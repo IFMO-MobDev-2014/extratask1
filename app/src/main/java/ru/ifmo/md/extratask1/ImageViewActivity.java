@@ -4,12 +4,15 @@ import android.app.LoaderManager;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -18,10 +21,9 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
     public static final String APP_PREFERENCES_POSITION = "position";
     SharedPreferences settings;
     ArrayList<MyImage> list;
-    ImageView imageView;
     int position;
-    TextView textView1;
-    TextView textView2;
+    ViewPager pager;
+    PagerAdapter pagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,28 +31,13 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
         supportRequestWindowFeature(Window.FEATURE_ACTION_BAR);
         getSupportActionBar().hide();
         setContentView(R.layout.activity_image_view);
-        imageView = (ImageView) findViewById(R.id.imageView);
-        textView1 = (TextView) findViewById(R.id.textView1);
-        textView2 = (TextView) findViewById(R.id.textView2);
+        pager = (ViewPager) findViewById(R.id.pager);
 
         settings = PreferenceManager.getDefaultSharedPreferences(this);
         if (settings.contains(APP_PREFERENCES_POSITION)) {
             position = settings.getInt(APP_PREFERENCES_POSITION, 0);
         } else position = 0;
 
-        imageView.setOnTouchListener(new OnSwipeTouchListener(this) {
-            @Override
-            public void onSwipeLeft() {
-                position++;
-                if (position >= list.size()) position -= list.size();
-                update();
-            }
-            public void onSwipeRight() {
-                position--;
-                if (position < 0) position += list.size();
-                update();
-            }
-        });
 
         getLoaderManager().initLoader(IMAGES_LOADER_ID, null, this);
     }
@@ -60,7 +47,7 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
         super.onPause();
 
         SharedPreferences.Editor editor = settings.edit();
-        editor.putInt(APP_PREFERENCES_POSITION, position);
+        editor.putInt(APP_PREFERENCES_POSITION, pager.getCurrentItem());
         editor.apply();
     }
 
@@ -76,22 +63,10 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
 
     private void update() {
         if (list != null && position >= 0 && position < list.size()) {
-            imageView.setImageBitmap(list.get(position).picture);
-            textView1.setText(list.get(position).pictureName);
-            textView2.setText("by " + list.get(position).username);
+            pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+            pager.setAdapter(pagerAdapter);
+            pager.setCurrentItem(position);
         }
-    }
-
-    public void onClickPrev(View view) {
-        position--;
-        if (position < 0) position += list.size();
-        update();
-    }
-
-    public void onClickNext(View view) {
-        position++;
-        if (position >= list.size()) position -= list.size();
-        update();
     }
 
     public Loader<ArrayList<MyImage>> onCreateLoader(int i, Bundle bundle) {
@@ -108,4 +83,27 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
     public void onLoaderReset(Loader<ArrayList<MyImage>> listLoader) {
         new MyImagesListLoader(this);
     }
+
+    private class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
+
+        public MyFragmentPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return ImageFullscreenFragment.newInstance(
+                    list.get(position).picture,
+                    list.get(position).pictureName,
+                    list.get(position).username
+            );
+        }
+
+        @Override
+        public int getCount() {
+            return list.size();
+        }
+
+    }
+
 }

@@ -1,0 +1,10 @@
+{
+    "fields": [
+	{
+	    "name": "name",
+	    "type": "String",
+	    "nullable": false,
+	    "index": true,
+	},
+    ]
+}

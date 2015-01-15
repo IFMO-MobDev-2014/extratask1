@@ -5,9 +5,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import ru.ifmo.zakharvoit.extratask1.provider.item.ItemCursor;
-import ru.ifmo.zakharvoit.extratask1.provider.item.ItemSelection;
-
 public class MainActivity extends ActionBarActivity {
 
     @Override
@@ -15,7 +12,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

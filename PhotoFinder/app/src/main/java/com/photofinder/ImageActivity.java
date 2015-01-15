@@ -1,11 +1,13 @@
 package com.photofinder;
 
+import android.app.LoaderManager;
 import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.Loader;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,19 +15,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Pair;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -34,21 +26,32 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
-public class ImageActivity extends ActionBarActivity {
+public class ImageActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<ArrayList<Image>> {
 
-
-    ArrayList<Bitmap> bitmapArrayList;
     ArrayList<Boolean> used;
-    ArrayList<Pair<String, String>> links;
-    private static Bitmap current;
+    private Bitmap current;
+    ArrayList<Image> data = new ArrayList<>();
     Intent intent;
     int pos;
     private MyUpdateBroadcastReceiver myUpdateBroadcastReceiver;
     IntentFilter intentFilter;
-    DataBaseAdapter dataBaseAdapter;
     boolean portrait;
+
+    public Loader<ArrayList<Image>> onCreateLoader(int i, Bundle bundle) {
+        return new ImagesAsyncTaskLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<ArrayList<Image>> listLoader, final ArrayList<Image> list) {
+        data = list;
+        loadHQ(pos);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<ArrayList<Image>> listLoader) {
+        new ImagesAsyncTaskLoader(this);
+    }
 
 
     public class MyUpdateBroadcastReceiver extends BroadcastReceiver {
@@ -57,21 +60,17 @@ public class ImageActivity extends ActionBarActivity {
         public void onReceive(Context context, Intent intent) {
             byte[] bytes = intent.getByteArrayExtra(ImageService.EXTRA_KEY_ADD);
             current = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-            bitmapArrayList.set(pos, current);
-            dataBaseAdapter.open();
-            dataBaseAdapter.changePicById(pos, current, links.get(pos).first, links.get(pos).second);
-            dataBaseAdapter.close();
+            data.set(pos, new Image(current, data.get(pos).link, data.get(pos).xxlLink));
             used.set(pos, true);
             imageView.setImageBitmap(current);
         }
     }
-
     ImageView imageView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.image_main);
+
         imageView = (ImageView) findViewById(R.id.imageView);
         myUpdateBroadcastReceiver = new MyUpdateBroadcastReceiver();
         intentFilter = new IntentFilter(ImageService.ACTION_ADD);
@@ -79,17 +78,11 @@ public class ImageActivity extends ActionBarActivity {
         registerReceiver(myUpdateBroadcastReceiver, intentFilter);
         portrait = getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
         Intent intent = getIntent();
-        dataBaseAdapter = new DataBaseAdapter(this);
-        dataBaseAdapter.open();
-        bitmapArrayList = dataBaseAdapter.getAllPics();
-        links = dataBaseAdapter.getAllLinks();
-        dataBaseAdapter.close();
         pos = intent.getIntExtra("POS", 0);
-        current = bitmapArrayList.get(pos);
         used = new ArrayList<>();
-        for (int i = 0; i < bitmapArrayList.size(); i++)
+        for (int i = 0; i < getResources().getInteger(R.integer.pictures_count); i++)
             used.add(false);
-        imageView.setImageBitmap(current);
+
         imageView.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onSwipeRight() {
                 if (pos > 0) {
@@ -97,27 +90,24 @@ public class ImageActivity extends ActionBarActivity {
                     loadHQ(pos);
                 }
             }
-
             public void onSwipeLeft() {
-                if (pos < bitmapArrayList.size()) {
+                if (pos < data.size()) {
                     pos++;
                     loadHQ(pos);
                 }
             }
-
-
-
         });
-        loadHQ(pos);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     void loadHQ(Integer id) {
-        current = bitmapArrayList.get(id);
+        current = data.get(id).bitmap;
         imageView.setImageBitmap(current);
         if (!used.get(id)) {
             intent = new Intent(ImageActivity.this, ImageService.class);
             intent.putExtra("JOB", false);
-            intent.putExtra("XXL_LINK", links.get(id).second);
+            intent.putExtra("XXL_LINK", data.get(id).xxlLink);
+            intent.putExtra("ID", id);
             startService(intent);
         }
     }
@@ -177,7 +167,7 @@ public class ImageActivity extends ActionBarActivity {
                 }
                 return true;
             case R.id.browser:
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(links.get(pos).first));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(data.get(pos).link));
                 startActivity(browserIntent);
 
             default:

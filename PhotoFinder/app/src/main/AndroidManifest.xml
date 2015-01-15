@@ -25,6 +25,11 @@
             android:label="@string/app_name" >
         </activity>
         <service android:name=".ImageService" />
+        <provider
+            android:name="com.photofinder.myContentProvider"
+            android:authorities="com.photofinder.myContentProvider"
+            android:enabled="true" >
+        </provider>
     </application>
 
 </manifest>

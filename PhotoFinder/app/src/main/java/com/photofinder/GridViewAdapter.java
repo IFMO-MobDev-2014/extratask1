@@ -1,7 +1,6 @@
 package com.photofinder;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -13,11 +12,11 @@ import java.util.ArrayList;
 public class GridViewAdapter extends BaseAdapter {
 
     private Context context;
-    private ArrayList<Bitmap> pictures;
+    private ArrayList<Image> pictures;
     private int screenWidth;
     private boolean portrait;
 
-    public GridViewAdapter(Context context, ArrayList<Bitmap> pictures, int screenWidth, boolean portrait) {
+    public GridViewAdapter(Context context, ArrayList<Image> pictures, int screenWidth, boolean portrait) {
         this.context = context;
         this.pictures = pictures;
         this.screenWidth = screenWidth;
@@ -43,7 +42,7 @@ public class GridViewAdapter extends BaseAdapter {
         imageView = convertView == null ? new ImageView(context) : (ImageView) convertView;
         imageView.setLayoutParams(new GridView.LayoutParams(pictureWidth, pictureWidth));
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        imageView.setImageBitmap(pictures.get(position));
+        imageView.setImageBitmap(pictures.get(position).bitmap);
         return imageView;
     }
 }

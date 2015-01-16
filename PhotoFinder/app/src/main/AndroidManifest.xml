@@ -26,8 +26,8 @@
         </activity>
         <service android:name=".ImageService" />
         <provider
-            android:name="com.photofinder.myContentProvider"
-            android:authorities="com.photofinder.myContentProvider"
+            android:name=".MyContentProvider"
+            android:authorities="com.photofinder.MyContentProvider"
             android:enabled="true" >
         </provider>
     </application>

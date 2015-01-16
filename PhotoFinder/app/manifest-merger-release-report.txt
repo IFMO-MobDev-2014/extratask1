@@ -63,7 +63,7 @@ service#com.photofinder.ImageService
 ADDED from AndroidManifest.xml:27:9
 	android:name
 		ADDED from AndroidManifest.xml:27:18
-provider#com.photofinder.myContentProvider
+provider#com.photofinder.MyContentProvider
 ADDED from AndroidManifest.xml:28:9
 	android:authorities
 		ADDED from AndroidManifest.xml:30:13

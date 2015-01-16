@@ -11,5 +11,7 @@
     <string name="error_saving">Error. Check your memory</string>
     <string name="wallpaper_set">Wallpaper was changed to this picture</string>
     <string name="wallpaper_error">Error. Check your device</string>
+    <string name="data_is_empty">Swipe down to download pictures</string>
+    <string name="check_connection">Check your connection</string>
 
 </resources>

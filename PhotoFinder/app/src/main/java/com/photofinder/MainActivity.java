@@ -44,6 +44,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     public void onLoadFinished(Loader<ArrayList<Image>> listLoader, final ArrayList<Image> list) {
         data = list;
         gridView.setAdapter(new GridViewAdapter(this, data, width, portrait));
+        if (data.isEmpty())
+            Toast.makeText(this, getString(R.string.data_is_empty), Toast.LENGTH_LONG).show();
     }
     @Override
     public void onLoaderReset(Loader<ArrayList<Image>> listLoader) {
@@ -142,7 +144,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         @Override
         public void onReceive(Context context, Intent intent) {
             if (!intent.getBooleanExtra(ImageService.EXTRA_KEY_SUCCESS, false)) {
-                Toast.makeText(MainActivity.this, "Check your connection", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, getString(R.string.check_connection), Toast.LENGTH_LONG).show();
                 MySwipeRefresh.setRefreshing(false);
                 progressBar.setProgress(0);
                 return;

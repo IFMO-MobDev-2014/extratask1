@@ -19,7 +19,7 @@ public class ImagesAsyncTaskLoader extends AsyncTaskLoader<ArrayList<Image>> {
     @Override
     public ArrayList<Image> loadInBackground() {
         ArrayList<Image> imageArrayList = new ArrayList<>();
-        Cursor cursor = context.getContentResolver().query(myContentProvider.URI, null, null, null, null);
+        Cursor cursor = context.getContentResolver().query(MyContentProvider.URI, null, null, null, null);
         if (cursor != null) {
             cursor.moveToFirst();
             while (!cursor.isBeforeFirst() && !cursor.isAfterLast()) {

@@ -6,8 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
-public class myContentProvider extends ContentProvider {
-    private static String AUTHORITY = "com.photofinder.myContentProvider";
+public class MyContentProvider extends ContentProvider {
+    private static String AUTHORITY = "com.photofinder.MyContentProvider";
     public static final Uri URI = Uri.parse("content://" + AUTHORITY + "/" + DataBaseHelper.TABLE_PICS);
 
     private DataBaseHelper dataBaseHelper;

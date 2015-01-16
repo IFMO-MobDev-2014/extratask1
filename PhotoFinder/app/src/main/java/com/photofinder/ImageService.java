@@ -68,7 +68,7 @@ public class ImageService extends IntentService {
                     cv.put(DataBaseHelper.KEY_PIC, bArray);
                     cv.put(DataBaseHelper.KEY_LINK, mLink);
                     cv.put(DataBaseHelper.KEY_XXL_LINK, xxlLink);
-                    getContentResolver().insert(myContentProvider.URI, cv);
+                    getContentResolver().insert(MyContentProvider.URI, cv);
                 }
                 Intent intentReady = new Intent();
                 intentReady.setAction(ACTION_READY);

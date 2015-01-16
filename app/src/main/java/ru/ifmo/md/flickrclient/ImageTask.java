@@ -1,5 +1,6 @@
 package ru.ifmo.md.flickrclient;
 
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -7,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.googlecode.flickrjandroid.photos.Photo;
 
@@ -20,19 +22,50 @@ import java.net.URL;
  */
 public class ImageTask extends AsyncTask<Long, Void, Bitmap> {
 
-    private ImageView imageView;
+    public static final String ROW_ID = "ROW_ID";
     private ContentResolver contentResolver;
+    private ImageView imageView;
+    private ProgressDialog progressDialog;
+    private Toast toast;
 
-    public ImageTask(ImageView imageView, ContentResolver contentResolver) {
-        this.imageView = imageView;
+
+    public ImageTask(ContentResolver contentResolver, ImageView imageView, ProgressDialog progressDialog, Toast toast) {
         this.contentResolver = contentResolver;
+        this.imageView = imageView;
+        this.progressDialog = progressDialog;
+        this.toast = toast;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        progressDialog.setIndeterminate(false);
+        progressDialog.setMessage("Downloading image");
+        progressDialog.show();
+    }
+
+    @Override
+    protected void onPostExecute(Bitmap bitmap) {
+        progressDialog.cancel();
+        if (bitmap == null) {
+            toast.setDuration(Toast.LENGTH_SHORT);
+            toast.setText("Internet error");
+            toast.show();
+        } else {
+            imageView.setImageBitmap(bitmap);
+            toast.cancel();
+        }
     }
 
     @Override
     protected Bitmap doInBackground(Long... params) {
+        long rowId = params[0];
+        if (rowId == -1) {
+            return null;
+        }
         Cursor cursor = contentResolver.query(FlickrContentProvider.PHOTO_URI, null, DBFlickr.ID1 + " = ?",
-                new String[] {String.valueOf(params[0])}, null);
-        Log.d("IMAGE_TASK", String.valueOf(params[0]));
+                new String[] {String.valueOf(rowId)}, null);
+        Log.d("IMAGE_TASK", String.valueOf(rowId));
         Photo photo = new Photo();
         cursor.moveToFirst();
         photo.setServer(cursor.getString(cursor.getColumnIndexOrThrow(DBFlickr.PHOTO_SERVER)));
@@ -52,14 +85,7 @@ public class ImageTask extends AsyncTask<Long, Void, Bitmap> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return bitmap;
+        return  bitmap;
     }
 
-    @Override
-    protected void onPostExecute(Bitmap bitmap) {
-        if (bitmap != null) {
-            imageView.setImageBitmap(bitmap);
-        }
-    }
 }

@@ -1,14 +1,14 @@
 package ru.ifmo.md.flickrclient;
 
-import android.app.Activity;
 import android.app.LoaderManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,14 +16,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.GridView;
+import android.widget.Toast;
 
 
-public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private GridView gridView = null;
     private GridAdapter gridAdapter = null;
-    private MyBroadcastReceiver myBroadcastReceiver;
     private Intent fullView;
+    private ProgressDialog progressBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +48,19 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 
         getLoaderManager().initLoader(1, null, this);
 
-        myBroadcastReceiver = new MyBroadcastReceiver();
-        IntentFilter intentFilter = new IntentFilter(UrlsDownloadService.ACTION_RESPONSE);
-        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-        registerReceiver(myBroadcastReceiver, intentFilter);
+    }
+
+    private void downloadAll() {
+        progressBar = new ProgressDialog(this);
+        progressBar.setIndeterminate(false);
+        progressBar.setMessage("Downloading images...");
+        progressBar.setMax(UrlsDownloadService.COUNT_IMAGES);
+        progressBar.setCancelable(true);
+        progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressBar.show();
+        Intent i = new Intent(this, UrlsDownloadService.class);
+        i.putExtra(UrlsDownloadService.RESULT_RECEIVER, new ProgressReceiver(new Handler()));
+        startService(i);
     }
 
 
@@ -57,7 +68,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -68,17 +79,22 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id)
+        {
+            case R.id.action_settings:
+                return true;
+            case R.id.refreshButton:
+                downloadAll();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
 
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(myBroadcastReceiver);
     }
 
     @Override
@@ -89,9 +105,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data.getCount() == 0) {
-            Intent i = new Intent(this, UrlsDownloadService.class);
-            i.putExtra(UrlsDownloadService.DOWNLOAD_ID, -1);
-            startService(i);
+            downloadAll();
         } else {
             gridAdapter.changeCursor(data);
         }
@@ -102,14 +116,40 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         gridAdapter.changeCursor(null);
     }
 
-    public class MyBroadcastReceiver extends BroadcastReceiver {
+
+    public class ProgressReceiver extends ResultReceiver {
+
+        /**
+         * Create a new ResultReceive to receive results.  Your
+         * {@link #onReceiveResult} method will be called from the thread running
+         * <var>handler</var> if given, or from an arbitrary thread if null.
+         *
+         * @param handler
+         */
+        public ProgressReceiver(Handler handler) {
+            super(handler);
+        }
 
         @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d("ACTIVITY", "broadcast received");
-            Cursor cursor = getContentResolver().query(FlickrContentProvider.PHOTO_URI, null, null, null, null);
-            gridAdapter.changeCursor(cursor);
-            Log.d("ACTIVITY", "broadcast " + cursor.getCount());
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            if (resultCode == 0) {
+                int progress = resultData.getInt(UrlsDownloadService.PROGRESS);
+                Log.d("Receiver", String.valueOf(progress));
+
+                if (progress == -1) {
+                    progressBar.cancel();
+                    Toast toast = new Toast(getApplicationContext());
+                    toast.setDuration(Toast.LENGTH_SHORT);
+                    toast.setText("Error on downloading");
+                    toast.show();
+                }else if (progress == UrlsDownloadService.COUNT_IMAGES) {
+                    progressBar.cancel();
+                    Cursor cursor = getContentResolver().query(FlickrContentProvider.PHOTO_URI, null, null, null, null);
+                    gridAdapter.changeCursor(cursor);
+                } else {
+                    progressBar.setProgress(progress);
+                }
+            }
         }
     }
 }

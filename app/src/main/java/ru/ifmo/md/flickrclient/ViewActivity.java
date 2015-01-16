@@ -1,15 +1,12 @@
 package ru.ifmo.md.flickrclient;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 
 public class ViewActivity extends ActionBarActivity {
@@ -18,6 +15,8 @@ public class ViewActivity extends ActionBarActivity {
 
     private long view_id;
     private ImageView imageView;
+    private ProgressDialog progressDialog;
+    private Toast toast;
 
 
     @Override
@@ -27,8 +26,13 @@ public class ViewActivity extends ActionBarActivity {
 
         view_id = getIntent().getLongExtra(IMAGE_ID, -1);
         imageView = (ImageView) findViewById(R.id.full_image);
+
         if (view_id != -1) {
-            ImageTask imageTask = new ImageTask(imageView, getContentResolver());
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Downloading image");
+            progressDialog.show();
+            toast = new Toast(this);
+            ImageTask imageTask = new ImageTask(getContentResolver(), imageView, progressDialog, toast);
             imageTask.execute(view_id);
         }
     }
@@ -56,13 +60,4 @@ public class ViewActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public class MyBroadcastReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d("ACTIVITY", "broadcast received");
-            Cursor cursor = getContentResolver().query(FlickrContentProvider.PHOTO_URI, null, null, null, null);
-            Log.d("ACTIVITY", "broadcast " + cursor.getCount());
-        }
-    }
 }

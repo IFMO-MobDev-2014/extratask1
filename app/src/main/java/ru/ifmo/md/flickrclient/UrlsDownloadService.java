@@ -5,6 +5,8 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.util.Log;
 
 import com.googlecode.flickrjandroid.Flickr;
@@ -25,9 +27,10 @@ import java.util.HashSet;
  * Created by sultan on 15.01.15.
  */
 public class UrlsDownloadService extends IntentService {
-    private static final int COUNT_IMAGES = 20;
+    public static final int COUNT_IMAGES = 20;
     public static final String ACTION_RESPONSE = "ru.ifmo.md.flickrclient.urlsDownloadService.RESPONSE";
-    public static final String DOWNLOAD_ID = "PHOTO_ID";
+    public static final String RESULT_RECEIVER = "RESULT_RECEIVER";
+    public static final String PROGRESS = "PROGRESS";
     private PhotoList photoList = null;
 
     /**
@@ -40,12 +43,16 @@ public class UrlsDownloadService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
+        ResultReceiver resultReceiver = intent.getParcelableExtra(RESULT_RECEIVER);
         try {
             Flickr f = FlickrHelper.getInstance().getFlickr();
             photoList = f.getPhotosInterface().getRecent(new HashSet<String>(), COUNT_IMAGES, 1);
             Log.d("Service", "urls");
 
             getContentResolver().delete(FlickrContentProvider.PHOTO_URI, null, null);
+            Bundle data = new Bundle();
+            int counter = 0;
             for (Photo photo : photoList)
             {
                 String strUrl = photo.getLargeSquareUrl();
@@ -68,10 +75,12 @@ public class UrlsDownloadService extends IntentService {
                 cv.put(DBFlickr.PHOTO, bytes);
 
                 getContentResolver().insert(FlickrContentProvider.PHOTO_URI, cv);
+                counter++;
+//                int progress = 100*counter/photoList.getPerPage();
+//                Log.d("URL_SERVICE", counter + " " + photoList.getPages());
+                data.putInt(PROGRESS, counter);
+                resultReceiver.send(0, data);
             }
-//            Intent i = new Intent(this, ImageDownloadService.class);
-//            i.putExtra("photoList", photoList);
-//            startService(i);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (FlickrException e) {
@@ -79,10 +88,5 @@ public class UrlsDownloadService extends IntentService {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d("Service", "broadcast");
-        Intent response = new Intent();
-        response.setAction(ACTION_RESPONSE);
-        response.addCategory(Intent.CATEGORY_DEFAULT);
-        sendBroadcast(response);
     }
 }

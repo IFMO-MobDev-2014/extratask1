@@ -3,7 +3,7 @@
 
     <string name="app_name">Editor\'s</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
     <string name="editorsUrl"><![CDATA[https://api.500px.com/v1/photos?consumer_key=rhKpWzWsTUV9Gb962w9LcZo4qggAhNQMLmyZ9nJc&feature=editors&sort=created_at&rpp=100&image_size=2]]></string>
+    <string name="sync">Sync</string>
 
 </resources>

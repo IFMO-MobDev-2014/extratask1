@@ -40,12 +40,12 @@ public class MessageFragment extends DialogFragment
         }
     }
 
-    protected void onCancelLoad() {
+    protected void onCancelLoad(final List<PhotoItem> list) {
         if (taskLoaderListener != null) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    taskLoaderListener.onCancelLoad();
+                    taskLoaderListener.onCancelLoad(list);
                 }
             });
         }
@@ -120,11 +120,11 @@ public class MessageFragment extends DialogFragment
     @Override
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
-
+        List<PhotoItem> items = loader.getList();
         loader.cancelLoad();
         loader.setCanceled(true);
 
-        onCancelLoad();
+        onCancelLoad(items);
     }
 
     private void hideDialog() {
@@ -146,3 +146,4 @@ public class MessageFragment extends DialogFragment
         }
     };
 }
+

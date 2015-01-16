@@ -40,6 +40,11 @@ public class PhotoLoader extends AsyncTaskLoader<List<PhotoItem>>{
     InputStream in;
     URL url;
 
+    public List<PhotoItem> getList() {
+        return list;
+    }
+
+
     @Override
     public List<PhotoItem> loadInBackground() {
         try {
@@ -150,8 +155,8 @@ public class PhotoLoader extends AsyncTaskLoader<List<PhotoItem>>{
         this.handler = handler;
     }
 
-    public void setCanceled(boolean canselled){
-        this.canceled = canselled;
+    public void setCanceled(boolean cancelled){
+        this.canceled = cancelled;
     }
 
     public boolean isCancelled() {

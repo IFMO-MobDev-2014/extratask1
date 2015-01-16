@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface PhotoLoadListener {
     void onLoadFinished(List<PhotoItem> data);
-    void onCancelLoad();
+    void onCancelLoad(List<PhotoItem> data);
 }

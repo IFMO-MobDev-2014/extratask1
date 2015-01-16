@@ -27,4 +27,9 @@ public class MySwipeRefresh extends SwipeRefreshLayout {
         }
         return super.onInterceptTouchEvent(motionEvent);
     }
+
+    @Override
+    public boolean canChildScrollUp() {
+        return findViewById(R.id.gridView).canScrollVertically(-1);
+    }
 }

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.ifmo.md.photooftheday" >
+          package="ru.ifmo.md.photooftheday">
+
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--<uses-sdk-->
+        <!--tools:node="replace" />-->
 
     <application
         android:allowBackup="true"

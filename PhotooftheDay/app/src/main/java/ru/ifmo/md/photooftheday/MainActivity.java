@@ -1,18 +1,39 @@
 package ru.ifmo.md.photooftheday;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+
 
 public class MainActivity extends Activity {
+    private static final int columnsCounter = 2;
+
+    private RecyclerView recyclerView;
+    private RecyclerAdapter recyclerAdapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView.setLayoutManager(new GridLayoutManager(this, columnsCounter));
+        recyclerView.setHasFixedSize(true);
+
+        layoutManager = new GridLayoutManager(this, columnsCounter);
+        recyclerView.setLayoutManager(layoutManager);
+
+        recyclerAdapter = new RecyclerAdapter(new ArrayList<Bitmap>());
+        recyclerView.setAdapter(recyclerAdapter);
+
+        recyclerAdapter.add(0, BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher));
     }
 
 

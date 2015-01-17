@@ -1,17 +1,15 @@
-package mariashka.editors.loader;
+package mariashka.editors;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.Contacts;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBarActivity;
 import android.widget.Toast;
 
 import java.util.List;
 
-import mariashka.editors.Main;
 import mariashka.editors.provider.photos.PhotosColumns;
 import mariashka.editors.provider.photos.PhotosContentValues;
 import mariashka.editors.provider.photos.PhotosSelection;
@@ -20,16 +18,16 @@ import mariashka.editors.provider.photos.PhotosSelection;
  * Created by mariashka on 1/16/15.
  */
 public class LoaderExecuter implements PhotoLoadListener {
-    Activity main;
+    ActionBarActivity main;
     PhotoLoader loader;
     MessageFragment fragment;
 
-    public LoaderExecuter(Activity main) {
+    public LoaderExecuter(ActionBarActivity main) {
        this.main = main;
     }
 
     public void execute() {
-        FragmentManager fm = main.getFragmentManager();
+        FragmentManager fm = main.getSupportFragmentManager();
 
         FragmentTransaction ft = fm.beginTransaction();
         Fragment prev = fm.findFragmentByTag("photo");
@@ -45,35 +43,38 @@ public class LoaderExecuter implements PhotoLoadListener {
         args.putInt("message", 0);
         fragment.setArguments(args);
 
-        fragment.show(ft, "photo");
+        fragment.show(fm, "photo");
     }
 
     @Override
     public void onLoadFinished(List<PhotoItem> data) {
+        if (data == null) {
+            Toast.makeText(main.getApplicationContext(),
+                    "Can't connect to the server", Toast.LENGTH_LONG).show();
+
+            Toast.makeText(main.getApplicationContext(),
+                    "Please check your Internet connection", Toast.LENGTH_LONG).show();
+            return;
+        }
         storeData(data);
         ((Main) main).notifyGrid(data);
 
-        Toast toast = new Toast(main.getApplicationContext());
-        toast.setText("Sync finished");
-        toast.setDuration(Toast.LENGTH_LONG);
-        toast.show();
-        toast.setText("Old and new photos are available to you");
-        toast.setDuration(Toast.LENGTH_LONG);
-        toast.show();
+
+        Toast.makeText(main.getApplicationContext(),
+                "Loading finished", Toast.LENGTH_LONG).show();
+        Toast.makeText(main.getApplicationContext(),
+                "Old and new photos both are available", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onCancelLoad(List<PhotoItem> data) {
-        storeData(data);
         ((Main) main).notifyGrid(data);
+        storeData(data);
 
-        Toast toast = new Toast(main.getApplicationContext());
-        toast.setText("Loading was canceled by user");
-        toast.setDuration(Toast.LENGTH_SHORT);
-        toast.show();
-        toast.setText("To get all start sync again");
-        toast.setDuration(Toast.LENGTH_SHORT);
-        toast.show();
+        Toast.makeText(main.getApplicationContext(),
+                "Loading was canceled by user", Toast.LENGTH_LONG).show();
+        Toast.makeText(main.getApplicationContext(),
+                "To get all start sync again", Toast.LENGTH_SHORT).show();
     }
 
     private void storeData(List<PhotoItem> items) {
@@ -85,7 +86,8 @@ public class LoaderExecuter implements PhotoLoadListener {
             where.name(p.name);
             Cursor c = main.getContentResolver().query(PhotosColumns.CONTENT_URI,
                     null, where.sel(), where.args(), null);
-            if (c == null) {
+            c.moveToFirst();
+            if (c.isAfterLast()) {
                 contentValues = new PhotosContentValues();
                 contentValues.putName(p.name).putSmallImg(p.smallImg).putBigImg(p.bigImg)
                         .putDescr(p.descr).putAuthor(p.author).putFace(p.face);

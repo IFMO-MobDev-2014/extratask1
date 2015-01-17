@@ -1,14 +1,13 @@
-package mariashka.editors.loader;
+package mariashka.editors;
 
-import android.app.DialogFragment;
-import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Loader;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.content.DialogInterface.OnCancelListener;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 
 import java.util.List;
 
@@ -17,7 +16,7 @@ import java.util.List;
  */
 
 public class MessageFragment extends DialogFragment
-        implements LoaderManager.LoaderCallbacks<List<PhotoItem>>, OnCancelListener {
+        implements LoaderManager.LoaderCallbacks<List<PhotoItem>>, DialogInterface.OnCancelListener {
 
     private ProgressDialog progressDialog;
 
@@ -55,7 +54,7 @@ public class MessageFragment extends DialogFragment
     protected MessageFragment(PhotoLoader loader){
         loader.setHandler(handler);
         this.loader = loader;
-        this.maxProgress = 100;
+        this.maxProgress = 10;
 
         Bundle args = new Bundle();
         args.putInt("message", 0);

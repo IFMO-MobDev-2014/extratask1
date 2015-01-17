@@ -1,4 +1,4 @@
-package mariashka.editors.loader;
+package mariashka.editors;
 
 /**
  * Created by mariashka on 1/16/15.

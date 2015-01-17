@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="mariashka.editors" >
+    <uses-permission android:name="android.permission.INTERNET" />
+
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:configChanges="keyboardHidden|orientation">
+
+        <provider
+            android:name="mariashka.editors.provider.Provider"
+            android:authorities="mariashka.editors.provider"
+            android:exported="false" />
+
+
         <activity
             android:name=".Main"
             android:label="@string/app_name" >

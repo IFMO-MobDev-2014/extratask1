@@ -1,10 +1,11 @@
-package mariashka.editors.loader;
+package mariashka.editors;
 
-import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.AsyncTaskLoader;
+import android.util.Log;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -22,12 +23,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import mariashka.editors.R;
-
 /**
  * Created by mariashka on 1/16/15.
  */
-public class PhotoLoader extends AsyncTaskLoader<List<PhotoItem>>{
+public class PhotoLoader extends AsyncTaskLoader<List<PhotoItem>> {
     private Handler handler;
     private boolean canceled = false;
     private List<PhotoItem> list = new ArrayList<>();
@@ -48,12 +47,14 @@ public class PhotoLoader extends AsyncTaskLoader<List<PhotoItem>>{
     @Override
     public List<PhotoItem> loadInBackground() {
         try {
-            url = new URL(getContext().getString(R.string.editorsUrl));
-            connection = (HttpURLConnection) url.openConnection();
-            in = connection.getInputStream();
-            connection.disconnect();
+            DefaultHttpClient client = new DefaultHttpClient();
+            HttpGet request = new HttpGet(getContext().getString(R.string.editorsUrl));
+            HttpResponse response = client.execute(request);
+            HttpEntity entity = response.getEntity();
 
-            BufferedReader streamReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            Log.d("input", "" + entity.getContentLength());
+
+            BufferedReader streamReader = new BufferedReader(new InputStreamReader(entity.getContent(), "UTF-8"));
             StringBuilder responseStrBuilder = new StringBuilder();
 
             String inputStr;
@@ -73,6 +74,7 @@ public class PhotoLoader extends AsyncTaskLoader<List<PhotoItem>>{
             }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
+            return null;
         }
         return list;
     }

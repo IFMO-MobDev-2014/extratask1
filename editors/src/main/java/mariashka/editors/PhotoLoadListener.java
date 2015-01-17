@@ -1,7 +1,4 @@
-package mariashka.editors.loader;
-
-import android.content.Loader;
-import android.os.Bundle;
+package mariashka.editors;
 
 import java.util.List;
 

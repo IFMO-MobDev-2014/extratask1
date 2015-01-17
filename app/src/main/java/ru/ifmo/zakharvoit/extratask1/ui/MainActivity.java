@@ -11,7 +11,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import ru.ifmo.zakharvoit.extratask1.R;
@@ -25,11 +27,14 @@ public class MainActivity extends ActionBarActivity
 
     private ImagesAdapter adapter;
     private int loadersCount = 0;
+    private ProgressBar downloadProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        downloadProgressBar = (ProgressBar) findViewById(R.id.download_progress_bar);
 
         adapter = new ImagesAdapter(this, new PictureSelection()
                 .query(getContentResolver()));
@@ -59,6 +64,8 @@ public class MainActivity extends ActionBarActivity
                 Log.d(TAG, "List downloaded");
                 images = new byte[size][];
                 currentSize = 0;
+                downloadProgressBar.setProgress(100 * currentSize / size);
+                downloadProgressBar.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -66,6 +73,7 @@ public class MainActivity extends ActionBarActivity
                 Log.d(TAG, "New image downloaded");
                 if (image != null) { // FIXME: Strange hack
                     images[currentSize++] = image;
+                    downloadProgressBar.setProgress(100 * currentSize / images.length);
                 }
             }
 
@@ -80,6 +88,7 @@ public class MainActivity extends ActionBarActivity
                     contentValues.insert(getContentResolver());
                 }
                 images = null;
+                downloadProgressBar.setVisibility(View.INVISIBLE);
             }
 
             @Override

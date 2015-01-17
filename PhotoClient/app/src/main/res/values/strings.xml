@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="no_connection">Internet connection is not available</string>
+    <string name="app_name">YaRecent</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="string_update">Update</string>
+    <string name="title_full_image_activity">Image</string>
+    <string name="action_set_as_wallpaper">Set as wallpaper</string>
+    <string name="action_open_in_browser">Open in browser</string>
+    <string name="action_save_to_gallery">Save to gallery</string>
+
+</resources>

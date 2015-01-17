@@ -30,8 +30,9 @@ public class ImageLoader extends AsyncTaskLoader <List <Image>>{
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
                 byte[] arraySmall = cursor.getBlob(cursor.getColumnIndex(SQLiteHelper.SMALL_IMAGE));
-                byte[] arrayLarge = cursor.getBlob(cursor.getColumnIndex(SQLiteHelper.LARGE_IMAGE));
+                //byte[] arrayLarge = cursor.getBlob(cursor.getColumnIndex(SQLiteHelper.LARGE_IMAGE));
                 Bitmap smallImage = BitmapFactory.decodeByteArray(arraySmall, 0, arraySmall.length);
+                smallImage = Bitmap.createScaledBitmap(smallImage, 200, 200, true);
                 //Bitmap largeImage = BitmapFactory.decodeByteArray(arrayLarge, 0, arrayLarge.length);
                 String largeImageLink = cursor.getString(cursor.getColumnIndex(SQLiteHelper.LARGE_IMAGE));
                 Bitmap largeImage = smallImage;

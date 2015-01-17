@@ -27,7 +27,7 @@ import java.util.HashSet;
  * Created by sultan on 15.01.15.
  */
 public class UrlsDownloadService extends IntentService {
-    public static final int COUNT_IMAGES = 20;
+    public static final int COUNT_IMAGES = 30;
     public static final String ACTION_RESPONSE = "ru.ifmo.md.flickrclient.urlsDownloadService.RESPONSE";
     public static final String RESULT_RECEIVER = "RESULT_RECEIVER";
     public static final String PROGRESS = "PROGRESS";
@@ -56,6 +56,7 @@ public class UrlsDownloadService extends IntentService {
             for (Photo photo : photoList)
             {
                 String strUrl = photo.getLargeSquareUrl();
+                Log.d("Service", String.valueOf(photo.getLargeSquareSize()));
                 URL url = new URL(strUrl);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setDoInput(true);
@@ -76,17 +77,13 @@ public class UrlsDownloadService extends IntentService {
 
                 getContentResolver().insert(FlickrContentProvider.PHOTO_URI, cv);
                 counter++;
-//                int progress = 100*counter/photoList.getPerPage();
-//                Log.d("URL_SERVICE", counter + " " + photoList.getPages());
                 data.putInt(PROGRESS, counter);
                 resultReceiver.send(0, data);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (FlickrException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (IOException | FlickrException | JSONException e) {
+            Bundle data = new Bundle();
+            data.putInt(PROGRESS, -1);
+            resultReceiver.send(0, data);
         }
     }
 }

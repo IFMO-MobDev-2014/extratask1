@@ -14,6 +14,7 @@ public class FlickrCursorLoader extends CursorLoader {
 
     @Override
     public Cursor loadInBackground() {
-        return getContext().getContentResolver().query(FlickrContentProvider.PHOTO_URI, null, null, null, null);
+        return getContext().getContentResolver().query(FlickrContentProvider.PHOTO_URI, null, null, null,
+                MainActivity.sortOrder);
     }
 }

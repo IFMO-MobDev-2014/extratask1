@@ -34,6 +34,5 @@ public class GridAdapter extends CursorAdapter {
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         ImageView imageView = (ImageView) view.findViewById(R.id.small_image);
         imageView.setImageBitmap(bitmap);
-//        Log.d("GRIDVIEW", String.valueOf(bytes.length));
     }
 }

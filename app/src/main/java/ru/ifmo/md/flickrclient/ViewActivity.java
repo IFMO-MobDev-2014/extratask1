@@ -31,7 +31,7 @@ public class ViewActivity extends ActionBarActivity {
             progressDialog = new ProgressDialog(this);
             progressDialog.setMessage("Downloading image");
             progressDialog.show();
-            toast = new Toast(this);
+            toast = Toast.makeText(this, "Internet error", Toast.LENGTH_SHORT);
             ImageTask imageTask = new ImageTask(getContentResolver(), imageView, progressDialog, toast);
             imageTask.execute(view_id);
         }

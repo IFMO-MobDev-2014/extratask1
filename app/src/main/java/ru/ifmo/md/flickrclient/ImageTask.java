@@ -46,14 +46,15 @@ public class ImageTask extends AsyncTask<Long, Void, Bitmap> {
 
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-        progressDialog.cancel();
-        if (bitmap == null) {
-            toast.setDuration(Toast.LENGTH_SHORT);
-            toast.setText("Internet error");
-            toast.show();
-        } else {
-            imageView.setImageBitmap(bitmap);
-            toast.cancel();
+        try {
+            progressDialog.cancel();
+            if (bitmap == null) {
+                toast.show();
+            } else {
+                imageView.setImageBitmap(bitmap);
+                toast.cancel();
+            }
+        } catch (IllegalArgumentException e) {
         }
     }
 

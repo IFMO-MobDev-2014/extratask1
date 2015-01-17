@@ -26,6 +26,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     private Intent fullView;
     private ProgressDialog progressBar;
 
+    public static final String sortOrder = DBFlickr.ID1 + " ASC " + " LIMIT 10";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +118,21 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         gridAdapter.changeCursor(null);
     }
 
+    public void loadMore(View view) {
+        Cursor cursor = gridAdapter.getCursor();
+        cursor.moveToLast();
+        long row_id = cursor.getLong(cursor.getColumnIndexOrThrow(DBFlickr.ID1));
+        Log.d("MAIN_ACTIVITY", String.valueOf(row_id));
+        cursor = getContentResolver().query(FlickrContentProvider.PHOTO_URI, null, DBFlickr.ID1 + " > ?",
+                new String[] {String.valueOf(row_id)}, MainActivity.sortOrder);
+        if (cursor.getCount() == 0) {
+            Toast toast = Toast.makeText(this, "Start from begging", Toast.LENGTH_SHORT);
+            toast.show();
+            cursor = getContentResolver().query(FlickrContentProvider.PHOTO_URI, null, null, null, MainActivity.sortOrder);
+        }
+        gridAdapter.swapCursor(cursor);
+    }
+
 
     public class ProgressReceiver extends ResultReceiver {
 
@@ -138,13 +155,12 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
                 if (progress == -1) {
                     progressBar.cancel();
-                    Toast toast = new Toast(getApplicationContext());
-                    toast.setDuration(Toast.LENGTH_SHORT);
-                    toast.setText("Error on downloading");
+                    Toast toast = Toast.makeText(getApplicationContext(), "Error on updating", Toast.LENGTH_SHORT);
                     toast.show();
                 }else if (progress == UrlsDownloadService.COUNT_IMAGES) {
                     progressBar.cancel();
-                    Cursor cursor = getContentResolver().query(FlickrContentProvider.PHOTO_URI, null, null, null, null);
+                    Cursor cursor = getContentResolver().query(FlickrContentProvider.PHOTO_URI, null, null, null,
+                            MainActivity.sortOrder);
                     gridAdapter.changeCursor(cursor);
                 } else {
                     progressBar.setProgress(progress);

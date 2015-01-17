@@ -1,7 +1,6 @@
 package ru.ifmo.md.flickrclient;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -36,29 +35,6 @@ public class DBFlickr extends SQLiteOpenHelper {
     public DBFlickr(Context context) {
         super(context, DB_NAME, null, VERSION);
         database = getWritableDatabase();
-        addAll();
-    }
-
-/*    private void addItem(CurrencyItem item) {
-        ContentValues cv = new ContentValues();
-        cv.put(DBMoney.CURRENCY1, item.getCurrency());
-        cv.put(DBMoney.RATE1, item.getRate());
-        cv.put(DBMoney.SUM1, item.getSum());
-        database.insert(DBMoney.TABLE_MONEY1, null, cv);
-    }*/
-
-    private void addAll() {
-        Cursor cursor = database.rawQuery("SELECT COUNT (*) FROM " + TABLE_PHOTO1, null);
-        if (cursor != null)
-        {
-            cursor.moveToFirst();
-            if (cursor.getInt(0) == 0) {
-//                for (CurrencyItem item : defaultItems) {
-//                    addItem(item);
-//                }
-            }
-        }
-
     }
 
     @Override

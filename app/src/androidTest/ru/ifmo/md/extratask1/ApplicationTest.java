@@ -1,4 +1,4 @@
-package com.ifmo.md.extratask1;
+package ru.ifmo.md.extratask1;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

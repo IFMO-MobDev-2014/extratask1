@@ -6,12 +6,12 @@ public class Image {
 
     Bitmap smallImage;
     Bitmap largeImage;
-    String linkOnLarge;
+    //String linkOnLarge;
 
-    public Image(Bitmap smallImage, Bitmap largeImage, String linkOnLarge) {
+    public Image(Bitmap smallImage, Bitmap largeImage/*, String linkOnLarge*/) {
         this.smallImage = smallImage;
         this.largeImage = largeImage;
-        this.linkOnLarge = linkOnLarge;
+        //this.linkOnLarge = linkOnLarge;
     }
 
     Bitmap getSmallImage() {
@@ -22,7 +22,7 @@ public class Image {
         return largeImage;
     }
 
-    String getLinkOnLarge() {
+    /*String getLinkOnLarge() {
         return linkOnLarge;
-    }
+    }*/
 }

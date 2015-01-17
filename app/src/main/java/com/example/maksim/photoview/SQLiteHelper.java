@@ -17,7 +17,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public static final String CREATE_IMAGES_BASE = "create table " + IMAGE_TABLE + " ("
             + COLUMN_ID + " integer primary key autoincrement, "
-            + LARGE_IMAGE + " TEXT, "
+            + LARGE_IMAGE + " BLOB, "
             + SMALL_IMAGE + " BLOB" + ");";
 
     public SQLiteHelper(Context context) {

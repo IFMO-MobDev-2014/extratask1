@@ -55,20 +55,20 @@ public class ImageDownloader extends IntentService {
             {
                 JSONObject currentImage = images.getJSONObject(i);
                 URL currentSmallURL = new URL(currentImage.getJSONObject("img").getJSONObject("M").getString("href"));
-                //URL currentLargeURL = new URL(currentImage.getJSONObject("img").getJSONObject("M").getString("href"));
+                URL currentLargeURL = new URL(currentImage.getJSONObject("img").getJSONObject("L").getString("href"));
                 Bitmap smallBitmap = BitmapFactory.decodeStream(currentSmallURL.openConnection().getInputStream());
-                //Bitmap largeBitmap = BitmapFactory.decodeStream(currentLargeURL.openConnection().getInputStream());
+                Bitmap largeBitmap = BitmapFactory.decodeStream(currentLargeURL.openConnection().getInputStream());
                 ByteArrayOutputStream bosSmall = new ByteArrayOutputStream();
                 smallBitmap.compress(Bitmap.CompressFormat.PNG, 100, bosSmall);
                 byte[] arraySmall = bosSmall.toByteArray();
-                //ByteArrayOutputStream bosLarge = new ByteArrayOutputStream();
-                //largeBitmap.compress(Bitmap.CompressFormat.PNG, 100, bosLarge);
-                //byte[] arrayLarge = bosLarge.toByteArray();
+                ByteArrayOutputStream bosLarge = new ByteArrayOutputStream();
+                largeBitmap.compress(Bitmap.CompressFormat.PNG, 100, bosLarge);
+                byte[] arrayLarge = bosLarge.toByteArray();
                 ContentValues cv = new ContentValues();
-                //cv.put(SQLiteHelper.LARGE_IMAGE, arrayLarge);
+                cv.put(SQLiteHelper.LARGE_IMAGE, arrayLarge);
 
-                String largeImageLink = currentImage.getJSONObject("img").getJSONObject("XL").getString("href");
-                cv.put(SQLiteHelper.LARGE_IMAGE, largeImageLink);
+                //String largeImageLink = currentImage.getJSONObject("img").getJSONObject("XL").getString("href");
+                //cv.put(SQLiteHelper.LARGE_IMAGE, largeImageLink);
 
                 cv.put(SQLiteHelper.SMALL_IMAGE, arraySmall);
                 getContentResolver().insert(MyContentProvider.IMAGES_CONTENT_URI, cv);

@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +53,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 Intent intent = new Intent(MainActivity.this, FullScreenImage.class);
                 Image img = (Image) adapter.getItem(position);
                 //intent.putExtra("image", img.getLargeImage());
-                intent.putExtra("link", img.getLinkOnLarge());
+                //intent.putExtra("link", img.getLinkOnLarge());
+                intent.putExtra("position", position);
                 startActivity(intent);
             }
         });

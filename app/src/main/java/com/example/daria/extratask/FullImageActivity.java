@@ -117,7 +117,7 @@ public class FullImageActivity extends Activity {
                         startActivity(intent);
                     }else if (detector.isSwipeLeft(e1, e2, velocityX)) {
                         showToast("Next");
-                        curImage++;
+                        curImage = Math.min(cur.getCount() - 1, curImage + 1);
                         text.setText((curImage + 1) + " of " + cur.getCount());
                         cur.moveToNext();
                         String url = cur.getString(cur.getColumnIndex(MySQLiteDatabase.COLUMN_URL));
@@ -126,7 +126,7 @@ public class FullImageActivity extends Activity {
                         imageView.setImageBitmap(bitmap);
                     } else if (detector.isSwipeRight(e1, e2, velocityX)) {
                         showToast("Previous");
-                        curImage--;
+                        curImage = Math.max(0, curImage - 1);
                         text.setText((curImage + 1) + " of " + cur.getCount());
                         cur.moveToPrevious();
                         String url = cur.getString(cur.getColumnIndex(MySQLiteDatabase.COLUMN_URL));

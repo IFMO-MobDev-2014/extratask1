@@ -19,7 +19,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FullScreenImage extends ActionBarActivity implements View.OnTouchListener, LoaderManager.LoaderCallbacks <Bitmap> {
+public class FullScreenImage extends ActionBarActivity implements LoaderManager.LoaderCallbacks <Bitmap> {
 
     //ProgressDialog dialog;
 
@@ -29,7 +29,7 @@ public class FullScreenImage extends ActionBarActivity implements View.OnTouchLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.full_screen_image);
+        setContentView(R.layout.full_screen);
         /*if (android.os.Build.VERSION.SDK_INT > 9) {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
@@ -59,6 +59,22 @@ public class FullScreenImage extends ActionBarActivity implements View.OnTouchLi
         startActivity(intent);
     }
 
+    public void onPrev(View view) {
+        position--;
+        if (position < 0) {
+            position = 99;
+        }
+        getLoaderManager().restartLoader(2, null ,FullScreenImage.this);
+    }
+
+    public void onNext(View view) {
+        position++;
+        if (position > 99) {
+            position = 0;
+        }
+        getLoaderManager().restartLoader(2, null, FullScreenImage.this);
+    }
+
     @Override
     public Loader<Bitmap> onCreateLoader(int i, Bundle bundle) {
         //return new ImageLoader(this);\
@@ -73,22 +89,4 @@ public class FullScreenImage extends ActionBarActivity implements View.OnTouchLi
     @Override
     public void onLoaderReset(Loader <Bitmap> listLoader) {}
 
-
-    @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
-        float startX = 0;
-        float finalX = 0;
-        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-            startX = motionEvent.getX();
-        } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-            finalX = motionEvent.getX();
-            if (finalX > startX) {
-                position++;
-            } else {
-                position--;
-            }
-            getLoaderManager().restartLoader(2, null, FullScreenImage.this);
-        }
-        return true;
-    }
 }

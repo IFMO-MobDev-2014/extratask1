@@ -21,8 +21,6 @@ public class PictureColumns implements BaseColumns {
      */
     public static final String _ID = new String(BaseColumns._ID);
 
-    public static final String NAME = "name";
-
     public static final String CONTENTS = "contents";
 
 
@@ -31,7 +29,6 @@ public class PictureColumns implements BaseColumns {
     // @formatter:off
     public static final String[] ALL_COLUMNS = new String[] {
             _ID,
-            NAME,
             CONTENTS
     };
     // @formatter:on
@@ -39,7 +36,6 @@ public class PictureColumns implements BaseColumns {
     public static boolean hasColumns(String[] projection) {
         if (projection == null) return true;
         for (String c : projection) {
-            if (c == NAME || c.contains("." + NAME)) return true;
             if (c == CONTENTS || c.contains("." + CONTENTS)) return true;
         }
         return false;

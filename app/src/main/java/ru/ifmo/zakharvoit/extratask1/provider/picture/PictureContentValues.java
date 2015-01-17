@@ -29,14 +29,6 @@ public class PictureContentValues extends AbstractContentValues {
         return contentResolver.update(uri(), values(), where == null ? null : where.sel(), where == null ? null : where.args());
     }
 
-    public PictureContentValues putName(String value) {
-        if (value == null) throw new IllegalArgumentException("value for name must not be null");
-        mContentValues.put(PictureColumns.NAME, value);
-        return this;
-    }
-
-
-
     public PictureContentValues putContents(byte[] value) {
         if (value == null) throw new IllegalArgumentException("value for contents must not be null");
         mContentValues.put(PictureColumns.CONTENTS, value);

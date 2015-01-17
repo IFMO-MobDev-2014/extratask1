@@ -7,6 +7,6 @@
     "sqliteOpenHelperClassName": "DatabaseHelper",
     "sqliteOpenHelperCallbacksClassName": "DatabaseHelperCallbacks",
     "databaseFileName": "extratask1.db",
-    "databaseVersion": 2,
+    "databaseVersion": 4,
     "enableForeignKeys": true,
 }

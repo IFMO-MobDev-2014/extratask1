@@ -56,21 +56,6 @@ public class PictureSelection extends AbstractSelection<PictureSelection> {
     }
 
 
-    public PictureSelection name(String... value) {
-        addEquals(PictureColumns.NAME, value);
-        return this;
-    }
-
-    public PictureSelection nameNot(String... value) {
-        addNotEquals(PictureColumns.NAME, value);
-        return this;
-    }
-
-    public PictureSelection nameLike(String... value) {
-        addLike(PictureColumns.NAME, value);
-        return this;
-    }
-
     public PictureSelection contents(byte[]... value) {
         addEquals(PictureColumns.CONTENTS, value);
         return this;

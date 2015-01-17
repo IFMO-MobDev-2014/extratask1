@@ -1,12 +1,6 @@
 {
     "fields": [
         {
-            "name": "name",
-            "type": "String",
-            "nullable": false,
-            "index": true
-        },
-        {
             "name": "contents",
             "type": "byte[]",
             "nullable": false

@@ -20,7 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = DatabaseHelper.class.getSimpleName();
 
     public static final String DATABASE_FILE_NAME = "extratask1.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
     private static DatabaseHelper sInstance;
     private final Context mContext;
     private final DatabaseHelperCallbacks mOpenHelperCallbacks;
@@ -29,12 +29,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_TABLE_PICTURE = "CREATE TABLE IF NOT EXISTS "
             + PictureColumns.TABLE_NAME + " ( "
             + PictureColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + PictureColumns.NAME + " TEXT NOT NULL, "
             + PictureColumns.CONTENTS + " BLOB NOT NULL "
             + " );";
-
-    private static final String SQL_CREATE_INDEX_PICTURE_NAME = "CREATE INDEX IDX_PICTURE_NAME "
-            + " ON " + PictureColumns.TABLE_NAME + " ( " + PictureColumns.NAME + " );";
 
     // @formatter:on
 
@@ -93,7 +89,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
         mOpenHelperCallbacks.onPreCreate(mContext, db);
         db.execSQL(SQL_CREATE_TABLE_PICTURE);
-        db.execSQL(SQL_CREATE_INDEX_PICTURE_NAME);
         mOpenHelperCallbacks.onPostCreate(mContext, db);
     }
 

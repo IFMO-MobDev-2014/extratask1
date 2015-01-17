@@ -1,22 +1,25 @@
 package ru.ifmo.zakharvoit.extratask1.util;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 /**
  * @author Zakhar Voit (zakharvoit@gmail.com)
  */
 public class StreamUtil {
     public static String inputStreamToString(InputStream stream) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        String line;
-        StringBuilder builder = new StringBuilder();
-        while ((line = reader.readLine()) != null) {
-            builder.append(line).append("\n");
+        return new String(inputStreamToByteArray(stream));
+    }
+
+    public static byte[] inputStreamToByteArray(InputStream stream) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        while (true) {
+            int r = stream.read(buffer);
+            if (r == -1) break;
+            out.write(buffer, 0, r);
         }
-        stream.close();
-        return builder.toString();
+        return out.toByteArray();
     }
 }

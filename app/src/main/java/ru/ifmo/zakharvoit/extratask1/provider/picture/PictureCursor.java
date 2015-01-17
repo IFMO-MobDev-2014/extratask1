@@ -18,15 +18,6 @@ public class PictureCursor extends AbstractCursor {
     }
 
     /**
-     * Get the {@code name} value.
-     * Cannot be {@code null}.
-     */
-    public String getName() {
-        Integer index = getCachedColumnIndexOrThrow(PictureColumns.NAME);
-        return getString(index);
-    }
-
-    /**
      * Get the {@code contents} value.
      * Cannot be {@code null}.
      */

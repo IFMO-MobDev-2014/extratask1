@@ -2,8 +2,8 @@ package mariashka.editors;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +23,10 @@ public class GridAdapter extends ArrayAdapter<PhotoItem> {
     private int layoutResourceId;
     private List<PhotoItem> data = new ArrayList<>();
 
+    public void setData(List<PhotoItem> i) {
+        data = i;
+    }
+
     public GridAdapter(Context context, int layoutResourceId, List<PhotoItem> data) {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
@@ -32,27 +36,35 @@ public class GridAdapter extends ArrayAdapter<PhotoItem> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View row = convertView;
-        ViewHolder holder = null;
+        ImageViewRecyclable imageView = (convertView == null) ? new ImageViewRecyclable(context) : (ImageViewRecyclable) convertView;
+        PhotoItem item = data.get(position);
+        byte[] bytes = item.smallImg;
+        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        imageView.setImageBitmap(bitmap);
 
-        if (row == null) {
-            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-            row = inflater.inflate(layoutResourceId, parent, false);
-            holder = new ViewHolder();
-            holder.image = (ImageView) row.findViewById(R.id.image);
-            row.setTag(holder);
-        } else {
-            holder = (ViewHolder) row.getTag();
+        return imageView;
+    }
+
+    public class ImageViewRecyclable extends ImageView
+    {
+        private Bitmap bitmap;
+
+        public ImageViewRecyclable(Context context)
+        {
+            super(context);
         }
 
-        PhotoItem item = data.get(position);
-        byte[] array = item.smallImg;
-        Log.d("arrayLength", "" + array.length);
-        holder.image.setImageBitmap(BitmapFactory.decodeByteArray(array, 0, array.length));
-        return row;
+        @Override
+        public void setImageBitmap(Bitmap bm)
+        {
+            super.setImageBitmap(bm);
+            if (bitmap != null)
+                bitmap.recycle();
+            this.bitmap = bm;
+        }
     }
 
     static class ViewHolder {
-        ImageView image;
+        ImageViewRecyclable image;
     }
 }

@@ -58,48 +58,4 @@ public class PhotosContentValues extends AbstractContentValues {
         return this;
     }
 
-
-    public PhotosContentValues putDescr(String value) {
-        mContentValues.put(PhotosColumns.DESCR, value);
-        return this;
-    }
-
-    public PhotosContentValues putDescrNull() {
-        mContentValues.putNull(PhotosColumns.DESCR);
-        return this;
-    }
-
-
-    public PhotosContentValues putCountry(String value) {
-        mContentValues.put(PhotosColumns.COUNTRY, value);
-        return this;
-    }
-
-    public PhotosContentValues putCountryNull() {
-        mContentValues.putNull(PhotosColumns.COUNTRY);
-        return this;
-    }
-
-
-    public PhotosContentValues putAuthor(String value) {
-        mContentValues.put(PhotosColumns.AUTHOR, value);
-        return this;
-    }
-
-    public PhotosContentValues putAuthorNull() {
-        mContentValues.putNull(PhotosColumns.AUTHOR);
-        return this;
-    }
-
-
-    public PhotosContentValues putFace(byte[] value) {
-        mContentValues.put(PhotosColumns.FACE, value);
-        return this;
-    }
-
-    public PhotosContentValues putFaceNull() {
-        mContentValues.putNull(PhotosColumns.FACE);
-        return this;
-    }
-
 }

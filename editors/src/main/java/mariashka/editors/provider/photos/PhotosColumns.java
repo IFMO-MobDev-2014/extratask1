@@ -24,14 +24,6 @@ public class PhotosColumns implements BaseColumns {
 
     public static final String BIG_IMG = "big_img";
 
-    public static final String DESCR = "descr";
-
-    public static final String COUNTRY = "country";
-
-    public static final String AUTHOR = "author";
-
-    public static final String FACE = "face";
-
 
     public static final String DEFAULT_ORDER = TABLE_NAME + "." +_ID;
 
@@ -40,11 +32,7 @@ public class PhotosColumns implements BaseColumns {
             _ID,
             NAME,
             SMALL_IMG,
-            BIG_IMG,
-            DESCR,
-            COUNTRY,
-            AUTHOR,
-            FACE
+            BIG_IMG
     };
     // @formatter:on
 
@@ -54,10 +42,6 @@ public class PhotosColumns implements BaseColumns {
             if (c == NAME || c.contains("." + NAME)) return true;
             if (c == SMALL_IMG || c.contains("." + SMALL_IMG)) return true;
             if (c == BIG_IMG || c.contains("." + BIG_IMG)) return true;
-            if (c == DESCR || c.contains("." + DESCR)) return true;
-            if (c == COUNTRY || c.contains("." + COUNTRY)) return true;
-            if (c == AUTHOR || c.contains("." + AUTHOR)) return true;
-            if (c == FACE || c.contains("." + FACE)) return true;
         }
         return false;
     }

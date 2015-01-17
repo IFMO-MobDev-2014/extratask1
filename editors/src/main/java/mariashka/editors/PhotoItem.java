@@ -7,9 +7,6 @@ public class PhotoItem {
     String name;
     byte[] smallImg;
     byte[] bigImg;
-    String descr;
-    String author;
-    byte[] face;
 
     PhotoItem(String name, byte[] small, byte[] big){
         this.name = name;

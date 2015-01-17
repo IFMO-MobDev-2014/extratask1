@@ -3,9 +3,11 @@ package mariashka.editors;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import java.util.List;
@@ -18,15 +20,16 @@ import mariashka.editors.provider.photos.PhotosSelection;
  * Created by mariashka on 1/16/15.
  */
 public class LoaderExecuter implements PhotoLoadListener {
-    ActionBarActivity main;
+    FragmentActivity main;
     PhotoLoader loader;
     MessageFragment fragment;
 
-    public LoaderExecuter(ActionBarActivity main) {
+    public LoaderExecuter(FragmentActivity main) {
        this.main = main;
     }
 
     public void execute() {
+        main.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         FragmentManager fm = main.getSupportFragmentManager();
 
         FragmentTransaction ft = fm.beginTransaction();
@@ -54,27 +57,23 @@ public class LoaderExecuter implements PhotoLoadListener {
 
             Toast.makeText(main.getApplicationContext(),
                     "Please check your Internet connection", Toast.LENGTH_LONG).show();
+            main.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             return;
         }
         storeData(data);
-        ((Main) main).notifyGrid(data);
-
+        ((Main)main).execMem.execute();
 
         Toast.makeText(main.getApplicationContext(),
                 "Loading finished", Toast.LENGTH_LONG).show();
-        Toast.makeText(main.getApplicationContext(),
-                "Old and new photos both are available", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onCancelLoad(List<PhotoItem> data) {
-        ((Main) main).notifyGrid(data);
-        storeData(data);
-
         Toast.makeText(main.getApplicationContext(),
                 "Loading was canceled by user", Toast.LENGTH_LONG).show();
         Toast.makeText(main.getApplicationContext(),
                 "To get all start sync again", Toast.LENGTH_SHORT).show();
+        main.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private void storeData(List<PhotoItem> items) {
@@ -89,10 +88,10 @@ public class LoaderExecuter implements PhotoLoadListener {
             c.moveToFirst();
             if (c.isAfterLast()) {
                 contentValues = new PhotosContentValues();
-                contentValues.putName(p.name).putSmallImg(p.smallImg).putBigImg(p.bigImg)
-                        .putDescr(p.descr).putAuthor(p.author).putFace(p.face);
+                contentValues.putName(p.name).putSmallImg(p.smallImg).putBigImg(p.bigImg);
                 main.getContentResolver().insert(PhotosColumns.CONTENT_URI, contentValues.values());
             }
+            c.close();
         }
     }
 }

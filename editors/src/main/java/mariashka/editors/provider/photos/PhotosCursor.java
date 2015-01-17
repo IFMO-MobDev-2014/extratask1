@@ -40,40 +40,4 @@ public class PhotosCursor extends AbstractCursor {
         Integer index = getCachedColumnIndexOrThrow(PhotosColumns.BIG_IMG);
         return getBlob(index);
     }
-
-    /**
-     * Get the {@code descr} value.
-     * Can be {@code null}.
-     */
-    public String getDescr() {
-        Integer index = getCachedColumnIndexOrThrow(PhotosColumns.DESCR);
-        return getString(index);
-    }
-
-    /**
-     * Get the {@code country} value.
-     * Can be {@code null}.
-     */
-    public String getCountry() {
-        Integer index = getCachedColumnIndexOrThrow(PhotosColumns.COUNTRY);
-        return getString(index);
-    }
-
-    /**
-     * Get the {@code author} value.
-     * Can be {@code null}.
-     */
-    public String getAuthor() {
-        Integer index = getCachedColumnIndexOrThrow(PhotosColumns.AUTHOR);
-        return getString(index);
-    }
-
-    /**
-     * Get the {@code face} value.
-     * Can be {@code null}.
-     */
-    public byte[] getFace() {
-        Integer index = getCachedColumnIndexOrThrow(PhotosColumns.FACE);
-        return getBlob(index);
-    }
 }

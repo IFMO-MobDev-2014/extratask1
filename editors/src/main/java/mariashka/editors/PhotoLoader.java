@@ -1,6 +1,7 @@
 package mariashka.editors;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -23,6 +24,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import mariashka.editors.provider.photos.PhotosColumns;
+import mariashka.editors.provider.photos.PhotosSelection;
+
 /**
  * Created by mariashka on 1/16/15.
  */
@@ -30,9 +34,11 @@ public class PhotoLoader extends AsyncTaskLoader<List<PhotoItem>> {
     private Handler handler;
     private boolean canceled = false;
     private List<PhotoItem> list = new ArrayList<>();
+    Context context;
 
     protected PhotoLoader(Context context) {
         super(context);
+        this.context = context;
     }
 
     HttpURLConnection connection;
@@ -53,6 +59,8 @@ public class PhotoLoader extends AsyncTaskLoader<List<PhotoItem>> {
             HttpEntity entity = response.getEntity();
 
             Log.d("input", "" + entity.getContentLength());
+            if  (entity.getContentLength() == 0)
+                return null;
 
             BufferedReader streamReader = new BufferedReader(new InputStreamReader(entity.getContent(), "UTF-8"));
             StringBuilder responseStrBuilder = new StringBuilder();
@@ -63,13 +71,19 @@ public class PhotoLoader extends AsyncTaskLoader<List<PhotoItem>> {
             JSONObject j = new JSONObject(responseStrBuilder.toString());
             JSONArray jArray = j.getJSONArray("photos");
             if (jArray == null)
-                ;// TODO something
+                return null;
             else {
                 for (int i = 0; i < jArray.length(); i++) {
                     JSONObject curr = jArray.getJSONObject(i);
-                    list.add(loadItem(curr));
+                    PhotosSelection where = new PhotosSelection();
+                    where.name(curr.getString("name"));
+                    Cursor c = context.getContentResolver().query(PhotosColumns.CONTENT_URI,
+                        null, where.sel(), where.args(), null);
+                    c.moveToFirst();
+                    if (c.isAfterLast())
+                        list.add(loadItem(curr));
+                    c.close();
                     publishProgress(i + 1);
-
                 }
             }
         } catch (IOException | JSONException e) {
@@ -82,12 +96,8 @@ public class PhotoLoader extends AsyncTaskLoader<List<PhotoItem>> {
 
     public PhotoItem loadItem(JSONObject curr) throws JSONException, IOException {
         String name = curr.getString("name");
-        String descript = curr.getString("description");
         String small_url = curr.getString("image_url");
-        String big_url = small_url.replace("2.", "4.");
-        JSONObject user = curr.getJSONObject("user");
-        String fullname = user.getString("fullname");
-        String userpic = user.getString("userpic_url");
+        String big_url = small_url.replace("2.", "3.");
 
         DefaultHttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(small_url);
@@ -100,7 +110,7 @@ public class PhotoLoader extends AsyncTaskLoader<List<PhotoItem>> {
         while (bytesRead < imageLength) {
             int n = is.read(small, bytesRead, imageLength - bytesRead);
             if (n <= 0)
-                ; // TODO some error handling
+                return null;
             bytesRead += n;
         }
 
@@ -114,30 +124,11 @@ public class PhotoLoader extends AsyncTaskLoader<List<PhotoItem>> {
         while (bytesRead < imageLength) {
             int n = is.read(big, bytesRead, imageLength - bytesRead);
             if (n <= 0)
-                ; // TODO some error handling
+                return null;
             bytesRead += n;
         }
 
-        request = new HttpGet(userpic);
-        response = client.execute(request);
-        entity = response.getEntity();
-        imageLength = (int) (entity.getContentLength());
-        is = entity.getContent();
-        byte[] face = new byte[imageLength];
-        bytesRead = 0;
-        while (bytesRead < imageLength) {
-            int n = is.read(face, bytesRead, imageLength - bytesRead);
-            if (n <= 0)
-                ; // TODO some error handling
-            bytesRead += n;
-        }
-
-        PhotoItem photoItem = new PhotoItem(name, small, big);
-        photoItem.descr = descript;
-        photoItem.author = fullname;
-        photoItem.face = face;
-
-        return photoItem;
+        return new PhotoItem(name, small, big);
     }
 
     public Bundle getArguments() {

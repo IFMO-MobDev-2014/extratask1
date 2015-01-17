@@ -1,11 +1,11 @@
 package mariashka.editors;
 
+import android.support.v4.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 
@@ -15,13 +15,12 @@ import java.util.List;
  * Created by mariashka on 1/16/15.
  */
 
-public class MessageFragment extends DialogFragment
-        implements LoaderManager.LoaderCallbacks<List<PhotoItem>>, DialogInterface.OnCancelListener {
+public class SpinnerFragment extends DialogFragment
+        implements LoaderManager.LoaderCallbacks<List<PhotoItem>>{
 
     private ProgressDialog progressDialog;
 
-    private final PhotoLoader loader;
-    private final int maxProgress;
+    private final MemoryLoader loader;
     private PhotoLoadListener taskLoaderListener;
 
     protected void setLoadListener(PhotoLoadListener taskLoaderListener){
@@ -50,10 +49,9 @@ public class MessageFragment extends DialogFragment
         }
     }
 
-    protected MessageFragment(PhotoLoader loader){
+    protected SpinnerFragment(MemoryLoader loader){
         loader.setHandler(handler);
         this.loader = loader;
-        this.maxProgress = 100;
 
         Bundle args = new Bundle();
         args.putInt("message", 0);
@@ -77,11 +75,9 @@ public class MessageFragment extends DialogFragment
     public ProgressDialog onCreateDialog(Bundle savedInstanceState) {
 
         progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("Loading started. Please wait or cancel.");
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setMax(maxProgress);
-        progressDialog.setProgress(0);
-        progressDialog.setOnCancelListener(this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("Loading data from memory");
+        progressDialog.setCancelable(false);
         progressDialog.show();
 
         return progressDialog;
@@ -107,7 +103,7 @@ public class MessageFragment extends DialogFragment
     @Override
     public void onLoadFinished(Loader<List<PhotoItem>> loader, List<PhotoItem> data) {
         onLoadComplete(data);
-        ((PhotoLoader) loader).setHandler(null);
+        ((MemoryLoader) loader).setHandler(null);
 
         hideDialog();
     }
@@ -137,11 +133,6 @@ public class MessageFragment extends DialogFragment
     private final Handler handler = new Handler() {
 
         public void handleMessage(Message msg) {
-            Integer progress = PhotoLoader.getProgress(msg);
-            if (progress != null){
-                progressDialog.setProgress(progress);
-            }
         }
     };
 }
-

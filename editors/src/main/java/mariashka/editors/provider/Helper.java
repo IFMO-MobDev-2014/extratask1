@@ -28,11 +28,7 @@ public class Helper extends SQLiteOpenHelper {
             + PhotosColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + PhotosColumns.NAME + " TEXT, "
             + PhotosColumns.SMALL_IMG + " BLOB, "
-            + PhotosColumns.BIG_IMG + " BLOB, "
-            + PhotosColumns.DESCR + " TEXT, "
-            + PhotosColumns.COUNTRY + " TEXT, "
-            + PhotosColumns.AUTHOR + " TEXT, "
-            + PhotosColumns.FACE + " BLOB "
+            + PhotosColumns.BIG_IMG + " BLOB "
             + " );";
 
     // @formatter:on

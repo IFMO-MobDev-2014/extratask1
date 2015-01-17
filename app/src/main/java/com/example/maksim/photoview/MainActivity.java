@@ -7,18 +7,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
-import android.database.Cursor;
-import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,11 +34,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         setContentView(R.layout.activity_main);
         view = (GridView) findViewById(R.id.gridView);
         currentPosition = getIntent().getIntExtra("current", 0);
-        //allImages = new ArrayList<Image>();
         adapter = new ImageAdapter(this, new ArrayList<Image>());
         dialog = new ProgressDialog(this);
-        //Intent intent = new Intent(this, ImageDownloader.class);
-        //startService(intent);
         receiver = new MyBroadcastReceiver();
         IntentFilter filter = new IntentFilter("RESPONSE");
         filter.addCategory(Intent.CATEGORY_DEFAULT);
@@ -54,24 +47,11 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, FullScreenImage.class);
-                Image img = (Image) adapter.getItem(position);
-                //intent.putExtra("image", img.getLargeImage());
-                //intent.putExtra("link", img.getLinkOnLarge());
                 intent.putExtra("position", currentPosition + position);
                 intent.putExtra("current", currentPosition);
                 startActivity(intent);
             }
         });
-        /*Cursor cursor = getContentResolver().query(MyContentProvider.IMAGES_CONTENT_URI, null, null, null, null);
-        if (cursor != null) {
-            cursor.moveToFirst();
-            if (cursor.isAfterLast()) {
-                onUpdate(view);
-                Intent intent = new Intent(this, ImageDownloader.class);
-                startService(intent);
-            }
-        }*/
-        //unregisterReceiver(receiver);
     }
 
     @Override
@@ -120,7 +100,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         if (currentPosition >= allImages.size()) {
             currentPosition = 0;
         }
-        adapter.setImages(allImages.subList(currentPosition, currentPosition + 10));
+        adapter.setImages(allImages.subList(currentPosition, Math.min(currentPosition + 10, allImages.size())));
         adapter.notifyDataSetChanged();
     }
 

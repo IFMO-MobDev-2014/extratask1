@@ -5,24 +5,13 @@ import android.graphics.Bitmap;
 public class Image {
 
     Bitmap smallImage;
-    Bitmap largeImage;
-    //String linkOnLarge;
 
-    public Image(Bitmap smallImage, Bitmap largeImage/*, String linkOnLarge*/) {
+    public Image(Bitmap smallImage) {
         this.smallImage = smallImage;
-        this.largeImage = largeImage;
-        //this.linkOnLarge = linkOnLarge;
     }
 
     Bitmap getSmallImage() {
         return smallImage;
     }
 
-    Bitmap getLargeImage() {
-        return largeImage;
-    }
-
-    /*String getLinkOnLarge() {
-        return linkOnLarge;
-    }*/
 }

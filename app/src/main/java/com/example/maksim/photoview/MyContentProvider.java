@@ -1,21 +1,10 @@
 package com.example.maksim.photoview;
 
 import android.content.ContentProvider;
-import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.text.TextUtils;
-
-import android.database.SQLException;
-import android.util.Log;
-
-import java.util.HashMap;
 
 public class MyContentProvider extends ContentProvider {
 

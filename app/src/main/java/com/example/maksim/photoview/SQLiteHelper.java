@@ -3,7 +3,6 @@ package com.example.maksim.photoview;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
 
@@ -12,7 +11,6 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "_id";
     public static final String SMALL_IMAGE = "smallImage";
     public static final String LARGE_IMAGE = "largeImage";
-    //public static final String LINK_ON_LARGE = "link";
     public static final int DATABASE_VERSION = 1;
 
     public static final String CREATE_IMAGES_BASE = "create table " + IMAGE_TABLE + " ("

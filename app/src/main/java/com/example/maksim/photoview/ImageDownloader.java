@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -14,7 +13,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -66,10 +64,6 @@ public class ImageDownloader extends IntentService {
                 byte[] arrayLarge = bosLarge.toByteArray();
                 ContentValues cv = new ContentValues();
                 cv.put(SQLiteHelper.LARGE_IMAGE, arrayLarge);
-
-                //String largeImageLink = currentImage.getJSONObject("img").getJSONObject("XL").getString("href");
-                //cv.put(SQLiteHelper.LARGE_IMAGE, largeImageLink);
-
                 cv.put(SQLiteHelper.SMALL_IMAGE, arraySmall);
                 getContentResolver().insert(MyContentProvider.IMAGES_CONTENT_URI, cv);
                 int progress = 100 * (i + 1) / images.length();

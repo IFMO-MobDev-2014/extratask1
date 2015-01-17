@@ -1,20 +1,13 @@
 package com.example.maksim.photoview;
 
 import android.content.AsyncTaskLoader;
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.util.Log;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class OneImageLoader extends AsyncTaskLoader <Bitmap> {
 
-    ArrayList <Image> images;
     Context context;
 
     OneImageLoader(Context context) {

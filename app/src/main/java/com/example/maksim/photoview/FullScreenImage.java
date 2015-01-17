@@ -55,7 +55,9 @@ public class FullScreenImage extends ActionBarActivity implements LoaderManager.
     }
 
     public void onBackPressed() {
+        int current = getIntent().getIntExtra("current", 0);
         Intent intent = new Intent(FullScreenImage.this, MainActivity.class);
+        intent.putExtra("current", current);
         startActivity(intent);
     }
 

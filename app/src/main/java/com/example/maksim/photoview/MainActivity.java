@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,7 +28,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     MyBroadcastReceiver receiver = null;
     ProgressDialog dialog;
     ImageAdapter adapter;
-    //List <Image> allImages;
+    int currentPosition = 0;
+    List <Image> allImages;
     GridView view;
 
     @Override
@@ -35,6 +37,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         view = (GridView) findViewById(R.id.gridView);
+        currentPosition = getIntent().getIntExtra("current", 0);
         //allImages = new ArrayList<Image>();
         adapter = new ImageAdapter(this, new ArrayList<Image>());
         dialog = new ProgressDialog(this);
@@ -54,7 +57,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 Image img = (Image) adapter.getItem(position);
                 //intent.putExtra("image", img.getLargeImage());
                 //intent.putExtra("link", img.getLinkOnLarge());
-                intent.putExtra("position", position);
+                intent.putExtra("position", currentPosition + position);
+                intent.putExtra("current", currentPosition);
                 startActivity(intent);
             }
         });
@@ -111,6 +115,24 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         startService(intent);
     }
 
+    public void onNext(View view) {
+        currentPosition += 10;
+        if (currentPosition >= allImages.size()) {
+            currentPosition = 0;
+        }
+        adapter.setImages(allImages.subList(currentPosition, currentPosition + 10));
+        adapter.notifyDataSetChanged();
+    }
+
+    public void onPrev(View view) {
+        currentPosition -= 10;
+        if (currentPosition < 0) {
+            currentPosition = allImages.size() - 10;
+        }
+        adapter.setImages(allImages.subList(currentPosition, currentPosition + 10));
+        adapter.notifyDataSetChanged();
+    }
+
     @Override
     public Loader <List <Image>> onCreateLoader(int i, Bundle bundle) {
         return new ImageLoader(this);
@@ -119,9 +141,11 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader <List <Image>> listLoader, List <Image> images) {
         unregisterReceiver(receiver);
-        adapter.setImages(images);
-        adapter.notifyDataSetChanged();
-        if (adapter.getCount() == 0) {
+        allImages = images;
+        if (allImages.size() > 0) {
+            adapter.setImages(allImages.subList(currentPosition, currentPosition + 10));
+            adapter.notifyDataSetChanged();
+        } else {
             onUpdate(view);
         }
     }

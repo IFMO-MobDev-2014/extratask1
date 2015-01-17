@@ -22,6 +22,7 @@ public class ImageLoaderAsyncTask extends AsyncTaskLoader<ArrayList<MyImage>> {
         super(context);
         this.page = page;
         this.category = category;
+        Log.d(page + " ", category);
     }
 
     @Override
@@ -30,7 +31,7 @@ public class ImageLoaderAsyncTask extends AsyncTaskLoader<ArrayList<MyImage>> {
         String selection = DBHelper.PICTURES_CATEGORY + " = \'" + category + "\' and " + DBHelper.PICTURES_PAGE + " = " + page;
         Cursor cursor = getContext().getContentResolver().query(DBContentProvider.PICTURES,
                 new String[]{DBHelper.PICTURES_NAME, DBHelper.PICTURES_SMALL_PICTURE,
-                        DBHelper.PICTURES_COLUMN_ID}, null, null, null);
+                        DBHelper.PICTURES_COLUMN_ID}, selection, null, null);
         Log.d("LOADING", "STARTEDHERE!!!!!!!!!!!!!!!!!");
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
@@ -43,7 +44,6 @@ public class ImageLoaderAsyncTask extends AsyncTaskLoader<ArrayList<MyImage>> {
             Log.d("NAME", result.get(result.size() - 1).name);
         }
         cursor.close();
-        Log.d("NAME", result.get(0).name);
         return result;
     }
 

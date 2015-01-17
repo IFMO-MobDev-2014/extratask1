@@ -19,7 +19,7 @@ public class ImagesAdapter extends ArrayAdapter<MyImage> {
         if (view == null) {
             view = new TextView(getContext());
         }
-        ((TextView)view).setText("1");
+        ((TextView)view).setText(getItem(position).link);
         return view;
     }
 }

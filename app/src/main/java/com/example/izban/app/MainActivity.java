@@ -1,16 +1,42 @@
 package com.example.izban.app;
 
 import android.content.Intent;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+class MyResultReceiver extends ResultReceiver {
+    public interface Receiver {
+        public void onReceiveResult(int resultCode, Bundle data);
+    }
 
-public class MainActivity extends ActionBarActivity {
+    private Receiver mReceiver;
+
+    public MyResultReceiver(Handler handler) {
+        super(handler);
+    }
+
+    public void setReceiver(Receiver receiver) {
+        mReceiver = receiver;
+    }
+
+    @Override
+    protected void onReceiveResult(int resultCode, Bundle resultData) {
+        if (mReceiver != null) {
+            mReceiver.onReceiveResult(resultCode, resultData);
+        }
+    }
+}
+
+public class MainActivity extends ActionBarActivity implements MyResultReceiver.Receiver {
     private ProgressBar progressBar;
+    MyResultReceiver resultReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +48,9 @@ public class MainActivity extends ActionBarActivity {
                     .commit();
         }
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.INVISIBLE);
+        resultReceiver = new MyResultReceiver(new Handler());
+        resultReceiver.setReceiver(this);
     }
 
 
@@ -45,37 +74,28 @@ public class MainActivity extends ActionBarActivity {
         }
 
         if (id == R.id.action_refresh) {
-            Toast.makeText(this, "trying to refresh", Toast.LENGTH_SHORT).show();
-            //new Thread(myThread).start();
-            startService(new Intent(this, DownloadService.class));
+            Toast.makeText(this, "refreshing", Toast.LENGTH_SHORT).show();
+            startService(new Intent(this, DownloadService.class).putExtra(Constants.RECEIVER, resultReceiver));
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    /*Runnable myThread = new Runnable() {
-
-        @Override
-        public void run() {
-            progressBar.setMax(10);
-            progressBar.setProgress(0);
-            while (progressBar.getProgress() < progressBar.getMax()) {
-
-                try {
-                    Thread.sleep(1000);
-                    myHandle.sendMessage(myHandle.obtainMessage());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            progressBar.setMax(0);
-        }
-
-        Handler myHandle = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
+    @Override
+    public void onReceiveResult(int resultCode, Bundle data) {
+        switch (resultCode) {
+            case Constants.RECEIVER_STARTED:
+                progressBar.setMax(DownloadService.PICTURES);
+                progressBar.setProgress(0);
+                progressBar.setVisibility(View.VISIBLE);
+                break;
+            case Constants.RECEIVER_RUNNING:
                 progressBar.setProgress(progressBar.getProgress() + 1);
-            }
-        };
-    };*/
+                break;
+            case Constants.RECEIVER_FINISHED:
+                progressBar.setVisibility(View.INVISIBLE);
+                Toast.makeText(this, "refreshed", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
 }

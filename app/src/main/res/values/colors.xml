@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="drawer_background">#2f353b</color>
+    <color name="drawer_foreground">#ffffff</color>
+    <color name="drawer_divider">#22ffffff</color>
+    <color name="facebook">#3b5998</color>
+</resources>

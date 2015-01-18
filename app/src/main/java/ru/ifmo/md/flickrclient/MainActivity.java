@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.StaleDataException;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -29,10 +30,10 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     private ProgressDialog progressBar;
     private SharedPreferences sharedPreferences;
 
-    private static final String FIRST_ROW_ID = "FIRST_ROW_ID";
     private long firstRowId = -1;
 
     public static final String sortOrder = DBFlickr.ID1 + " ASC " + " LIMIT 10";
+    public static final String sortOrderFor1 = DBFlickr.ID1 + " ASC " + " LIMIT 1";
 
 
     @Override
@@ -42,7 +43,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
         fullView = new Intent(this, ViewActivity.class);
         sharedPreferences = getSharedPreferences(getString(R.string.shared_preferences), Context.MODE_PRIVATE);
-        sharedPreferences.getLong(getString(R.string.saving_row_id), firstRowId);
+        firstRowId = sharedPreferences.getLong(getString(R.string.saving_row_id), -1);
+        Log.d("ACTIVITY_MAIN" , "Start " + String.valueOf(firstRowId));
 
 
         gridView = (GridView) findViewById(R.id.gridView);
@@ -66,7 +68,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         progressBar.setIndeterminate(false);
         progressBar.setMessage("Downloading images...");
         progressBar.setMax(UrlsDownloadService.COUNT_IMAGES);
-        progressBar.setCancelable(true);
+        progressBar.setCanceledOnTouchOutside(false);
+        progressBar.setCancelable(false);
         progressBar.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressBar.show();
         Intent i = new Intent(this, UrlsDownloadService.class);
@@ -80,18 +83,6 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putLong(FIRST_ROW_ID, firstRowId);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        savedInstanceState.getLong(FIRST_ROW_ID, firstRowId);
     }
 
     @Override
@@ -122,11 +113,13 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Log.d("ACTIVITY_MAIN", "Loader " + String.valueOf(this.firstRowId));
         return new FlickrCursorLoader(this, this.firstRowId);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.d("ACTIVITY_MAIN", "Loader finished " + String.valueOf(this.firstRowId));
         if (data.getCount() == 0) {
             downloadAll();
         } else {
@@ -136,25 +129,35 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        Log.d("ACTIVITY_MAIN", "Loader restart " + String.valueOf(this.firstRowId));
         gridAdapter.changeCursor(null);
     }
 
     public void loadMore(View view) {
         Cursor cursor = gridAdapter.getCursor();
-        cursor.moveToLast();
-        long row_id = cursor.getLong(cursor.getColumnIndexOrThrow(DBFlickr.ID1));
+        long row_id = -1;
+        try {
+            cursor.moveToLast();
+            row_id = cursor.getLong(cursor.getColumnIndexOrThrow(DBFlickr.ID1));
+        } catch (IllegalStateException | StaleDataException e) {
+        }
         Log.d("MAIN_ACTIVITY", String.valueOf(row_id));
-        cursor = getContentResolver().query(FlickrContentProvider.PHOTO_URI, null, DBFlickr.ID1 + " > ?",
-                new String[] {String.valueOf(row_id)}, MainActivity.sortOrder);
+        cursor = getContentResolver().query(FlickrContentProvider.PHOTO_URI, new String[] { DBFlickr.ID1}, DBFlickr.ID1 + " > ?",
+                new String[] {String.valueOf(row_id)}, MainActivity.sortOrderFor1);
         if (cursor.getCount() == 0) {
             Toast toast = Toast.makeText(this, "Start from begging", Toast.LENGTH_SHORT);
             toast.show();
-            cursor = getContentResolver().query(FlickrContentProvider.PHOTO_URI, null, null, null, MainActivity.sortOrder);
+            cursor = getContentResolver().query(FlickrContentProvider.PHOTO_URI, new String[] {DBFlickr.ID1}, null, null, MainActivity.sortOrderFor1);
         }
         cursor.moveToFirst();
         firstRowId = cursor.getLong(cursor.getColumnIndexOrThrow(DBFlickr.ID1));
         sharedPreferences.edit().putLong(getString(R.string.saving_row_id), firstRowId).apply();
-        gridAdapter.swapCursor(cursor);
+        Log.d("ACTIVITY_MAIN", "Save " + String.valueOf(firstRowId));
+        restartLoader();
+    }
+
+    protected void restartLoader() {
+        getLoaderManager().restartLoader(1, null, this);
     }
 
 
@@ -178,17 +181,24 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 Log.d("Receiver", String.valueOf(progress));
 
                 if (progress == -1) {
-                    progressBar.cancel();
+                    try {
+                        progressBar.cancel();
+                    } catch (IllegalArgumentException e) {
+                    }
                     Toast toast = Toast.makeText(getApplicationContext(), "Error on updating", Toast.LENGTH_SHORT);
                     toast.show();
                 }else if (progress == UrlsDownloadService.COUNT_IMAGES) {
-                    progressBar.cancel();
-                    Cursor cursor = getContentResolver().query(FlickrContentProvider.PHOTO_URI, null, null, null,
-                            MainActivity.sortOrder);
+                    try {
+                        progressBar.cancel();
+                    } catch (IllegalArgumentException e) {
+                    }
+                    Cursor cursor = getContentResolver().query(FlickrContentProvider.PHOTO_URI, new String[] {DBFlickr.ID1},
+                            null, null, MainActivity.sortOrderFor1);
                     cursor.moveToFirst();
                     firstRowId = cursor.getLong(cursor.getColumnIndexOrThrow(DBFlickr.ID1));
                     sharedPreferences.edit().putLong(getString(R.string.saving_row_id), firstRowId).apply();
-                    gridAdapter.changeCursor(cursor);
+                    Log.d("ACTIVITY_MAIN", "Save " + String.valueOf(firstRowId));
+                    restartLoader();
                 } else {
                     progressBar.setProgress(progress);
                 }

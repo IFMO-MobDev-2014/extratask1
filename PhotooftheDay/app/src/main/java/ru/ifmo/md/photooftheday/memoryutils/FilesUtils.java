@@ -55,6 +55,19 @@ public class FilesUtils {
         return file;
     }
 
+    public static boolean removeFile(File path, String fileName) {
+        if (!path.exists()) {
+            Log.e(TAG, path + " doesn't exist");
+            return false;
+        }
+        File file = new File(path, fileName);
+        if (file.exists()) {
+            return file.delete();
+        }
+        Log.e(TAG, "File doesn't exist");
+        return false;
+    }
+
     public static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED.equals(state)) {

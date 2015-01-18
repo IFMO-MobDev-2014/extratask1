@@ -7,6 +7,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import ru.ifmo.md.photooftheday.memoryutils.FilesUtils;
 import ru.ifmo.md.photooftheday.memoryutils.LoadBitmapTask;
 import ru.ifmo.md.photooftheday.memoryutils.SaveBitmapTask;
 import ru.ifmo.md.photooftheday.photodatabase.PhotoContract;
@@ -43,6 +45,8 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
     private static final int PORTRAIT_COLUMNS_COUNTER = 2;
     private static final int LANDSCAPE_COLUMNS_COUNTER = 4;
 
+    private static final String THUMBNAIL_SUFFIX = "-thumbnail";
+    
     private RecyclerView recyclerView;
     private RecyclerAdapter recyclerAdapter;
     private RecyclerView.LayoutManager layoutManager;
@@ -121,7 +125,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         return super.onOptionsItemSelected(item);
     }
 
-    public Cursor refresh() {
+    public void refresh() {
         /*
         download json
         parse it and update database
@@ -138,12 +142,17 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         }
         if (jsonObject == null) {
             Toast.makeText(this, "Failed to download photos", Toast.LENGTH_SHORT);
-            return null;
+            return;
         }
+
+        ContentValues values = new ContentValues();
+        values.put(PhotoContract.Photo.VALID_STATE, 0);
+        getContentResolver().update(PhotoProvider.PHOTO_CONTENT_URI, values, null, null);
 
         try {
             JSONArray photos = jsonObject.getJSONArray("photos");
             Log.d(TAG, "photos in JSON: " + photos.length());
+            int insertCounter = 0;
             for (int i = 0; i < photos.length(); ++i) {
                 final JSONObject photo = photos.getJSONObject(i);
                 final JSONArray images = photo.getJSONArray("images");
@@ -156,13 +165,14 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
                 String fullUrl = full.getString("url");
 
                 final String photoID = photo.getString("id");
+                final String photoName = photo.getString("name");
 
                 new BitmapDownloadTask(){
                     @Override
                     protected void onPostExecute(Bitmap bitmap) {
                         super.onPostExecute(bitmap);
                         recyclerAdapter.add(bitmap, photoID);
-                        new SaveBitmapTask(photoID + "-thumbnail").execute(bitmap);
+                        new SaveBitmapTask(photoID + THUMBNAIL_SUFFIX).execute(bitmap);
                     }
                 }.execute(new URL(thumbnailUrl));
 
@@ -175,26 +185,55 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
                     }
                 }.execute(new URL(fullUrl));
 
-                ContentValues values = new ContentValues();
-                values.put(PhotoContract.Photo.TITLE, photoID);
-                values.put(PhotoContract.Photo.NAME, photo.getString("name"));
-                values.put(PhotoContract.Photo.URL_FULL, fullUrl);
-                values.put(PhotoContract.Photo.URL_THUMBNAIL, thumbnailUrl);
-                values.put(PhotoContract.Photo.VALID_STATE, 1);
 
-                getContentResolver().update(PhotoProvider.PHOTO_CONTENT_URI, values, null, null);
+                Cursor cursor = getContentResolver().query(PhotoProvider.PHOTO_CONTENT_URI, null,
+                        PhotoContract.Photo.TITLE + " = " + DatabaseUtils.sqlEscapeString(photoID) + " AND " +
+                                PhotoContract.Photo.NAME + " = " + DatabaseUtils.sqlEscapeString(photoName) + " AND " +
+                                PhotoContract.Photo.URL_FULL + " = " + DatabaseUtils.sqlEscapeString(fullUrl) + " AND " +
+                                PhotoContract.Photo.URL_THUMBNAIL + " = " + DatabaseUtils.sqlEscapeString(thumbnailUrl),
+                        null, null
+                        );
+                if (cursor.getCount() == 0) {
+                    Log.d(TAG, "insertion");
+                    insertCounter++;
+                    values.clear();
+                    values.put(PhotoContract.Photo.TITLE, photoID);
+                    values.put(PhotoContract.Photo.NAME, photoName);
+                    values.put(PhotoContract.Photo.URL_FULL, fullUrl);
+                    values.put(PhotoContract.Photo.URL_THUMBNAIL, thumbnailUrl);
+                    values.put(PhotoContract.Photo.VALID_STATE, 1);
+                    getContentResolver().insert(PhotoProvider.PHOTO_CONTENT_URI, values);
+                } else {
+                    Log.d(TAG, "allready have");
+                    values.clear();
+                    values.put(PhotoContract.Photo.VALID_STATE, 1);
+                    getContentResolver().update(PhotoProvider.PHOTO_CONTENT_URI, values, null, null);
+                }
                 // TODO: remove all invalid images
             }
+            Cursor cursor = getContentResolver().query(PhotoProvider.PHOTO_CONTENT_URI, null,
+                    PhotoContract.Photo.VALID_STATE + " = 0", null, null);
+            int ddeleteCounter = cursor.getCount();
+            while (!cursor.isAfterLast()) {
+                String photoID = cursor.getString(cursor.getColumnIndex(PhotoContract.Photo.TITLE));
+                FilesUtils.removeFile(FilesUtils.getApplicationStorageDir(), photoID + THUMBNAIL_SUFFIX);
+                FilesUtils.removeFile(FilesUtils.getApplicationStorageDir(), photoID);
+                cursor.moveToNext();
+            }
+            int deleteCounter = getContentResolver().delete(PhotoProvider.PHOTO_CONTENT_URI,
+                    PhotoContract.Photo.VALID_STATE + " = 0", null);
+            Log.d(TAG, "After updating " + insertCounter + " rows were inserted " +
+                    "and " +  deleteCounter + "(" + ddeleteCounter + ") were deleted");
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage(), e);
             Toast.makeText(this, "Failed to download photos", Toast.LENGTH_SHORT);
-            return null;
+            return;
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
-        return getContentResolver().query(PhotoProvider.PHOTO_CONTENT_URI,
-                PhotoContract.Photo.ALL_COLUMNS, null, null, null);
+//        return getContentResolver().query(PhotoProvider.PHOTO_CONTENT_URI,
+//                PhotoContract.Photo.ALL_COLUMNS, null, null, null);
     }
 
     // LoaderCallback methods
@@ -209,25 +248,26 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 //        if (data == null) throw new AssertionError("Cursor is null");
         if (data == null) {
             Log.d(TAG, "go to refresh");
-            data = refresh();
+            refresh();
+        } else {
+            Log.d(TAG, "data is " + (data == null ? "" : "not ") + "null");
+            data.moveToFirst();
+            Log.d(TAG, "recyclerAdapter is " + (recyclerAdapter == null ? "" : "not ") + "null");
+            Log.d(TAG, "recyclerAdapter.size() = " + recyclerAdapter.getItemCount());
+            recyclerAdapter.clear();
+            while (!data.isAfterLast()) {
+                final String title = data.getString(data.getColumnIndex(PhotoContract.Photo.TITLE));
+                new LoadBitmapTask(title + THUMBNAIL_SUFFIX) {
+                    @Override
+                    protected void onPostExecute(Bitmap bitmap) {
+                        super.onPostExecute(bitmap);
+                        recyclerAdapter.add(bitmap, title);
+                    }
+                }.execute();
+                data.moveToNext();
+            }
+            Log.d(TAG, "recyclerAdapter.size() = " + recyclerAdapter.getItemCount());
         }
-        Log.d(TAG, "data is " + (data == null ? "" : "not ") + "null");
-        data.moveToFirst();
-        Log.d(TAG, "recyclerAdapter is " + (recyclerAdapter == null ? "" : "not ") + "null");
-        Log.d(TAG, "recyclerAdapter.size() = " + recyclerAdapter.getItemCount());
-        recyclerAdapter.clear();
-        while (!data.isAfterLast()) {
-            final String title = data.getString(data.getColumnIndex(PhotoContract.Photo.TITLE));
-            new LoadBitmapTask(title + "-thumbnail"){
-                @Override
-                protected void onPostExecute(Bitmap bitmap) {
-                    super.onPostExecute(bitmap);
-                    recyclerAdapter.add(bitmap, title);
-                }
-            }.execute();
-            data.moveToNext();
-        }
-        Log.d(TAG, "recyclerAdapter.size() = " + recyclerAdapter.getItemCount());
     }
 
     @Override

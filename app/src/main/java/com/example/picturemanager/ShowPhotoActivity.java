@@ -1,24 +1,28 @@
 package com.example.picturemanager;
 
+import android.app.LoaderManager;
+import android.content.Loader;
+import android.graphics.Bitmap;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
 
-public class ShowPhotoActivity extends ActionBarActivity {
+public class ShowPhotoActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<MyImage> {
 
     ImageView image;
+    int photoId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_photo);
-
+        photoId = getIntent().getIntExtra("id", 0);
         image = (ImageView) findViewById(R.id.image);
-        //image.setImageBitmap();
-
+        getLoaderManager().initLoader(123, null, this);
     }
 
 
@@ -42,5 +46,21 @@ public class ShowPhotoActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public Loader<MyImage> onCreateLoader(int id, Bundle args) {
+        return new BigPhotoLoader(this, photoId);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<MyImage> loader, MyImage data) {
+        image.setImageBitmap(data.image);
+        getSupportActionBar().setTitle(data.name);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<MyImage> loader) {
+        new BigPhotoLoader(this, photoId);
     }
 }

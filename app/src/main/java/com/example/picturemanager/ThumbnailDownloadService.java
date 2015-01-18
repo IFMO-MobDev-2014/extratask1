@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.util.Log;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -36,13 +37,12 @@ public class ThumbnailDownloadService extends IntentService {
     private static final String CONSUMER_SECRET = "ulOHRSaaFPmRnjW0fS70DjArOUtvZNFGeV8XMK6I";
     public static final String BASE_URL = "https://api.500px.com/v1/photos";
     public static final int imagesPerPage = 16;
-    public static final int imageSize = 2;
 
     public ThumbnailDownloadService() {
         super("ThumbnailDownloadService");
     }
 
-    private String getJsonString(int pageNumber, String category) {
+    private String getJsonString(int pageNumber, String category, int imageSize) {
         String request = Uri.parse(BASE_URL).buildUpon()
                 .appendQueryParameter("feature", category)
                 .appendQueryParameter("sort", "rating")
@@ -82,17 +82,19 @@ public class ThumbnailDownloadService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         String category = intent.getStringExtra("category");
         int pageNumber = intent.getIntExtra("pageNumber", 1);
-        String jsonString = getJsonString(pageNumber, category);
+        String jsonString = getJsonString(pageNumber, category, 2);
+        String jsonStringBigImages = getJsonString(pageNumber, category, 4);
         //Log.d("JSONSTRING", jsonString);
-        JSONObject json = null;
         try {
-            json = new JSONObject(jsonString);
+            JSONArray jsonArray = (new JSONObject(jsonString)).getJSONArray("photos");
+            JSONArray jsonArray2 = (new JSONObject(jsonStringBigImages)).getJSONArray("photos");
             String selection = DBHelper.PICTURES_CATEGORY + " = \'" + category + "\' and " + DBHelper.PICTURES_PAGE + " = " + pageNumber;
             Log.d("selection", selection);
             getContentResolver().delete(DBContentProvider.PICTURES, selection, null);
             for (int i = 0; i < imagesPerPage; i++) {
-                String link = json.getJSONArray("photos").getJSONObject(i).getString("image_url");
-                String name = json.getJSONArray("photos").getJSONObject(i).getString("name");
+                String link = jsonArray.getJSONObject(i).getString("image_url");
+                String name = jsonArray.getJSONObject(i).getString("name");
+                String linkToBigImage = jsonArray2.getJSONObject(i).getString("image_url");
                 URL imageURL = new URL(link);
                 HttpURLConnection connection = (HttpURLConnection) imageURL.openConnection();
                 InputStream inputStream = connection.getInputStream();
@@ -102,7 +104,8 @@ public class ThumbnailDownloadService extends IntentService {
                 byte[] bArray = outputStream.toByteArray();
                 ContentValues cv = new ContentValues();
                 cv.put(DBHelper.PICTURES_NAME, name);
-                cv.put(DBHelper.PICTURES_HAS_BIG_PICTURE, false);
+                cv.put(DBHelper.PICTURES_HAS_BIG_PICTURE, 0);
+                cv.put(DBHelper.PICTURES_LINK, linkToBigImage);
                 cv.put(DBHelper.PICTURES_SMALL_PICTURE, bArray);
                 cv.put(DBHelper.PICTURES_PAGE, pageNumber);
                 cv.put(DBHelper.PICTURES_CATEGORY, category);

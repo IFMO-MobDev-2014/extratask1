@@ -32,7 +32,6 @@ public class ImageLoaderAsyncTask extends AsyncTaskLoader<ArrayList<MyImage>> {
         Cursor cursor = getContext().getContentResolver().query(DBContentProvider.PICTURES,
                 new String[]{DBHelper.PICTURES_NAME, DBHelper.PICTURES_SMALL_PICTURE,
                         DBHelper.PICTURES_COLUMN_ID}, selection, null, null);
-        Log.d("LOADING", "STARTEDHERE!!!!!!!!!!!!!!!!!");
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             String name = cursor.getString(cursor.getColumnIndex(DBHelper.PICTURES_NAME));

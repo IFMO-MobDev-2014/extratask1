@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,11 +30,15 @@ public class MainActivity extends ActionBarActivity {
     public static final String POPULAR_CATEGORY = "popular";
     public static final String EDITORS_CATEGORY = "editors";
 
+
     private int pageNumber;
     private String currentCategory;
     private GridView gridView;
     private ActionBarActivity activity;
     private TextView pageNumberText;
+    private boolean isServiceWorking;
+    private ArrayList<MyImage> images;
+    IntentFilter finishFilter = new IntentFilter(ThumbnailDownloadService.LOAD_FINISHED_BROADCAST);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,27 +48,23 @@ public class MainActivity extends ActionBarActivity {
         gridView = (GridView) findViewById(R.id.gridView);
         gridView.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onSwipeTop() {
-                activity.registerReceiver(receiver, finishFilter);
-                startService(currentCategory, pageNumber);
-                activity.getLoaderManager().restartLoader(0, null, new MyLoader(pageNumber, currentCategory));
-
+                    activity.registerReceiver(receiver, finishFilter);
+                    startService(currentCategory, pageNumber);
+                    activity.getLoaderManager().restartLoader(0, null, new MyLoader(pageNumber, currentCategory));
             }
             public void onSwipeLeft() {
-                activity.registerReceiver(receiver, finishFilter);
-                pageNumber++;
-                updatePageNumberText();
-                startService(currentCategory, pageNumber);
-                activity.getLoaderManager().restartLoader(0, null, new MyLoader(pageNumber, currentCategory));
-
+                if (!isServiceWorking) {
+                    pageNumber++;
+                    updatePageNumberText();
+                    startService(currentCategory, pageNumber);
+                }
             }
 
             public void onSwipeRight() {
-                if (pageNumber != 1) {
-                    activity.registerReceiver(receiver, finishFilter);
+                if (!isServiceWorking && pageNumber != 1) {
                     pageNumber--;
                     updatePageNumberText();
                     startService(currentCategory, pageNumber);
-                    activity.getLoaderManager().restartLoader(0, null, new MyLoader(pageNumber, currentCategory));
                 }
             }
 
@@ -76,10 +77,21 @@ public class MainActivity extends ActionBarActivity {
                 return gestureDetector.onTouchEvent(event);
             }
         });
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, ShowPhotoActivity.class);
+                intent.putExtra("id", images.get(position).idInDB);
+                startActivity(intent);
+
+            }
+        });
         pageNumberText = (TextView) findViewById(R.id.numPage);
         pageNumber = 1;
         currentCategory = POPULAR_CATEGORY;
-        getLoaderManager().initLoader(0, null, new MyLoader(pageNumber, "popular"));
+        getSupportActionBar().setTitle("Popular");
+        getLoaderManager().initLoader(0, null, new MyLoader(pageNumber, currentCategory));
+        startService(currentCategory, pageNumber);
     }
 
 
@@ -91,6 +103,9 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void startService(String category, int pageNumber) {
+        isServiceWorking = true;
+        activity.registerReceiver(receiver, finishFilter);
+        getLoaderManager().restartLoader(0, null, new MyLoader(pageNumber, category));
         Intent intent = new Intent(this, ThumbnailDownloadService.class);
         intent.putExtra("category", category);
         intent.putExtra("pageNumber", pageNumber);
@@ -106,30 +121,25 @@ public class MainActivity extends ActionBarActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
-        if (id == R.id.upcoming) {
+        if (!isServiceWorking && id == R.id.upcoming) {
             getSupportActionBar().setTitle(item.getTitle());
-            this.registerReceiver(receiver, finishFilter);
             pageNumber = 1;
             updatePageNumberText();
-            getLoaderManager().restartLoader(0, null, new MyLoader(pageNumber, currentCategory));
             startService(UPCOMING_CATEGORY, 1);
 
         }
-        if (id == R.id.popular) {
+        if (!isServiceWorking && id == R.id.popular) {
             getSupportActionBar().setTitle(item.getTitle());
-            this.registerReceiver(receiver, finishFilter);
             pageNumber = 1;
             updatePageNumberText();
-            getLoaderManager().restartLoader(0, null, new MyLoader(pageNumber, currentCategory));
             startService(POPULAR_CATEGORY, 1);
         }
-        if (id == R.id.editors) {
+        if (!isServiceWorking && id == R.id.editors) {
             getSupportActionBar().setTitle(item.getTitle());
-            this.registerReceiver(receiver, finishFilter);
             pageNumber = 1;
             updatePageNumberText();
-            getLoaderManager().restartLoader(0, null, new MyLoader(pageNumber, currentCategory));
             startService(EDITORS_CATEGORY, 1);
         }
         //noinspection SimplifiableIfStatement
@@ -140,23 +150,24 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    IntentFilter finishFilter = new IntentFilter(ThumbnailDownloadService.LOAD_FINISHED_BROADCAST);
+
     public BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String category = intent.getStringExtra("category");
             int pageNumber = intent.getIntExtra("pageNumber", 1);
             Log.d(category, pageNumber + " ");
-            activity.getLoaderManager().restartLoader(0, null, new MyLoader(pageNumber, category));
             activity.unregisterReceiver(receiver);
+            activity.getLoaderManager().restartLoader(0, null, new MyLoader(pageNumber, category));
+            isServiceWorking = false;
         }
     };
 
     public void setAdapter(ArrayList<MyImage> images) {
-        ImageAdapter adapter = new ImageAdapter(this, images);
-        Log.d("UPDATED", "WOOOOOOW");
+        this.images = images;
+        ImageAdapter imageAdapter = new ImageAdapter(this, images);
 
-        gridView.setAdapter(adapter);
+        gridView.setAdapter(imageAdapter);
     }
 
     public class MyLoader implements LoaderManager.LoaderCallbacks<ArrayList<MyImage>> {

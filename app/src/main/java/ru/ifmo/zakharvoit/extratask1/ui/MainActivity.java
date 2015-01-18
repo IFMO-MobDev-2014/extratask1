@@ -42,17 +42,9 @@ public class MainActivity extends ActionBarActivity
 
         GridView imagesGrid = (GridView) findViewById(R.id.images_grid);
         imagesGrid.setAdapter(adapter);
-
         imagesGrid.setOnItemClickListener(this);
 
-        ImagesResultReceiver receiver = new ImagesResultReceiver();
-        receiver.setReceiver(createReceiver(this));
-
         getLoaderManager().initLoader(loadersCount++, null, this);
-
-        Intent intent = new Intent(this, ImagesDownloadService.class);
-        intent.putExtra(ImagesDownloadService.RESULT_RECEIVER_EXTRA_KEY, receiver);
-        startService(intent);
     }
 
     private ImagesResultReceiver.Receiver createReceiver(final Context context) {
@@ -68,7 +60,10 @@ public class MainActivity extends ActionBarActivity
                 Log.d(TAG, "List downloaded");
                 images = new Image[size];
                 currentSize = 0;
-                dialog = new ProgressDialog(context, ProgressDialog.STYLE_HORIZONTAL);
+                dialog = new ProgressDialog(context);
+                dialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                dialog.setIndeterminate(false);
+                dialog.setCancelable(false);
                 dialog.setProgress(0);
                 dialog.setMessage("Downloading...");
                 dialog.show();
@@ -109,21 +104,21 @@ public class MainActivity extends ActionBarActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_reload) {
+            ImagesResultReceiver receiver = new ImagesResultReceiver();
+            receiver.setReceiver(createReceiver(this));
+
+            Intent intent = new Intent(this, ImagesDownloadService.class);
+            intent.putExtra(ImagesDownloadService.RESULT_RECEIVER_EXTRA_KEY, receiver);
+            startService(intent);
         }
 
         return super.onOptionsItemSelected(item);

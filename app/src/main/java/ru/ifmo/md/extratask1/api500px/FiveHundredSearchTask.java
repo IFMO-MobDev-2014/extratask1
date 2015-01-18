@@ -25,19 +25,17 @@ public class FiveHundredSearchTask extends AsyncTask<Void, Void, ArrayList<Photo
     @Override
     protected ArrayList<Photo> doInBackground(Void... voids) {
         FiveHundredQuery fiveHundredQuery = new FiveHundredQuery(API_KEY);
-        //fiveHundredQuery.addParameter("image_size[]", "3");
         fiveHundredQuery.addParameter("image_size[]", "4");
-        fiveHundredQuery.addParameter("rpp", "60");
+        fiveHundredQuery.addParameter("rpp", String.valueOf(MainActivity.MAX_IMAGES));
         ArrayList<Photo> pictures = new ArrayList<>();
         try {
             JSONArray searchResults = fiveHundredQuery.get().getJSONArray("photos");
             for (int i = 0; i < searchResults.length(); ++i) {
                 JSONArray current = searchResults.getJSONObject(i).getJSONArray("images");
-                //String previewUrl = current.getJSONObject(0).getString("https_url");
-                //String fullUrl = current.getJSONObject(1).getString("https_url");
                 String fullUrl = current.getJSONObject(0).getString("https_url");
+                Log.d(TAG, fullUrl);
                 pictures.add(new Photo(fullUrl));
-                if (pictures.size() == 60) {
+                if (pictures.size() == MainActivity.MAX_IMAGES) {
                     break;
                 }
             }

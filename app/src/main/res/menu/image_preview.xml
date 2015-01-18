@@ -1,10 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="ru.ifmo.md.extratask1.PhotoPreview">
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".OneImage">
     <item
         android:id="@+id/action_save"
-        android:icon="@drawable/ic_action_save"
-        android:title="@string/action_save"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        android:title="save"
+        android:icon="@drawable/ic_action_save">
+    </item>
+    <item
+        android:id="@+id/action_set_wallpaper"
+        app:showAsAction="always"
+        android:title="wallpaper"
+        android:icon="@drawable/ic_action_picture"/>
+    <item
+        android:id="@+id/action_open_browser"
+        app:showAsAction="ifRoom"
+        android:title="browser"
+        android:icon="@drawable/ic_action_web_site"/>
 </menu>

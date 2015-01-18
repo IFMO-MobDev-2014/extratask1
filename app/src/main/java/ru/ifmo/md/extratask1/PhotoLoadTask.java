@@ -40,7 +40,7 @@ public class PhotoLoadTask implements PhotoTask {
             activity.onImageLoad();
         } else if (ctx instanceof MainActivity) {
             MainActivity activity = (MainActivity) ctx;
-            activity.onImageLoad();
+            activity.onPhotoLoaded();
         }
     }
 }

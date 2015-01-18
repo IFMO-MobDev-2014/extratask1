@@ -1,5 +1,9 @@
 package ru.ifmo.md.extratask1;
 
+import android.app.WallpaperManager;
+import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
@@ -20,9 +24,10 @@ import java.nio.channels.FileChannel;
 public class PhotoPreview extends ActionBarActivity {
     public static final long IMAGE_PREVIEW_TIMEOUT = 60 * 1000;
 
-    ImageView imgView;
-    String resId;
+    ImageView imageView;
+    String resourceId;
     PhotoCacher cacher;
+    String url;
 
     private static void copyFile(File src, File dst) throws IOException {
         FileChannel inChannel = new FileInputStream(src).getChannel();
@@ -42,12 +47,11 @@ public class PhotoPreview extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_preview);
+        setContentView(R.layout.activity_single_image);
 
-        imgView = (ImageView) findViewById(R.id.preview_container);
-        String url = getIntent().getStringExtra("url");
-        url = url.replace("_M", "_XXL");
-        resId = new File(url).getName();
+        imageView = (ImageView) findViewById(R.id.preview_container);
+        url = getIntent().getStringExtra("url");
+        resourceId = new File(url).getName();
         cacher = new PhotoCacher(this);
 
         PhotoLoadTask loadTask = new PhotoLoadTask(cacher, this, url);
@@ -58,10 +62,10 @@ public class PhotoPreview extends ActionBarActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (cacher.isAvailable(resId)) {
-                    cacher.putToImageView(imgView, resId);
+                if (cacher.isAvailable(resourceId)) {
+                    cacher.putToImageView(imageView, resourceId);
                 } else {
-                    imgView.setImageResource(R.drawable.image_error);
+                    imageView.setImageResource(R.drawable.image_error);
                 }
             }
         });
@@ -76,12 +80,8 @@ public class PhotoPreview extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == android.R.id.home) {
             finish();
             return true;
@@ -89,14 +89,30 @@ public class PhotoPreview extends ActionBarActivity {
         if (id == R.id.action_save) {
             try {
                 File sdCard = Environment.getExternalStorageDirectory();
-                File from = new File(getCacheDir() + File.separator + resId);
-                File to = new File(sdCard.getAbsolutePath() + File.separator + resId + ".jpg");
+                File from = new File(getCacheDir() + File.separator + resourceId);
+                File to = new File(sdCard.getAbsolutePath() + File.separator + resourceId + ".jpg");
                 copyFile(from, to);
-                Toast.makeText(this, "Photo saved on SD card", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Photo saved to SD card", Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 Toast.makeText(this, "Could not save: " + e.toString(), Toast.LENGTH_LONG).show();
             }
             return true;
+        }
+
+        if (id == R.id.action_set_wallpaper) {
+            WallpaperManager manager = WallpaperManager.getInstance(this);
+            try {
+                manager.setBitmap(((BitmapDrawable) imageView.getDrawable()).getBitmap());
+                Toast.makeText(this, "Wallpaper has been changed", Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                Toast.makeText(this, "ERROR", Toast.LENGTH_SHORT).show();
+            }
+            return true;
+        }
+
+        if (id == R.id.action_open_browser) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            startActivity(browserIntent);
         }
 
         return super.onOptionsItemSelected(item);

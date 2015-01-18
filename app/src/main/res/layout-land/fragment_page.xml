@@ -2,15 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="96dp"
-    android:paddingRight="96dp"
+    android:paddingLeft="50dp"
+    android:paddingRight="50dp"
     android:background="#222">
 
     <GridView
         android:id="@+id/gallery"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
+        android:layout_height="wrap_content"
         android:numColumns="3"
         android:stretchMode="columnWidth" />
 

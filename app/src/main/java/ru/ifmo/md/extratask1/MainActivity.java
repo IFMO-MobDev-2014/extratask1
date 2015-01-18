@@ -1,15 +1,19 @@
 package ru.ifmo.md.extratask1;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -28,14 +32,24 @@ public class MainActivity extends ActionBarActivity {
     MyFragmentPagerAdapter adapter;
     List<Photo> allPhotos;
     int imagesLoaded;
-
-    MenuItem updateButton;
+    SwipeRefreshLayout mSwipeRefreshLayout;
     ProgressBar progressBar;
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results_list);
+
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                updatePhotos();
+            }
+        });
 
         pager = (ViewPager) findViewById(R.id.pager);
         adapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
@@ -55,9 +69,8 @@ public class MainActivity extends ActionBarActivity {
         });
 
         progressBar = (ProgressBar) findViewById(R.id.progress);
-
+        progressBar.setMax(MAX_IMAGES);
         helper = new UrlDataBase(this);
-
         List<Photo> photos = helper.getUrls();
         if (photos.size() == 0) {
             updatePhotos();
@@ -66,34 +79,12 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.results_list, menu);
-        updateButton = menu.findItem(R.id.action_refresh);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_refresh) {
-            updatePhotos();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     private void updatePhotos() {
         progressBar.setVisibility(View.VISIBLE);
         progressBar.setProgress(0);
-        if (updateButton != null) {
-            updateButton.setEnabled(false);
-        }
         imagesLoaded = 0;
-        pager.setAdapter(null);
         new FiveHundredSearchTask(this).execute();
+        Toast.makeText(this, "Updating photos...", Toast.LENGTH_SHORT).show();
     }
 
     public void onImageSearchFinished(List<Photo> photos) {
@@ -106,17 +97,15 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public void onImageLoad() {
+    public void onPhotoLoaded() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 imagesLoaded++;
-                progressBar.setProgress(2 * MAX_IMAGES * imagesLoaded / MAX_IMAGES);
+                progressBar.setProgress(imagesLoaded);
                 if (imagesLoaded == MAX_IMAGES) {
+                    mSwipeRefreshLayout.setRefreshing(false);
                     progressBar.setVisibility(View.INVISIBLE);
-                    if (updateButton != null) {
-                        updateButton.setEnabled(true);
-                    }
                     pager.setAdapter(adapter);
                 }
             }

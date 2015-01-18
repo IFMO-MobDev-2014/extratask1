@@ -19,6 +19,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,11 +33,15 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
 import ru.eugene.extratask1.db.ImageDataSource;
@@ -120,10 +125,43 @@ public class ViewPhoto extends ActionBarActivity implements LoaderManager.Loader
             }
             return true;
         } else if (id == R.id.save) {
-
+            savefile(curItem.getBigImage());
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    void savefile(String sourceuri) {
+        Log.e("LOG", curItem.getBigImage());
+        Uri u = Uri.parse(curItem.getBigImage());
+        File f = new File("" + u);
+        String name = f.getName();
+        String sourceFilename = sourceuri;
+        String destinationFilename = Environment.getExternalStorageDirectory().getPath() + File.separatorChar +
+                Environment.DIRECTORY_DOWNLOADS + File.separatorChar + name + ".jpeg";
+
+        BufferedInputStream bis = null;
+        BufferedOutputStream bos = null;
+
+        try {
+            bis = new BufferedInputStream(new FileInputStream(sourceFilename));
+            bos = new BufferedOutputStream(new FileOutputStream(destinationFilename, false));
+            byte[] buf = new byte[1024];
+            bis.read(buf);
+            do {
+                bos.write(buf);
+            } while (bis.read(buf) != -1);
+        } catch (IOException e) {
+
+        } finally {
+            try {
+                if (bis != null) bis.close();
+                if (bos != null) bos.close();
+            } catch (IOException e) {
+
+            }
+        }
+        Toast.makeText(this, "file successfully saved : " + destinationFilename, Toast.LENGTH_SHORT).show();
     }
 
     @Override

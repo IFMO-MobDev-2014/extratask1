@@ -74,6 +74,7 @@ public class ImagesGridFragment extends Fragment
 
         GridView imagesGrid = (GridView) rootView.findViewById(R.id.images_grid);
         imagesGrid.setAdapter(adapter);
+        imagesGrid.setOnItemClickListener(this);
 
         getLoaderManager().initLoader(loadersCount++, null, this);
 

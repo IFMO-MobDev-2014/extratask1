@@ -10,7 +10,7 @@
         android:id="@+id/gridView"
         android:verticalSpacing="1dp"
         android:horizontalSpacing="1dp"
-        android:numColumns="3"
+        android:numColumns="5"
         android:layout_weight="5"/>
 
     <LinearLayout

@@ -11,113 +11,113 @@ import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.TreeMap;
 
 import ru.ya.popularfotki.OnePicture;
 import ru.ya.popularfotki.R;
+import ru.ya.popularfotki.SquareImageView;
 import ru.ya.popularfotki.UpdateIntentService;
 import ru.ya.popularfotki.database.FotkiContentProvider;
 import ru.ya.popularfotki.database.FotkiSQLiteHelper;
 
 
-public class MainActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks < Cursor > {
-    private BroadcastReceiver broadcastReceiver;
-    private BroadcastReceiver broadcastFromDM;
+public class MainActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private DownloadManager dm;
-    private OnePicture [] pictures;
-    private int cur;
-    private int cntTask;
+    private ArrayList<OnePicture> pictures;
     GridView gridView;
+    TreeMap<Long, Long> loadToPicture;
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.e("onBroadCast", "form intent");
+            pictures = (ArrayList<OnePicture>) intent.getSerializableExtra(UpdateIntentService.ON_POST_EXECUTE);
+            Log.e("list:", "size: " + pictures.size());
+            for (int i = 0; i < pictures.size(); i++) {
+                OnePicture picture = pictures.get(i);
+                if (picture.getAlreadyLoad()) throw new Error();
+                dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+                DownloadManager.Request request = new DownloadManager.Request(Uri.parse(picture.getURLS()));
+                Long id = dm.enqueue(request);
+                loadToPicture.put(id, (long) i);
+            }
+
+        }
+    };
+
+
+    private BroadcastReceiver broadcastFromDM = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.e("broadCast:", "after download");
+            long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+            DownloadManager.Query query = new DownloadManager.Query();
+            query.setFilterById(downloadId);
+            Cursor c = dm.query(query);
+            long reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            if (reference == -1) throw new Error();
+            if (c.moveToFirst()) {
+                int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
+                    String uriString = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                    int id = loadToPicture.get(Long.valueOf(reference)).intValue();
+                    pictures.get(id).setPath(uriString);
+
+                    ContentValues values = new ContentValues();
+                    values.put(FotkiSQLiteHelper.COLUMN_URL_S, pictures.get(id).getURLS());
+                    values.put(FotkiSQLiteHelper.COLUMN_URL_XL, pictures.get(id).getHttpXL());
+                    values.put(FotkiSQLiteHelper.COLUMN_PATH, pictures.get(id).getPath());
+                    values.put(FotkiSQLiteHelper.COLUMN_YANDEX_ID, pictures.get(id).getYandexId());
+                    getContentResolver().insert(FotkiContentProvider.FOTKI_URI, values);
+                    //Log.e("after insert", "broadcast");
+                }
+            }
+        }
+    };
+
     SimpleCursorAdapter adapter;
-    TreeMap < Long , Long > loadToPicture;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e(": ", "-------------------------------------------------------------");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         loadToPicture = new TreeMap<>();
-        gridView = (GridView)findViewById(R.id.gridView);
-
-
-
-        /// init something
-        adapter = new SimpleCursorAdapter(this, R.layout.item, null, null, null, 1) {
+        gridView = (GridView) findViewById(R.id.gridView);
+        String [] from = {};
+        int[] to = {};
+        adapter = new SimpleCursorAdapter(this, R.layout.item, null, from, to, 0) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
-                LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
-                View mView = (convertView == null)? inflater.inflate(R.layout.item, parent, false): convertView;
-                ImageView imageView = (ImageView)mView.findViewById(R.id.imageView);
+                LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                View mView = (convertView == null) ? inflater.inflate(R.layout.item, parent, false) : convertView;
+                SquareImageView imageView = (SquareImageView) mView.findViewById(R.id.picture);
+
                 Cursor cursor = getCursor();
-                Uri uri = Uri.parse(cursor.getString(cursor.getColumnIndex(FotkiSQLiteHelper.COLUMN_PATH)));
+                cursor.moveToPosition(position);
+                int id = cursor.getColumnIndex(FotkiSQLiteHelper.COLUMN_PATH);
+                Uri uri = Uri.parse(cursor.getString(id));
+
                 imageView.setImageURI(uri);
                 return mView;
             }
         };
-
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                pictures = (OnePicture [])intent.getSerializableExtra(UpdateIntentService.ON_POST_EXECUTE);
-                cur = 0;
-                cntTask = 0;
-                for (int i = 0; i < pictures.length; i++) {
-                    OnePicture picture = pictures[i];
-                    if (picture.getAlreadyLoad()) throw new Error();
-                    dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-                    DownloadManager.Request request = new DownloadManager.Request( Uri.parse(picture.getURLS()));
-                    cntTask++;
-                    Long id = dm.enqueue(request);
-                    loadToPicture.put(id, (long) i);
-                }
-
-            }
-        };
-
-        broadcastFromDM = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
-                DownloadManager.Query query = new DownloadManager.Query();
-                query.setFilterById(downloadId);
-                Cursor c = dm.query(query);
-                long reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-                if (reference == -1) throw new Error();
-                if (c.moveToFirst()) {
-                    int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
-                    if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
-                        String uriString = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
-                        Long id = loadToPicture.get(new Long(reference));
-                        pictures[id.intValue()].setPath(uriString);
-                        cur++;
-                        if (cur == cntTask) {
-                            ContentValues [] values = new ContentValues[cntTask];
-                            for (int i = 0; i < cntTask; i++) {
-                                values[i] = new ContentValues();
-                                values[i].put(FotkiSQLiteHelper.COLUMN_URL_S, pictures[i].getURLS());
-                                values[i].put(FotkiSQLiteHelper.COLUMN_URL_XL, pictures[i].getHttpXL());
-                                values[i].put(FotkiSQLiteHelper.COLUMN_PATH, pictures[i].getPath());
-                                values[i].put(FotkiSQLiteHelper.COLUMN_YANDEX_ID, pictures[i].getYandexId());
-                            }
-                            getContentResolver().bulkInsert(FotkiContentProvider.FOTKI_URI, values);
-                        }
-                    }
-                }
-            }
-        };
-
+        getLoaderManager().initLoader(0, null, this);
+        gridView.setAdapter(adapter);
     }
 
     @Override
@@ -134,23 +134,33 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         registerReceiver(broadcastFromDM, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
-    private void update () {
+    private void update() {
         Intent intent = new Intent(this, UpdateIntentService.class);
         startService(intent);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, FotkiContentProvider.FOTKI_URI, null, null, null, null);
+        String sortOrder = FotkiSQLiteHelper.COLUMN_ID + " " + FotkiSQLiteHelper.DESC;
+        Log.e("sortOrder:", sortOrder);
+        return new CursorLoader(this, FotkiContentProvider.FOTKI_URI, null, null, null, sortOrder);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+//        Log.e("onLoadFinish:", "cursorLoader");
+        //Log.e("adapter: ", "" + adapter);
+        //Log.e("data", "Cursor: " + data);
+        //if (data == null)
+            //Log.e("NULLLLLLLLLLLLLLLLLLLLLLLLLLLL", "");
+        //assert data != null;
+        //Log.e("cnt data:", "" + data.getCount());
         adapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
+        throw new Error();
     }
 
 
@@ -164,10 +174,13 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if (item.getItemId() == R.id.action_launcher) {
+        if (item.getItemId() == R.id.refresh_button) {
             Toast.makeText(this, "onOptionsItemSelected", Toast.LENGTH_LONG).show();
             update();
             return true;
+        }
+        if (item.getItemId() == R.id.clear_button) {
+            getContentResolver().delete(FotkiContentProvider.FOTKI_URI, FotkiSQLiteHelper.COLUMN_ID + ">0", null);
         }
         return super.onOptionsItemSelected(item);
     }

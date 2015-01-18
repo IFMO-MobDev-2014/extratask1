@@ -1,15 +1,23 @@
 package ru.ya.popularfotki;
 
+import java.io.Serializable;
+
 /**
  * Created by vanya on 17.01.15.
  */
-public class OnePicture {
+public class OnePicture implements Serializable{
     private String URLS;
     private String URLXL;
     private String yandexId;
     private String Path;
     private Boolean alreadyLoad;
 
+    public OnePicture(String URLS, String URLXL, String yandexId) {
+        this.URLS = URLS;
+        this.URLXL = URLXL;
+        this.yandexId = yandexId;
+        this.alreadyLoad = false;
+    }
     public void setAlreadyLoad(Boolean alreadyLoad) {
         this.alreadyLoad = alreadyLoad;
     }
@@ -42,9 +50,4 @@ public class OnePicture {
         return alreadyLoad;
     }
 
-    public OnePicture(String URLS, String URLXL, String yandexId) {
-        this.URLS = URLS;
-        this.URLXL = URLXL;
-        this.yandexId = yandexId;
-    }
 }

@@ -21,6 +21,11 @@
             </intent-filter>
         </activity>
 
+        <!--android:authorities="ru.ya.popularfotki.database.FotkiContentProvider"-->
+        <provider
+            android:authorities="@string/authority"
+            android:name=".database.FotkiContentProvider" />
+
         <service
             android:name=".UpdateIntentService"
             android:exported="false" >

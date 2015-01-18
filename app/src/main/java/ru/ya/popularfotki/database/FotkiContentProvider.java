@@ -4,14 +4,16 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
-import java.net.URI;
+import ru.ya.popularfotki.R;
 
 /**
  * Created by vanya on 17.01.15.
  */
 public class FotkiContentProvider extends ContentProvider {
-    public static final String AUTHORITY = "ru.ya.popularfotki";
+    //public static String AUTHORITY;
+    public static final String AUTHORITY = "ru.ya.popularfotki.database.FotkiContentProvider";
     public static final String PICTURE_PATH = "PICTURE_PATH";
     private static Boolean flagUpdate = true;
     private FotkiSQLiteHelper fotkiSQLiteHelper;
@@ -20,16 +22,18 @@ public class FotkiContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
+//        Log.e("onCreate: ", "ContentProvider");
         fotkiSQLiteHelper = new FotkiSQLiteHelper(getContext());
-        return false;
+        return true;
     }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        Log.e("in: ", " query");
         Cursor cursor = fotkiSQLiteHelper.getReadableDatabase().query(FotkiSQLiteHelper.PICTURES_TABLE,
                 projection, selection, selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
-        return null;
+        return cursor;
     }
 
     @Override
@@ -39,14 +43,17 @@ public class FotkiContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
+        Log.e("insert:", "contentProvider");
         long id = fotkiSQLiteHelper.getWritableDatabase().insert(FotkiSQLiteHelper.PICTURES_TABLE, null, values);
         upd(uri);
         return Uri.parse(PICTURE_PATH + "/" + id);
     }
 
     private void upd(Uri uri) {
-        if (flagUpdate)
+        if (flagUpdate) {
+            Log.e("upd:", "CP");
             getContext().getContentResolver().notifyChange(uri, null);
+        }
     }
 
 

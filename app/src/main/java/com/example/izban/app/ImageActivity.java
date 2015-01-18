@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -31,6 +32,8 @@ public class ImageActivity extends ActionBarActivity implements MyResultReceiver
         Intent intent = new Intent(this, DownloadOneImageService.class).putExtra(Constants.RECEIVER, resultReceiver);
         intent.putExtra("link", getIntent().getStringExtra("link"));
         startService(intent);
+        ((TextView)findViewById(R.id.textView)).setText(getIntent().getStringExtra("title"));
+        Log.i("", getIntent().getStringExtra("title"));
     }
 
 

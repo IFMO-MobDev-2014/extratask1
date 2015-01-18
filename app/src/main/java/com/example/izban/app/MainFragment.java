@@ -57,6 +57,7 @@ public class MainFragment extends Fragment implements android.support.v4.app.Loa
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(getActivity(), ImageActivity.class);
                 intent.putExtra("link", adapter.getItem(i).link);
+                intent.putExtra("title", adapter.getItem(i).title);
                 startActivity(intent);
             }
         });

@@ -56,6 +56,7 @@ public class DownloadAllImagesService extends IntentService {
                 cv[i].put(DatabaseHelper.IMAGES_LINK, item.getJSONObject("img").getJSONObject("XXL").getString("href"));
                 cv[i].put(DatabaseHelper.IMAGES_FILEPATH, filepath);
                 cv[i].put(DatabaseHelper.IMAGES_IND, i);
+                cv[i].put(DatabaseHelper.IMAGES_TITLE, item.getString("title"));
 
                 try {
                     url = new URL(item.getJSONObject("img").getJSONObject("M").getString("href"));

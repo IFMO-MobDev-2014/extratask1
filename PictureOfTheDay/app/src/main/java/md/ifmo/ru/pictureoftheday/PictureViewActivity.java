@@ -6,6 +6,7 @@ import android.content.Loader;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,6 +16,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -47,42 +49,33 @@ public class PictureViewActivity extends ActionBarActivity {
         webLink = intent.getStringExtra("WEB_LINK");
         webView = (WebView) findViewById(R.id.webView);
         webView.setWebViewClient(new AppWebViewClient());
-        webView.loadUrl(hrLink);
-        try {
-            URL url = url = new URL(hrLink);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
-            //InputStream inputStream = urlConnection.getInputStream();
-            //bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-
-
-        } catch (Exception e) {
-            Toast.makeText(this, "Can't Load Picture"+hrLink, Toast.LENGTH_LONG).show();
-        }
+        new DownloadImageTask(bitmap).execute(hrLink);
         imageView.setImageBitmap(bitmap);
-
-
     }
 
-    private InputStream getHttpConnection(String urlString)
-            throws IOException {
-        InputStream stream = null;
-        URL url = new URL(urlString);
-        URLConnection connection = url.openConnection();
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        Bitmap bmImage;
 
-        try {
-            HttpURLConnection httpConnection = (HttpURLConnection) connection;
-            httpConnection.setRequestMethod("GET");
-            httpConnection.connect();
-
-            if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                stream = httpConnection.getInputStream();
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        public DownloadImageTask(Bitmap bmImage) {
+            this.bmImage = bmImage;
         }
-        return stream;
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage = result;
+        }
     }
 
     private class AppWebViewClient extends WebViewClient {

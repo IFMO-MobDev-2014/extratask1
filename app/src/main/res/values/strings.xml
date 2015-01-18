@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Yandex Fotki</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="save">Save a photo to your phone</string>
+    <string name="wallpaper">Set as wallpaper if you want</string>
+    <string name="browser">Open this photo in browser</string>
+    <string name="save_in_gallery">Picture was saved to your gallery</string>
+    <string name="error_saving">Error...Check your memory.Need some more space</string>
+    <string name="wallpaper_set">Wallpaper was changed to this picture successfully</string>
+    <string name="wallpaper_error">Error...Check your device</string>
+    <string name="data_is_empty">Swipe down!</string>
+    <string name="check_connection">Check your internet connection,please</string>
+
+</resources>

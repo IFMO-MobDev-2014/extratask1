@@ -69,10 +69,9 @@ public class ImagesDownloadService extends IntentService {
 
         try {
             ImageData[] imagesList = fetchUriList();
-            Bundle bundle = new Bundle();
-            bundle.putInt(ImagesResultReceiver.SIZE_BUNDLE_KEY, imagesList.length);
-            receiver.send(ImagesResultReceiver.LIST_DOWNLOADED, bundle);
-            bundle.clear();
+            Bundle listSizeBundle = new Bundle();
+            listSizeBundle.putInt(ImagesResultReceiver.SIZE_BUNDLE_KEY, imagesList.length);
+            receiver.send(ImagesResultReceiver.LIST_DOWNLOADED, listSizeBundle);
             for (ImageData image : imagesList) {
                 String title = image.getTitle();
                 String smallLink = image.getSmallLink();
@@ -81,10 +80,11 @@ public class ImagesDownloadService extends IntentService {
                 InputStream is = new URL(smallLink).openStream();
                 byte[] value = StreamUtil.inputStreamToByteArray(is);
 
+                Image newImage = new Image(title, value, largeLink);
+                Bundle bundle = new Bundle();
                 bundle.putParcelable(ImagesResultReceiver.IMAGE_BUNDLE_KEY,
-                        new Image(title, value, largeLink));
+                        newImage);
                 receiver.send(ImagesResultReceiver.IMAGE_DOWNLOADED, bundle);
-                bundle.clear();
             }
             receiver.send(ImagesResultReceiver.FINISHED, Bundle.EMPTY);
         } catch (Exception e) {

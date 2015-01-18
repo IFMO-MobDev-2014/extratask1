@@ -1,6 +1,7 @@
 package ru.ifmo.zakharvoit.extratask1.ui;
 
 import android.app.LoaderManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -12,8 +13,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import ru.ifmo.zakharvoit.extratask1.R;
@@ -21,27 +22,28 @@ import ru.ifmo.zakharvoit.extratask1.images.Image;
 import ru.ifmo.zakharvoit.extratask1.images.ImagesDownloadService;
 import ru.ifmo.zakharvoit.extratask1.images.ImagesResultReceiver;
 import ru.ifmo.zakharvoit.extratask1.provider.picture.PictureContentValues;
+import ru.ifmo.zakharvoit.extratask1.provider.picture.PictureCursor;
 import ru.ifmo.zakharvoit.extratask1.provider.picture.PictureSelection;
 
 public class MainActivity extends ActionBarActivity
-        implements LoaderManager.LoaderCallbacks<Cursor> {
+        implements LoaderManager.LoaderCallbacks<Cursor>,
+                GridView.OnItemClickListener {
 
     private ImagesAdapter adapter;
     private int loadersCount = 0;
-    private ProgressBar downloadProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        downloadProgressBar = (ProgressBar) findViewById(R.id.download_progress_bar);
-
         adapter = new ImagesAdapter(this, new PictureSelection()
                 .query(getContentResolver()));
 
         GridView imagesGrid = (GridView) findViewById(R.id.images_grid);
         imagesGrid.setAdapter(adapter);
+
+        imagesGrid.setOnItemClickListener(this);
 
         ImagesResultReceiver receiver = new ImagesResultReceiver();
         receiver.setReceiver(createReceiver(this));
@@ -58,29 +60,31 @@ public class MainActivity extends ActionBarActivity
             public static final String TAG = "ResultReceiver";
 
             private Image[] images;
-            int currentSize;
+            private int currentSize;
+            private ProgressDialog dialog;
 
             @Override
             public void onListDownload(int size) {
                 Log.d(TAG, "List downloaded");
                 images = new Image[size];
                 currentSize = 0;
-                downloadProgressBar.setProgress(100 * currentSize / size);
-                downloadProgressBar.setVisibility(View.VISIBLE);
+                dialog = new ProgressDialog(context, ProgressDialog.STYLE_HORIZONTAL);
+                dialog.setProgress(0);
+                dialog.setMessage("Downloading...");
+                dialog.show();
             }
 
             @Override
             public void onImageDownload(Image image) {
                 Log.d(TAG, "New image downloaded");
-                if (image != null) { // FIXME: Strange hack
-                    images[currentSize++] = image;
-                    downloadProgressBar.setProgress(100 * currentSize / images.length);
-                }
+                images[currentSize++] = image;
+                dialog.setProgress(100 * currentSize / images.length);
             }
 
             @Override
             public void onFinishDownload() {
                 Log.d(TAG, "Finished downloading");
+                dialog.setProgress(100);
                 new PictureSelection().delete(getContentResolver());
                 for (int i = 0; i < currentSize; i++) {
                     Image image = images[i];
@@ -91,7 +95,7 @@ public class MainActivity extends ActionBarActivity
                     contentValues.insert(getContentResolver());
                 }
                 images = null;
-                downloadProgressBar.setVisibility(View.INVISIBLE);
+                dialog.dismiss();
             }
 
             @Override
@@ -141,5 +145,22 @@ public class MainActivity extends ActionBarActivity
     public void onLoaderReset(Loader<Cursor> loader) {
         Log.d("LoaderCallbacks", "Load reset");
         adapter.swapCursor(null);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.d("MainActivity.onItemClick", "Clicked " + id);
+
+        PictureCursor cursor = new PictureSelection()
+                .id(id).query(getContentResolver());
+        cursor.moveToFirst();
+
+        String title = cursor.getTitle();
+        String link = cursor.getLargeLink();
+
+        Intent intent = new Intent(this, FullImageActivity.class);
+        intent.putExtra(FullImageActivity.IMAGE_TITLE_EXTRA, title);
+        intent.putExtra(FullImageActivity.IMAGE_LINK_EXTRA, link);
+        startActivity(intent);
     }
 }

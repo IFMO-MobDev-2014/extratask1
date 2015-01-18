@@ -22,8 +22,15 @@
         <service android:name=".images.ImagesDownloadService" />
 
         <provider
-            android:name="ru.ifmo.zakharvoit.extratask1.provider.Provider"
+            android:name=".provider.Provider"
             android:authorities="ru.ifmo.zakharvoit.extratask1.provider"
             android:exported="false" />
+
+        <activity
+            android:name=".ui.FullImageActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_full_image" >
+        </activity>
     </application>
+
 </manifest>

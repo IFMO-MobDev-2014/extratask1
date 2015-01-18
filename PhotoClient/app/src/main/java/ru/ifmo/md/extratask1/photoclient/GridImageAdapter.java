@@ -14,16 +14,16 @@ import ru.ifmo.md.extratask1.photoclient.database.ImagesTable;
 /**
  * Created by sergey on 17.01.15.
  */
-public class ImageAdapter extends CursorAdapter {
+public class GridImageAdapter extends CursorAdapter {
 
-    public ImageAdapter(Context context, Cursor c, boolean flags) {
+    public GridImageAdapter(Context context, Cursor c, boolean flags) {
         super(context, c, flags);
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        return inflater.inflate(R.layout.one_picture, parent, false);
+        return inflater.inflate(R.layout.grid_view_one_picture, parent, false);
     }
 
     @Override

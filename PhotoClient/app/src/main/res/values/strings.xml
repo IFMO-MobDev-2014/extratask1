@@ -9,5 +9,6 @@
     <string name="action_set_as_wallpaper">Set as wallpaper</string>
     <string name="action_open_in_browser">Open in browser</string>
     <string name="action_save_to_gallery">Save to gallery</string>
+    <string name="default_image_title">Ritratto di Monna Lisa del Giocondo</string>
 
 </resources>

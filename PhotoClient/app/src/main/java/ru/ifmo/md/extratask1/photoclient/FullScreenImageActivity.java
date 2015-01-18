@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import ru.ifmo.md.extratask1.photoclient.database.ImagesProvider;
@@ -32,6 +33,8 @@ public class FullScreenImageActivity extends ActionBarActivity {
     public static final String EXTRA_ROW_ID = "extra_row_id";
 
     private ImageView imageView;
+    private TextView tvTitle;
+
     private Bitmap imageBitmap;
     private String imageURL;
     private String imageURLonWeb;
@@ -60,6 +63,7 @@ public class FullScreenImageActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_full_image);
         imageView = (ImageView) findViewById(R.id.full_image_view);
+        tvTitle = (TextView) findViewById(R.id.tv_image_title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         rowId = getIntent().getIntExtra(EXTRA_ROW_ID, 1);
         gestureDetector = initGestureDetector();
@@ -153,9 +157,7 @@ public class FullScreenImageActivity extends ActionBarActivity {
     private void showBigImage() {
         imageBitmap = ImageFilesHandler.loadImageFromStorage(getApplicationContext(), imageURL);
         imageView.setImageBitmap(imageBitmap);
-        getSupportActionBar().setTitle(title);
-//        ((TextView) findViewById(R.id.tv_image_title)).setText(title);
-
+        tvTitle.setText(title);
     }
 
     @Override

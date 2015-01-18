@@ -4,19 +4,16 @@
     <item
         android:id="@+id/action_set_wallpaper"
         android:icon="@drawable/wallpaper"
-        android:title="@string/action_set_as_wallpaper"
         app:showAsAction="ifRoom|withText" />
 
     <item
         android:id="@+id/action_open_in_browser"
         android:icon="@drawable/browser"
-        android:title="@string/action_open_in_browser"
         app:showAsAction="ifRoom|withText" />
 
     <item
         android:id="@+id/action_save_to_gallery"
         android:icon="@drawable/download"
-        android:title="@string/action_save_to_gallery"
         app:showAsAction="ifRoom|withText" />
 
 </menu>

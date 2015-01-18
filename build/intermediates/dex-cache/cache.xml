@@ -23,6 +23,13 @@
         <dex dex="D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\pre-dexed\debug\classes-870231316daeb9f0fd78a23983fa9d430ca77b81.jar" />
     </item>
     <item
+        jar="D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\libs\android-support-v4.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="48c94ae70fa65718b382098237806a5909bb096e">
+        <dex dex="D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\pre-dexed\debug\android-support-v4-f9548e7a8046adbec673d069eb1ee2ce64f448c3.jar" />
+    </item>
+    <item
         jar="D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\classes.jar"
         jumboMode="false"
         revision="21.1.1"

@@ -7,4 +7,9 @@
     <string name="action_refresh">Refresh</string>
     <string name="title_activity_image">ImageActivity</string>
 
+    <string name="portrait_columns">2</string>
+    <string name="portrait_rows">4</string>
+    <string name="landscape_columns">4</string>
+    <string name="landscape_rows">2</string>
+
 </resources>

@@ -26,7 +26,6 @@ import java.util.Scanner;
  * Created by izban on 17.01.15.
  */
 public class DownloadAllImagesService extends IntentService {
-    public static final int PICTURES = 30;
 
     public DownloadAllImagesService() {
         super(DownloadAllImagesService.class.getSimpleName());
@@ -49,13 +48,14 @@ public class DownloadAllImagesService extends IntentService {
             }
             JSONArray jsons = new JSONObject(s).getJSONArray("entries");
 
-            ContentValues cv[] = new ContentValues[PICTURES];
-            for (int i = 0; i < PICTURES; i++) {
-                String filepath = "" + i;
+            ContentValues cv[] = new ContentValues[Constants.PICTURES];
+            for (int i = 0; i < Constants.PICTURES; i++) {
+                String filepath = String.format("%02d", i);
                 JSONObject item = jsons.getJSONObject(i);
                 cv[i] = new ContentValues();
                 cv[i].put(DatabaseHelper.IMAGES_LINK, item.getJSONObject("img").getJSONObject("XXL").getString("href"));
                 cv[i].put(DatabaseHelper.IMAGES_FILEPATH, filepath);
+                cv[i].put(DatabaseHelper.IMAGES_IND, i);
 
                 try {
                     url = new URL(item.getJSONObject("img").getJSONObject("M").getString("href"));

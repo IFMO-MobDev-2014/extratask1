@@ -2,8 +2,14 @@ package com.example.izban.app;
 
 import android.content.Intent;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,21 +18,60 @@ import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity implements MyResultReceiver.Receiver {
     private ProgressBar progressBar;
-    MyResultReceiver resultReceiver;
+    private MyResultReceiver resultReceiver;
+    ViewPager pager;
+    PagerAdapter pagerAdapter;
+
+    private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+
+        public MyFragmentPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return MainFragment.newInstance(position);
+        }
+
+        @Override
+        public int getCount() {
+            return Constants.PICTURES / Constants.ON_PAGE;
+        }
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new MainFragment())
-                    .commit();
+
         }
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
         resultReceiver = new MyResultReceiver(new Handler());
         resultReceiver.setReceiver(this);
+
+        pager = (ViewPager) findViewById(R.id.pager);
+        pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+        pager.setAdapter(pagerAdapter);
+
+        pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageSelected(int position) {
+                Log.d("", "onPageSelected, position = " + position);
+            }
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset,
+                                       int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
     }
 
 
@@ -61,7 +106,7 @@ public class MainActivity extends ActionBarActivity implements MyResultReceiver.
     public void onReceiveResult(int resultCode, Bundle data) {
         switch (resultCode) {
             case Constants.RECEIVER_STARTED:
-                progressBar.setMax(DownloadAllImagesService.PICTURES);
+                progressBar.setMax(Constants.PICTURES);
                 progressBar.setProgress(0);
                 progressBar.setVisibility(View.VISIBLE);
                 break;

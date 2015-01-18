@@ -43,6 +43,7 @@ public class PhotosFragment extends Fragment implements SwipeRefreshLayout.OnRef
     private int page;
     private GetListTask getListTask;
     private ImageDownloader imageDownloader;
+    private Dialog dialog;
 
     @Nullable
     @Override
@@ -116,7 +117,7 @@ public class PhotosFragment extends Fragment implements SwipeRefreshLayout.OnRef
             showFullscreenTask.execute(url);
         }
 
-        Dialog dialog = new Dialog(getActivity(), android.R.style.Theme_DeviceDefault_DialogWhenLarge_NoActionBar);
+        dialog = new Dialog(getActivity(), android.R.style.Theme_DeviceDefault_DialogWhenLarge_NoActionBar);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(0x77000000));
         dialog.setContentView(contentView);
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -129,6 +130,14 @@ public class PhotosFragment extends Fragment implements SwipeRefreshLayout.OnRef
         });
 
         dialog.show();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (dialog != null) {
+            dialog.dismiss();
+        }
+        super.onDestroy();
     }
 
     private class GetListTask extends AsyncTask<Void, Void, PhotoList> {

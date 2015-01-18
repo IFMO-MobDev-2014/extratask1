@@ -6,8 +6,8 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import ru.ifmo.zakharvoit.extratask1.R;
+import ru.ifmo.zakharvoit.extratask1.images.Image;
 import ru.ifmo.zakharvoit.extratask1.images.ImagesDownloadService;
 import ru.ifmo.zakharvoit.extratask1.images.ImagesResultReceiver;
 import ru.ifmo.zakharvoit.extratask1.provider.picture.PictureContentValues;
@@ -56,20 +57,20 @@ public class MainActivity extends ActionBarActivity
         return new ImagesResultReceiver.Receiver() {
             public static final String TAG = "ResultReceiver";
 
-            private byte[][] images;
+            private Image[] images;
             int currentSize;
 
             @Override
             public void onListDownload(int size) {
                 Log.d(TAG, "List downloaded");
-                images = new byte[size][];
+                images = new Image[size];
                 currentSize = 0;
                 downloadProgressBar.setProgress(100 * currentSize / size);
                 downloadProgressBar.setVisibility(View.VISIBLE);
             }
 
             @Override
-            public void onImageDownload(byte[] image) {
+            public void onImageDownload(Image image) {
                 Log.d(TAG, "New image downloaded");
                 if (image != null) { // FIXME: Strange hack
                     images[currentSize++] = image;
@@ -82,9 +83,11 @@ public class MainActivity extends ActionBarActivity
                 Log.d(TAG, "Finished downloading");
                 new PictureSelection().delete(getContentResolver());
                 for (int i = 0; i < currentSize; i++) {
-                    byte[] image = images[i];
+                    Image image = images[i];
                     PictureContentValues contentValues = new PictureContentValues();
-                    contentValues.putContents(image);
+                    contentValues.putTitle(image.getTitle());
+                    contentValues.putContents(image.getContents());
+                    contentValues.putLargeLink(image.getLargeLink());
                     contentValues.insert(getContentResolver());
                 }
                 images = null;

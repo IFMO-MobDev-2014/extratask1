@@ -1,8 +1,18 @@
 {
     "fields": [
         {
+            "name": "title",
+            "type": "String",
+            "nullable": false
+        },
+        {
             "name": "contents",
             "type": "byte[]",
+            "nullable": false
+        },
+        {
+            "name": "large_link",
+            "type": "String",
             "nullable": false
         }
     ]

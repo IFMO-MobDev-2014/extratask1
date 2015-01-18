@@ -18,11 +18,29 @@ public class PictureCursor extends AbstractCursor {
     }
 
     /**
+     * Get the {@code title} value.
+     * Cannot be {@code null}.
+     */
+    public String getTitle() {
+        Integer index = getCachedColumnIndexOrThrow(PictureColumns.TITLE);
+        return getString(index);
+    }
+
+    /**
      * Get the {@code contents} value.
      * Cannot be {@code null}.
      */
     public byte[] getContents() {
         Integer index = getCachedColumnIndexOrThrow(PictureColumns.CONTENTS);
         return getBlob(index);
+    }
+
+    /**
+     * Get the {@code large_link} value.
+     * Cannot be {@code null}.
+     */
+    public String getLargeLink() {
+        Integer index = getCachedColumnIndexOrThrow(PictureColumns.LARGE_LINK);
+        return getString(index);
     }
 }

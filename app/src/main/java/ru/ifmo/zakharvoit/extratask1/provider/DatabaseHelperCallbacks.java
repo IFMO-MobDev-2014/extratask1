@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import ru.ifmo.zakharvoit.extratask1.BuildConfig;
+import ru.ifmo.zakharvoit.extratask1.provider.picture.PictureColumns;
 
 /**
  * Implement your custom database creation or upgrade code here.
@@ -35,6 +36,7 @@ public class DatabaseHelperCallbacks {
 
     public void onUpgrade(final Context context, final SQLiteDatabase db, final int oldVersion, final int newVersion) {
         if (BuildConfig.DEBUG) Log.d(TAG, "Upgrading database from version " + oldVersion + " to " + newVersion);
-        // Insert your upgrading code here.
+        db.execSQL("DROP TABLE IF EXISTS " + PictureColumns.TABLE_NAME);
+        DatabaseHelper.getInstance(context).onCreate(db);
     }
 }

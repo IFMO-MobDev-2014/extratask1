@@ -21,7 +21,11 @@ public class PictureColumns implements BaseColumns {
      */
     public static final String _ID = new String(BaseColumns._ID);
 
+    public static final String TITLE = "title";
+
     public static final String CONTENTS = "contents";
+
+    public static final String LARGE_LINK = "large_link";
 
 
     public static final String DEFAULT_ORDER = TABLE_NAME + "." +_ID;
@@ -29,14 +33,18 @@ public class PictureColumns implements BaseColumns {
     // @formatter:off
     public static final String[] ALL_COLUMNS = new String[] {
             _ID,
-            CONTENTS
+            TITLE,
+            CONTENTS,
+            LARGE_LINK
     };
     // @formatter:on
 
     public static boolean hasColumns(String[] projection) {
         if (projection == null) return true;
         for (String c : projection) {
+            if (c == TITLE || c.contains("." + TITLE)) return true;
             if (c == CONTENTS || c.contains("." + CONTENTS)) return true;
+            if (c == LARGE_LINK || c.contains("." + LARGE_LINK)) return true;
         }
         return false;
     }

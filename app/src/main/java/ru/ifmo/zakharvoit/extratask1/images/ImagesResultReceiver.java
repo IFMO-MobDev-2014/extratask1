@@ -18,7 +18,7 @@ public class ImagesResultReceiver extends ResultReceiver {
 
     public static abstract class Receiver {
         public abstract void onListDownload(int size);
-        public abstract void onImageDownload(byte[] image);
+        public abstract void onImageDownload(Image image);
         public abstract void onFinishDownload();
         public abstract void onError();
 
@@ -28,7 +28,7 @@ public class ImagesResultReceiver extends ResultReceiver {
                     onListDownload(data.getInt(SIZE_BUNDLE_KEY));
                     break;
                 case IMAGE_DOWNLOADED:
-                    onImageDownload(data.getByteArray(IMAGE_BUNDLE_KEY));
+                    onImageDownload((Image) data.getParcelable(IMAGE_BUNDLE_KEY));
                     break;
                 case ERROR:
                     onError();

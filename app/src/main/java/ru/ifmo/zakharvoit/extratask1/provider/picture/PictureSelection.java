@@ -56,6 +56,21 @@ public class PictureSelection extends AbstractSelection<PictureSelection> {
     }
 
 
+    public PictureSelection title(String... value) {
+        addEquals(PictureColumns.TITLE, value);
+        return this;
+    }
+
+    public PictureSelection titleNot(String... value) {
+        addNotEquals(PictureColumns.TITLE, value);
+        return this;
+    }
+
+    public PictureSelection titleLike(String... value) {
+        addLike(PictureColumns.TITLE, value);
+        return this;
+    }
+
     public PictureSelection contents(byte[]... value) {
         addEquals(PictureColumns.CONTENTS, value);
         return this;
@@ -66,4 +81,19 @@ public class PictureSelection extends AbstractSelection<PictureSelection> {
         return this;
     }
 
+
+    public PictureSelection largeLink(String... value) {
+        addEquals(PictureColumns.LARGE_LINK, value);
+        return this;
+    }
+
+    public PictureSelection largeLinkNot(String... value) {
+        addNotEquals(PictureColumns.LARGE_LINK, value);
+        return this;
+    }
+
+    public PictureSelection largeLinkLike(String... value) {
+        addLike(PictureColumns.LARGE_LINK, value);
+        return this;
+    }
 }

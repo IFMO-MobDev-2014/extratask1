@@ -20,7 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = DatabaseHelper.class.getSimpleName();
 
     public static final String DATABASE_FILE_NAME = "extratask1.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 8;
     private static DatabaseHelper sInstance;
     private final Context mContext;
     private final DatabaseHelperCallbacks mOpenHelperCallbacks;
@@ -29,7 +29,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_TABLE_PICTURE = "CREATE TABLE IF NOT EXISTS "
             + PictureColumns.TABLE_NAME + " ( "
             + PictureColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + PictureColumns.CONTENTS + " BLOB NOT NULL "
+            + PictureColumns.TITLE + " TEXT NOT NULL, "
+            + PictureColumns.CONTENTS + " BLOB NOT NULL, "
+            + PictureColumns.LARGE_LINK + " TEXT NOT NULL "
             + " );";
 
     // @formatter:on

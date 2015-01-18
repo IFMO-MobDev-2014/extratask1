@@ -2,8 +2,10 @@
       xmlns:app="http://schemas.android.com/apk/res-auto"
       xmlns:tools="http://schemas.android.com/tools"
       tools:context="ru.ya.popularfotki.activities.BigPicture">
-    <item android:id="@+id/action_settings"
-          android:title="@string/action_settings"
-          android:orderInCategory="100"
-          app:showAsAction="never"/>
+   <!--<item android:id="@+id/go_to_internet"-->
+          <!--android:title="@string/action_settings"-->
+          <!--app:showAsAction="always"-->
+          <!--android:icon="@drawable/ic_action_computer"-->
+          <!--android:orderInCategory="100"-->
+          <!--/>-->
 </menu>

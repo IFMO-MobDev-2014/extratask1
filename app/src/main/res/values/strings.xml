@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">extratask1</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="imageName">Name of image</string>
+    <string name="imageViewDescription">image</string>
+    <string name="action_update_name">Update</string>
+
+</resources>

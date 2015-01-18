@@ -1,6 +1,5 @@
 package freemahn.com.extratask1;
 
-import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -8,13 +7,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 
 import java.util.ArrayList;
@@ -24,30 +24,27 @@ import java.util.ArrayList;
  */
 public class MainActivity extends FragmentActivity implements View.OnClickListener, LoaderManager.LoaderCallbacks<ArrayList<Entry>> {
 
-    ArrayList<Entry> entries;
+    ViewPager pager;
+    PagerAdapter pagerAdapter;
+    static ArrayList<Entry> entries;
+
+    //ugly button :(
     Button btnRefresh;
-    GridView gridView;
     ProgressBar progressBar;
     MyBroadcastReceiver myBroadcastReceiver;
     MyUpdateBroadcastReceiver myUpdateBroadcastReceiver;
 
-    //FragmentPageAdapter mAdapter;
-    ViewPager mPager;
-    int mNumFragments = 0;
-    int mNumItems = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_main);
-        btnRefresh = (Button) findViewById(R.id.btnRefresh);
-        gridView = (GridView) findViewById(R.id.gridView);
-        progressBar = (ProgressBar) findViewById(R.id.progressbar);
+        setContentView(R.layout.layout_grid_and_pager);
+        entries = new ArrayList<>();
+        pager = (ViewPager) findViewById(R.id.pager);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
 
         Intent intentMyIntentService = new Intent(this, DownloadImagesService.class);
         startService(intentMyIntentService);
-
-
         myBroadcastReceiver = new MyBroadcastReceiver();
         myUpdateBroadcastReceiver = new MyUpdateBroadcastReceiver();
         IntentFilter intentFilter = new IntentFilter(
@@ -60,10 +57,9 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         registerReceiver(myUpdateBroadcastReceiver, intentFilter2);
 
         getLoaderManager().initLoader(0, null, this);
-
     }
 
-
+    //OnClick for RefreshBtn
     @Override
     public void onClick(View v) {
         Intent intentMyIntentService = new Intent(this, DownloadImagesService.class);
@@ -74,21 +70,37 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     public Loader<ArrayList<Entry>> onCreateLoader(int i, Bundle bundle) {
         return new ImagesListLoader(this);
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(myBroadcastReceiver);
         unregisterReceiver(myUpdateBroadcastReceiver);
     }
+
     @Override
     public void onLoadFinished(Loader<ArrayList<Entry>> listLoader, final ArrayList<Entry> list) {
-        gridView.setAdapter(new ImageAdapter(this, list));
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        entries = list;
+
+        pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
+        pager.setAdapter(pagerAdapter);
+        btnRefresh = (Button) findViewById(R.id.btnRefresh);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        // stub
+        pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
             @Override
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                Intent intent = new Intent(MainActivity.this, ImageActivity.class);
-                intent.putExtra("link",list.get(position).linkBig);
-                startActivity(intent);
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset,
+                                       int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
             }
         });
     }
@@ -99,7 +111,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         new ImagesListLoader(this);
     }
 
-    public class MyBroadcastReceiver extends BroadcastReceiver {
+    class MyBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -108,14 +120,34 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         }
     }
 
-    public class MyUpdateBroadcastReceiver extends BroadcastReceiver {
+    class MyUpdateBroadcastReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            int update = intent
-                    .getIntExtra(DownloadImagesService.TAG_PERCENT, 0);
-          //  Log.d("PROGRESS", update + "");
+            int update = intent.getIntExtra(DownloadImagesService.TAG_PERCENT, 0);
             progressBar.setProgress(update);
         }
     }
+
+
+    private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
+
+        public MyFragmentPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return PageFragment.newInstance(position);
+        }
+
+        @Override
+        public int getCount() {
+            return entries.size() / 9;
+        }
+
+    }
+
+
+
 }

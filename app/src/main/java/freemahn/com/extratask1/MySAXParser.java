@@ -53,7 +53,7 @@ public class MySAXParser {
                         int size = Integer.parseInt(attributes.getValue("height"));
                         if (size == 75)
                             current.linkSmall = attributes.getValue("href");
-                        if (size >= 700 && size <= 1600)
+                        if (size >= 500 && size <= 1600)
                             current.linkBig = attributes.getValue("href");
                     }
 

@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,7 +32,8 @@ public class ImageActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_image_big);
-        iw = (ImageView) findViewById(R.id.imageView);
+
+        iw = (ImageView) findViewById(R.id.bigImageView);
         registerForContextMenu(iw);
         iw.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
             @Override
@@ -46,11 +46,12 @@ public class ImageActivity extends Activity {
         Intent intent = getIntent();
 
         String lnk = intent.getStringExtra("link");
-       // Log.d("IMAGEACTIVITY", lnk + "");
         new DownloadBigImageTask(this).execute(lnk);
+        iw.setImageBitmap(bm);
 
 
-        //iw.setImageBitmap(bm);
+
+
     }
 
     void setImageBitmap(Bitmap bitmap) {
@@ -96,4 +97,9 @@ public class ImageActivity extends Activity {
         }
         return true;
     }
+
+
+
+
+
 }

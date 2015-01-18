@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Popular Photos</string>
+    <string name="title_activity_fullres">View Photo</string>
+    <string name="action_set_as_wallpaper">Set as Wallpaper</string>
+    <string name="action_download">Download the Full-size</string>
+    <string name="action_open_browser">Open Browser</string>
+    <string name="wallpaper_success">Successfully set as Wallpaper</string>
+    <string name="wallpaper_fail">Failed to set as Wallpaper</string>
+    <string name="progress_title">Updating</string>
+    <string name="progress_message">Please wait</string>
+
+</resources>

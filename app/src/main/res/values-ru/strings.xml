@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Популярные фотографии</string>
+    <string name="title_activity_fullres">Просмотр фотографии</string>
+    <string name="action_set_as_wallpaper">Установить в качестве обоев</string>
+    <string name="wallpaper_success">Обои успешно установлены</string>
+    <string name="wallpaper_fail">Не удалось установить в качестве обоев</string>
+    <string name="action_download">Загрузить оригинал</string>
+    <string name="progress_message">Пожалуйста, подождите</string>
+    <string name="progress_title">Обновление</string>
+    <string name="action_open_browser">Открыть в браузере</string>
+</resources>

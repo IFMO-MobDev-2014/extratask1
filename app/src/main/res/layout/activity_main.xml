@@ -1,0 +1,23 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:padding="@dimen/item_margin"
+        android:columnWidth="8dp"
+        android:clipToPadding="false"/>
+    <ImageButton
+        android:layout_width="@dimen/fab_diameter"
+        android:layout_height="@dimen/fab_diameter"
+        android:layout_gravity="center_horizontal|bottom"
+        android:src="@drawable/ic_action_refresh"
+        android:background="@drawable/ripple"
+        android:layout_margin="16dp"
+        android:elevation="3dp"
+        android:id="@+id/refreshButton"
+        />
+</FrameLayout>

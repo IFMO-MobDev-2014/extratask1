@@ -1,4 +1,4 @@
-<android.support.v4.widget.SwipeRefreshLayout
+<ru.ifmo.md.extratask1.TightSwipe
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/refresh_layout"
@@ -26,4 +26,4 @@
             android:layout_height="match_parent"/>
     </LinearLayout>
 
-</android.support.v4.widget.SwipeRefreshLayout>
+</ru.ifmo.md.extratask1.TightSwipe>

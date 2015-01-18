@@ -1,0 +1,12 @@
+{
+    "syntaxVersion": "2",
+    "projectPackageId": "ru.ifmo.zakharvoit.extratask1",
+    "authority": "ru.ifmo.zakharvoit.extratask1.provider",
+    "providerJavaPackage": "ru.ifmo.zakharvoit.extratask1.provider",
+    "providerClassName": "Provider",
+    "sqliteOpenHelperClassName": "DatabaseHelper",
+    "sqliteOpenHelperCallbacksClassName": "DatabaseHelperCallbacks",
+    "databaseFileName": "extratask1.db",
+    "databaseVersion": 9,
+    "enableForeignKeys": true,
+}

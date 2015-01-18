@@ -126,6 +126,10 @@ public class ViewPhoto extends ActionBarActivity implements LoaderManager.Loader
             return true;
         } else if (id == R.id.save) {
             savefile(curItem.getBigImage());
+        } else if (id == R.id.browser) {
+            Toast.makeText(this, "open browser", Toast.LENGTH_LONG).show();
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(curItem.getBigImageUrl()));
+            startActivity(browserIntent);
         }
 
         return super.onOptionsItemSelected(item);

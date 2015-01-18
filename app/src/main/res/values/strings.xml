@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Interesting today</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_full_image">FullImageActivity</string>
+    <string name="prev">previous</string>
+    <string name="next">next page</string>
+    <string name="refresh">refresh</string>
+    <string name="browse">open in browser</string>
+    <string name="wallpaper">set as wallpaper</string>
+    <string name="save">save</string>
+    <string name="title_activity_image_view">ImageViewActivity</string>
+    <string name="connection_problem">Internet is unavailable</string>
+
+</resources>

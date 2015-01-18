@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">500px: popular</string>
+    <string name="image_preview_title">Full size photo</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_save">Save</string>
+
+</resources>

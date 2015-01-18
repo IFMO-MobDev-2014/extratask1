@@ -2,8 +2,10 @@ package ru.ifmo.md.flickrclient;
 
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +27,10 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     private GridAdapter gridAdapter = null;
     private Intent fullView;
     private ProgressDialog progressBar;
+    private SharedPreferences sharedPreferences;
+
+    private static final String FIRST_ROW_ID = "FIRST_ROW_ID";
+    private long firstRowId = -1;
 
     public static final String sortOrder = DBFlickr.ID1 + " ASC " + " LIMIT 10";
 
@@ -35,6 +41,9 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         setContentView(R.layout.activity_main);
 
         fullView = new Intent(this, ViewActivity.class);
+        sharedPreferences = getSharedPreferences(getString(R.string.shared_preferences), Context.MODE_PRIVATE);
+        sharedPreferences.getLong(getString(R.string.saving_row_id), firstRowId);
+
 
         gridView = (GridView) findViewById(R.id.gridView);
         gridAdapter = new GridAdapter(this, null, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
@@ -74,6 +83,18 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(FIRST_ROW_ID, firstRowId);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        savedInstanceState.getLong(FIRST_ROW_ID, firstRowId);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -101,7 +122,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new FlickrCursorLoader(this);
+        return new FlickrCursorLoader(this, this.firstRowId);
     }
 
     @Override
@@ -130,6 +151,9 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
             toast.show();
             cursor = getContentResolver().query(FlickrContentProvider.PHOTO_URI, null, null, null, MainActivity.sortOrder);
         }
+        cursor.moveToFirst();
+        firstRowId = cursor.getLong(cursor.getColumnIndexOrThrow(DBFlickr.ID1));
+        sharedPreferences.edit().putLong(getString(R.string.saving_row_id), firstRowId).apply();
         gridAdapter.swapCursor(cursor);
     }
 
@@ -161,6 +185,9 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                     progressBar.cancel();
                     Cursor cursor = getContentResolver().query(FlickrContentProvider.PHOTO_URI, null, null, null,
                             MainActivity.sortOrder);
+                    cursor.moveToFirst();
+                    firstRowId = cursor.getLong(cursor.getColumnIndexOrThrow(DBFlickr.ID1));
+                    sharedPreferences.edit().putLong(getString(R.string.saving_row_id), firstRowId).apply();
                     gridAdapter.changeCursor(cursor);
                 } else {
                     progressBar.setProgress(progress);

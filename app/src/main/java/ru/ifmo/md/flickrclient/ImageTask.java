@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.googlecode.flickrjandroid.photos.Photo;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -22,7 +23,6 @@ import java.net.URL;
  */
 public class ImageTask extends AsyncTask<Long, Void, Bitmap> {
 
-    public static final String ROW_ID = "ROW_ID";
     private ContentResolver contentResolver;
     private ImageView imageView;
     private ProgressDialog progressDialog;
@@ -39,8 +39,6 @@ public class ImageTask extends AsyncTask<Long, Void, Bitmap> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        progressDialog.setIndeterminate(false);
-        progressDialog.setMessage("Downloading image");
         progressDialog.show();
     }
 
@@ -74,17 +72,22 @@ public class ImageTask extends AsyncTask<Long, Void, Bitmap> {
         photo.setFarm(String.valueOf(cursor.getInt(cursor.getColumnIndexOrThrow(DBFlickr.PHOTO_FARM))));
         photo.setId(cursor.getString(cursor.getColumnIndexOrThrow(DBFlickr.PHOTO_ID)));
         Bitmap bitmap = null;
-        String strUrl = photo.getLargeUrl();
-
         try {
-            URL url = new URL(strUrl);
-            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.setDoInput(true);
-            httpURLConnection.connect();
-            InputStream is = httpURLConnection.getInputStream();
-            bitmap = BitmapFactory.decodeStream(is);
-        } catch (IOException e) {
-            e.printStackTrace();
+            bitmap = ImageFileHelper.readImageFromExternalStorage(photo.getId());
+        } catch (FileNotFoundException e) {
+            String strUrl = photo.getLargeUrl();
+
+            try {
+                URL url = new URL(strUrl);
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setDoInput(true);
+                httpURLConnection.connect();
+                InputStream is = httpURLConnection.getInputStream();
+                bitmap = BitmapFactory.decodeStream(is);
+                ImageFileHelper.saveImageToExternalStorage(bitmap, photo.getId());
+            } catch (IOException e2) {
+                e2.printStackTrace();
+            }
         }
         return  bitmap;
     }

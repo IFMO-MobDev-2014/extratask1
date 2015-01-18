@@ -30,9 +30,6 @@ public class MainFragment extends Fragment implements android.support.v4.app.Loa
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         adapter = new ImagesAdapter(getActivity(), android.R.layout.simple_list_item_1);
         ((GridView)rootView.findViewById(R.id.gridView)).setAdapter(adapter);
-        for (int it = 0; it < 5; it++) {
-            adapter.add(new MyImage());
-        }
         getLoaderManager().initLoader(0, null, this);
 
         return rootView;

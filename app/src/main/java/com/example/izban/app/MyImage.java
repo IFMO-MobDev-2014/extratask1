@@ -5,10 +5,17 @@ package com.example.izban.app;
  */
 public class MyImage {
     String link;
+    String filePath;
 
     MyImage() {}
 
-    MyImage(String link) {
+    MyImage(String link, String filePath) {
         this.link = link;
+        this.filePath = filePath;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("link: %s, filePath: %s", link, filePath);
     }
 }

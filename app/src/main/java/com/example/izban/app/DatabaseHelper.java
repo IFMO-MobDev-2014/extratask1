@@ -12,15 +12,17 @@ import android.util.Log;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String NAME = "data";
-    public static final int ver = 1;
+    public static final int ver = 6;
 
-    public static final String IMAGES_TABLE_NAME = "cities";
+    public static final String IMAGES_TABLE_NAME = "images";
     public static final String IMAGES_ID = "_ID";
     public static final String IMAGES_LINK = "link";
+    public static final String IMAGES_FILEPATH = "filepath";
     public static final String IMAGES_CREATE =
             "CREATE TABLE " + IMAGES_TABLE_NAME + " (" +
                     IMAGES_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    IMAGES_LINK + " TEXT)";
+                    IMAGES_LINK + " TEXT, " +
+                    IMAGES_FILEPATH + " TEXT)";
 
 
     public DatabaseHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
@@ -48,6 +50,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     static public MyImage getImage(Cursor cursor) {
-        return new MyImage(cursor.getString(cursor.getColumnIndex(IMAGES_LINK)));
+        return new MyImage(cursor.getString(cursor.getColumnIndex(IMAGES_LINK)),
+                           cursor.getString(cursor.getColumnIndex(IMAGES_FILEPATH)));
     }
 }

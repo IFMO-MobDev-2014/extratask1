@@ -1,6 +1,7 @@
 package ru.ifmo.md.extratask1.photoclient;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -42,6 +43,7 @@ public class FullScreenImageActivity extends ActionBarActivity {
     private String authorName;
     private int rowId;
     private GestureDetector gestureDetector;
+    private ProgressDialog progressDialog;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -78,6 +80,13 @@ public class FullScreenImageActivity extends ActionBarActivity {
             public void onClick(View ignore) {
             }
         });
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Downloading image...");
+        progressDialog.setProgressStyle(android.R.style.Widget_Holo_ProgressBar_Horizontal);
+        progressDialog.setIndeterminate(true);
+        progressDialog.show();
+
         showPictureByRowId(rowId);
     }
 

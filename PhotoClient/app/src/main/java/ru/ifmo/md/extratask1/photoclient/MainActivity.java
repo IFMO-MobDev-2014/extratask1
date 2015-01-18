@@ -14,7 +14,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.widget.GridView;
 import android.widget.Toast;
 
 import ru.ifmo.md.extratask1.photoclient.database.ImagesProvider;
@@ -23,22 +22,19 @@ import ru.ifmo.md.extratask1.photoclient.database.ImagesTable;
 
 public class MainActivity extends ActionBarActivity implements SwipeRefreshLayout.OnRefreshListener{
 
-    private GridView gridView;
-    private GridImageAdapter mAdapter;
-
     private ViewPager mAwesomePager;
     private PagerAdapter mPagerAdapter;
 
     private SwipeRefreshLayout mRefreshLayout;
     private boolean mIsRefreshing;
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
+    private BroadcastReceiver mUpdateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
                 Log.d("Tag", "update of feed finished!");
-//                mRefreshLayout.setRefreshing(false);
+                mRefreshLayout.setRefreshing(false);
             }
         }
     };
@@ -93,11 +89,9 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
     @Override
     protected void onResume() {
         super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
+        int pagerPosition = mAwesomePager.getCurrentItem();
+        mAwesomePager.setAdapter(mPagerAdapter);
+        mAwesomePager.setCurrentItem(pagerPosition);
     }
 
     @Override

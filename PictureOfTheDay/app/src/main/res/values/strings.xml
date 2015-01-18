@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Pictures Of The Day</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_picture_view"></string>
+    <string name="refresh">Refresh</string>
+    <string name="title_activity_image_view">Picture</string>
+    <string name="downloading_error">Downloading Error</string>
+    <string name="no_internet">No Internet Connection</string>
+
+</resources>

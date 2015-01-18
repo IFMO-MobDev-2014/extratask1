@@ -5,10 +5,6 @@
 /manifest-merger-release-report.txt
 /app/manifest-merger-release-report.txt
 
-#built application files
-*.apk
-*.ap_
-
 # files for the dex VM
 *.dex
 

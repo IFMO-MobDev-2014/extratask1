@@ -22,6 +22,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -63,6 +64,8 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
     int curPosition = 0;
 
     private ImageAdapter adapter;
+
+    SwipeRefreshLayout swipeLayout;
 
 	DisplayImageOptions options;
 
@@ -145,7 +148,15 @@ public class ImageGridFragment extends AbsListViewBaseFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View rootView = inflater.inflate(R.layout.fr_image_grid, container, false);
+        View rootView = inflater.inflate(R.layout.fr_image_grid, container, false);
+        swipeLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_refresh_layout);
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeLayout.setRefreshing(false);
+                update();
+            }
+        });
 		listView = (GridView) rootView.findViewById(R.id.grid);
 		((GridView) listView).setAdapter(adapter);
 		listView.setOnItemClickListener(new OnItemClickListener() {

@@ -1,7 +1,9 @@
 package me.loskutov.popularphotosviewer;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -29,6 +31,7 @@ class GetAllImagesTask extends AsyncTask <Void, Integer, Void> {
     private final List<Bitmap> bitmaps;
     private final boolean update;
     private ProgressDialog progressDialog;
+    private boolean exceptionHappened = false;
 
     public GetAllImagesTask(Context context,
                             RecyclerView.Adapter<ImageViewHolder> adapter,
@@ -69,12 +72,22 @@ class GetAllImagesTask extends AsyncTask <Void, Integer, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        adapter.notifyDataSetChanged();
         if (progressDialog != null) {
             progressDialog.dismiss();
         }
-        Log.d("aa", "got all images");
-        Log.d("aa", "and size is " + photos.size());
+        if (exceptionHappened) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setMessage(R.string.dialog_error)
+                    .setCancelable(false)
+                    .setIcon(android.R.drawable.btn_dialog)
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            //System.exit(0);
+                        }
+                    })
+                    .create()
+                    .show();
+        }
     }
 
     @Override
@@ -86,7 +99,6 @@ class GetAllImagesTask extends AsyncTask <Void, Integer, Void> {
         HttpGet httpGet = new HttpGet("http://api-fotki.yandex.ru/api/top/");
         httpGet.setHeader("Accept", "application/json");
 
-        boolean exceptionHappened = false;
         JSONObject jsonObject = null;
         if(update) {
             try {
@@ -107,7 +119,7 @@ class GetAllImagesTask extends AsyncTask <Void, Integer, Void> {
                     JSONObject img = pic.getJSONObject("img");
                     boolean noOrig = pic.getBoolean("hideOriginal");
                     String orig;
-                    if(noOrig) {
+                    if(noOrig) { // I guess it’s large enough
                         orig = img.getJSONObject("XXXL").getString("href");
                     } else {
                         orig = img.getJSONObject("orig").getString("href");
@@ -124,6 +136,7 @@ class GetAllImagesTask extends AsyncTask <Void, Integer, Void> {
 
             } catch (JSONException e) {
                 e.printStackTrace();
+                exceptionHappened = true;
             }
         }
 

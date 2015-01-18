@@ -1,9 +1,12 @@
 package me.loskutov.popularphotosviewer;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Outline;
 import android.os.Bundle;
@@ -25,6 +28,7 @@ public class MainActivity extends Activity {
     private ImageAdapter adapter;
     private boolean firstRun;
     private Context context;
+    private DBHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +36,7 @@ public class MainActivity extends Activity {
         photos = new ArrayList<>(50);
         setContentView(R.layout.activity_main);
         context = this;
+        helper = new DBHelper(this);
 
         if(savedInstanceState != null) {
             ArrayList<String> ids = savedInstanceState.getStringArrayList("ids");
@@ -46,7 +51,21 @@ public class MainActivity extends Activity {
             }
             firstRun = false;
         } else {
-            firstRun = true;
+            SQLiteDatabase db = helper.getReadableDatabase();
+            Cursor cursor = db.query("PHOTOS", null, null, null, null, null, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    String id = cursor.getString(cursor.getColumnIndexOrThrow(helper.COLUMN_ID));
+                    String large = cursor.getString(cursor.getColumnIndex(helper.COLUMN_LARGE));
+                    String preview = cursor.getString(cursor.getColumnIndex(helper.COLUMN_PREVIEW));
+                    String orig = cursor.getString(cursor.getColumnIndex(helper.COLUMN_ORIG));
+                    String url = cursor.getString(cursor.getColumnIndex(helper.COLUMN_URL));
+                    photos.add(new Photo(id, preview, large, orig, url));
+                } while (cursor.moveToNext());
+            } else {
+                firstRun = true;
+            }
+            cursor.close();
         }
 
         adapter = new ImageAdapter();
@@ -148,6 +167,7 @@ public class MainActivity extends Activity {
         ArrayList<String> origs = new ArrayList<>(50);
         ArrayList<String> larges = new ArrayList<>(50);
         ArrayList<String> previews = new ArrayList<>(50);
+
         for(Photo photo : photos) {
             if(photo != null) {
                 ids.add(photo.id);
@@ -162,6 +182,13 @@ public class MainActivity extends Activity {
         outState.putStringArrayList("origs", origs);
         outState.putStringArrayList("larges", larges);
         outState.putStringArrayList("previews", previews);
+
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        (new DbSaveTask(helper, photos)).execute();
     }
 }

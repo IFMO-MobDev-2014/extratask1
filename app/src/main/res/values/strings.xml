@@ -10,5 +10,8 @@
     <string name="wallpaper_fail">Failed to set as Wallpaper</string>
     <string name="progress_title">Updating</string>
     <string name="progress_message">Please wait</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="dialog_error">An error occurred</string>
 
 </resources>

@@ -25,18 +25,18 @@ import java.util.Scanner;
 /**
  * Created by izban on 17.01.15.
  */
-public class DownloadService extends IntentService {
+public class DownloadAllImagesService extends IntentService {
     public static final int PICTURES = 30;
 
-    public DownloadService() {
-        super(DownloadService.class.getSimpleName());
+    public DownloadAllImagesService() {
+        super(DownloadAllImagesService.class.getSimpleName());
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.i("", "start DownloadAllImagesService");
+        final ResultReceiver receiver = intent.getParcelableExtra(Constants.RECEIVER);
         try {
-            Log.i("", "start DownloadService");
-            final ResultReceiver receiver = intent.getParcelableExtra(Constants.RECEIVER);
             receiver.send(Constants.RECEIVER_STARTED, Bundle.EMPTY);
 
             URL url = new URL("http://api-fotki.yandex.ru/api/podhistory/?format=json");
@@ -73,10 +73,10 @@ public class DownloadService extends IntentService {
             getContentResolver().delete(uri, null, null);
             getContentResolver().bulkInsert(uri, cv);
             receiver.send(Constants.RECEIVER_FINISHED, Bundle.EMPTY);
-            Log.i("", "service ok");
+            Log.i("", "DownloadAllImagesService ok");
         } catch (IOException | JSONException e) {
-            e.printStackTrace();
-            Log.i("", "service failed");
+            receiver.send(Constants.RECEIVER_FAILED, Bundle.EMPTY);
+            Log.i("", "DownloadAllImagesService failed");
         }
     }
 }

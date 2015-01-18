@@ -1,5 +1,6 @@
 package com.example.izban.app;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.support.v4.content.CursorLoader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 /**
@@ -30,6 +32,14 @@ public class MainFragment extends Fragment implements android.support.v4.app.Loa
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         adapter = new ImagesAdapter(getActivity(), android.R.layout.simple_list_item_1);
         ((GridView)rootView.findViewById(R.id.gridView)).setAdapter(adapter);
+        ((GridView)rootView.findViewById(R.id.gridView)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(getActivity(), ImageActivity.class);
+                intent.putExtra("link", adapter.getItem(i).link);
+                startActivity(intent);
+            }
+        });
         getLoaderManager().initLoader(0, null, this);
 
         return rootView;

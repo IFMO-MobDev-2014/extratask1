@@ -3,7 +3,6 @@ package com.example.izban.app;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -43,7 +42,6 @@ public class ImagesAdapter extends ArrayAdapter<MyImage> {
         ((MyImageView)view).setScaleType(ImageView.ScaleType.FIT_XY);
         view.setPadding(8, 8, 8, 8);
         try {
-            Log.i("", getItem(position).toString());
             FileInputStream inputStream = getContext().openFileInput(getItem(position).filePath);
             Bitmap image = BitmapFactory.decodeStream(inputStream);
             ((MyImageView)view).setImageBitmap(image);

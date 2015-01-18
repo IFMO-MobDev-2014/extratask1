@@ -1,39 +1,43 @@
 package com.example.izban.app;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-public class MainActivity extends ActionBarActivity implements MyResultReceiver.Receiver {
-    private ProgressBar progressBar;
+
+public class ImageActivity extends ActionBarActivity implements MyResultReceiver.Receiver {
+    ProgressBar progressBar;
+    ImageView imageView;
     MyResultReceiver resultReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new MainFragment())
-                    .commit();
-        }
-        progressBar = (ProgressBar)findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.INVISIBLE);
+        Log.i("", "ImageActivity created");
+        setContentView(R.layout.activity_image);
+        progressBar = (ProgressBar)findViewById(R.id.progressBar2);
+        imageView = (ImageView)findViewById(R.id.imageView);
         resultReceiver = new MyResultReceiver(new Handler());
         resultReceiver.setReceiver(this);
+        Intent intent = new Intent(this, DownloadOneImageService.class).putExtra(Constants.RECEIVER, resultReceiver);
+        intent.putExtra("link", getIntent().getStringExtra("link"));
+        startService(intent);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_image, menu);
         return true;
     }
 
@@ -49,11 +53,6 @@ public class MainActivity extends ActionBarActivity implements MyResultReceiver.
             return true;
         }
 
-        if (id == R.id.action_refresh) {
-            Toast.makeText(this, "refreshing", Toast.LENGTH_SHORT).show();
-            startService(new Intent(this, DownloadAllImagesService.class).putExtra(Constants.RECEIVER, resultReceiver));
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -61,16 +60,13 @@ public class MainActivity extends ActionBarActivity implements MyResultReceiver.
     public void onReceiveResult(int resultCode, Bundle data) {
         switch (resultCode) {
             case Constants.RECEIVER_STARTED:
-                progressBar.setMax(DownloadAllImagesService.PICTURES);
-                progressBar.setProgress(0);
                 progressBar.setVisibility(View.VISIBLE);
-                break;
-            case Constants.RECEIVER_RUNNING:
-                progressBar.setProgress(progressBar.getProgress() + 1);
                 break;
             case Constants.RECEIVER_FINISHED:
                 progressBar.setVisibility(View.INVISIBLE);
-                Toast.makeText(this, "refreshed", Toast.LENGTH_SHORT).show();
+                Bitmap bitmap = data.getParcelable("bitmap");
+                imageView.setImageBitmap(bitmap);
+                imageView.setScaleType(ImageView.ScaleType.CENTER);
                 break;
             case Constants.RECEIVER_FAILED:
                 Toast.makeText(this, "failed to refresh", Toast.LENGTH_SHORT).show();

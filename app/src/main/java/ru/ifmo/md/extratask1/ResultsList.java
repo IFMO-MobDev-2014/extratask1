@@ -2,22 +2,21 @@ package ru.ifmo.md.extratask1;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 
 import java.util.List;
 
-/**
- * Created by anton on 17/01/15.
- */
-public class ResultsList extends FragmentActivity {
+public class ResultsList extends ActionBarActivity {
     static int PAGE_COUNT = 5;
-    static int IMAGE_LOADING_TIMEOUT = 4000;
+    static int IMAGE_LOADING_TIMEOUT = 60 * 1000;
 
     DbHelper helper;
     ViewPager pager;
@@ -25,7 +24,7 @@ public class ResultsList extends FragmentActivity {
     List<String> allUrls;
     int imagesLoaded;
 
-    Button updateButton;
+    MenuItem updateButton;
     ProgressBar progressBar;
 
     @Override
@@ -33,7 +32,6 @@ public class ResultsList extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results_list);
 
-        // DO gallery = (GridView) findViewById(R.id.gallery);
         pager = (ViewPager) findViewById(R.id.pager);
         adapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
 
@@ -51,22 +49,12 @@ public class ResultsList extends FragmentActivity {
             }
         });
 
-        updateButton = (Button) findViewById(R.id.update_btn);
-        updateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                updatePhotos();
-            }
-        });
-
         progressBar = (ProgressBar) findViewById(R.id.progress);
-
-        // DO adapter = new ImageAdapter(gallery, this);
-        // DO gallery.setAdapter(adapter);
 
         helper = new DbHelper(this);
 
         List<String> urls = helper.getUrls();
+        Log.i("I have", "" + urls.size() + " urls");
         if (urls.size() == 0) {
             updatePhotos();
         } else {
@@ -74,8 +62,36 @@ public class ResultsList extends FragmentActivity {
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.results_list, menu);
+        updateButton = menu.findItem(R.id.action_refresh);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_refresh) {
+            updatePhotos();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private void updatePhotos() {
-        updateButton.setEnabled(false);
+        progressBar.setVisibility(View.VISIBLE);
+        progressBar.setProgress(0);
+        if (updateButton != null) {
+            updateButton.setEnabled(false);
+        }
         imagesLoaded = 0;
         pager.setAdapter(null);
         ImageSearchTask imSearch = new ImageSearchTask(this);
@@ -83,12 +99,11 @@ public class ResultsList extends FragmentActivity {
     }
 
     public void onImageSearchFinished(List<String> urls) {
-        // DO adapter.setData(urls);
         allUrls = urls;
         helper.setUrls(urls);
         ImageCacher cacher = new ImageCacher(this);
         for (String url : urls) {
-            ImageLoadTask loader = new ImageLoadTask(null, cacher, this, url);
+            ImageLoadTask loader = new ImageLoadTask(cacher, this, url);
             TimeoutTaskRunner.runTask(loader, IMAGE_LOADING_TIMEOUT);
         }
     }
@@ -96,14 +111,17 @@ public class ResultsList extends FragmentActivity {
     public void onImageSearchCancelled() {
     }
 
-    public void datasetChanged() {
+    public void onImageLoad() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 imagesLoaded++;
                 progressBar.setProgress(100 * imagesLoaded / 50);
                 if (imagesLoaded == 50) {
-                    updateButton.setEnabled(true);
+                    progressBar.setVisibility(View.INVISIBLE);
+                    if (updateButton != null) {
+                        updateButton.setEnabled(true);
+                    }
                     pager.setAdapter(adapter);
                 }
             }

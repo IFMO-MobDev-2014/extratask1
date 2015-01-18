@@ -12,9 +12,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by anton on 17/01/15.
- */
 public class ImageAdapter extends BaseAdapter {
     private GridView gallery;
     private List<String> urls;
@@ -51,8 +48,10 @@ public class ImageAdapter extends BaseAdapter {
 
         String resId = new File(url).getName();
         if (cacher.isAvailable(resId)) {
-            imageView.setImageDrawable(cacher.get(resId));
+            cacher.putToImageView(imageView, resId);
             imageView.setOnClickListener(new ImageClickListener(context, url));
+        } else {
+            imageView.setImageResource(R.drawable.image_error);
         }
 
         return imageView;

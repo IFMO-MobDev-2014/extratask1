@@ -11,12 +11,8 @@ import android.widget.GridView;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Created by anton on 17/01/15.
- */
 public class PageFragment extends Fragment {
     ImageAdapter adapter;
-    List<String> pageUrls;
     private int backColor;
     private int pageNumber;
 
@@ -33,7 +29,6 @@ public class PageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         pageNumber = getArguments().getInt("page_number");
-        pageUrls = ((ResultsList) getActivity()).allUrls.subList(pageNumber * 10, (pageNumber + 1) * 10);
 
         Random rnd = new Random();
         backColor = Color.argb(40, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
@@ -46,6 +41,7 @@ public class PageFragment extends Fragment {
 
         GridView gallery = (GridView) view.findViewById(R.id.gallery);
         adapter = new ImageAdapter(gallery, getActivity());
+        List<String> pageUrls = ((ResultsList) getActivity()).allUrls.subList(pageNumber * 10, (pageNumber + 1) * 10);
         adapter.setData(pageUrls);
         gallery.setAdapter(adapter);
         gallery.setBackgroundColor(backColor);

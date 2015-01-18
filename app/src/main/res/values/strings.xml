@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">ExtraTask</string>
-    <string name="action_settings">Settings</string>
-    <string name="search_hint">Enter the search query</string>
-    <string name="button_send">Go</string>
-    <string name="title_activity_results_list">ResultsList</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_loading_screen">LoadingScreen</string>
-    <string name="dialog_title">Loading…</string>
-    <string name="translating_msg">Translating query…</string>
-    <string name="search_images_msg">Searching for images…</string>
-    <string name="go_back">Back</string>
-    <string name="title_activity_image_preview">ImagePreview</string>
+    <string name="app_name">Interesting photos</string>
+    <string name="image_preview_title"></string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_save">Save</string>
 
 </resources>

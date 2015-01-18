@@ -7,19 +7,16 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Created by anton on 17/01/15.
- */
 public class TimeoutTaskRunner implements Runnable {
-    Runnable task;
+    ImageTask task;
     long timeout;
 
-    private TimeoutTaskRunner(Runnable task, long timeout) {
+    private TimeoutTaskRunner(ImageTask task, long timeout) {
         this.task = task;
         this.timeout = timeout;
     }
 
-    public static void runTask(Runnable task, long timeout) {
+    public static void runTask(ImageTask task, long timeout) {
         new Thread(new TimeoutTaskRunner(task, timeout)).start();
     }
 
@@ -38,6 +35,7 @@ public class TimeoutTaskRunner implements Runnable {
             e.printStackTrace();
         }
 
+        task.afterRun();
         executor.shutdown();
     }
 }

@@ -16,9 +16,6 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/**
- * Created by anton on 17/01/15.
- */
 public class ImageSearchTask extends AsyncTask<Void, Void, ArrayList<String>> {
     ResultsList screen;
 

@@ -45,7 +45,6 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
                     mIsRefreshing = false;
                     mRefreshLayout.setRefreshing(false);
                     Log.d("Tag", "new updates came");
-                    mPagerAdapter.notifyDataSetChanged();
                     break;
                 case BroadcastStateSender.STATE_NO_CONNECTION:
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_connection), Toast.LENGTH_SHORT).show();
@@ -60,6 +59,7 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
                 default:
                     break;
             }
+            mPagerAdapter.notifyDataSetChanged();
         }
     }
 
@@ -67,10 +67,6 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity_view_pager);
-        mAwesomePager = (ViewPager) findViewById(R.id.view_pager);
-        mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
-        mAwesomePager.setAdapter(mPagerAdapter);
-
         mRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         mRefreshLayout.setOnRefreshListener(this);
         mRefreshLayout.setColorSchemeResources(
@@ -79,6 +75,11 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
                 android.R.color.holo_red_dark,
                 android.R.color.holo_blue_dark
         );
+
+        mAwesomePager = (ViewPager) findViewById(R.id.view_pager);
+        mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        mAwesomePager.setAdapter(mPagerAdapter);
+
 
         getContentResolver().registerContentObserver(ImagesProvider.CONTENT_URI, true, new ContentObserver(new Handler()) {
             @Override
@@ -99,15 +100,12 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
 
     private class PagerAdapter extends FragmentStatePagerAdapter {
 
-        private int savedIndex = 0;
-
         private PagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
-            savedIndex = position;
             int numRows = getNumberOfRows();
             int startIndex = position * IMAGES_TO_SHOW + 1;
             if (startIndex < 1 || startIndex >= numRows)
@@ -123,19 +121,20 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
 
         @Override
         public int getCount() {
-            return (getNumberOfRows() + IMAGES_TO_SHOW - 1) / IMAGES_TO_SHOW;
+            int numRows = getNumberOfRows();
+            if (numRows == 0) {
+                ImagesLoader.startActionLoadFeed(getApplicationContext());
+                mRefreshLayout.setRefreshing(true);
+                return 0;
+            }
+            return (numRows + IMAGES_TO_SHOW - 1) / IMAGES_TO_SHOW;
         }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        int pagerPosition = mAwesomePager.getCurrentItem();
-        mAwesomePager.setAdapter(mPagerAdapter);
-        mAwesomePager.setCurrentItem(pagerPosition);
-
-        Log.d("Tag", "position = " + pagerPosition);
-
+        mPagerAdapter.notifyDataSetChanged();
         mRefreshLayout.setRefreshing(mIsRefreshing);
 
         mUpdateReceiver = new BroadcastStateReceiver();
@@ -157,12 +156,6 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
     public void onRefresh() {
         mIsRefreshing = true;
         ImagesLoader.startActionLoadFeed(getApplicationContext());
-        /*
-        mUpdateReceiver = new BroadcastStateReceiver();
-        IntentFilter intentFilter = new IntentFilter(BroadcastStateSender.BROADCAST_ACTION);
-        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mUpdateReceiver, intentFilter);
-        */
     }
 
     private int getNumberOfRows() {
@@ -171,7 +164,7 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
                 new String[] {ImagesTable.COLUMN_ID},
                 null, null, null);
         int result = cursor.getCount();
-        cursor.close();;
+        cursor.close();
         return result;
     }
 }

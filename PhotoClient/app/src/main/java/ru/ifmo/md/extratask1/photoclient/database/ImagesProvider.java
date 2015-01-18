@@ -6,6 +6,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
+import android.database.sqlite.SQLiteStatement;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -32,6 +33,7 @@ public class ImagesProvider extends ContentProvider {
     }
 
     private static final UriMatcher uriMatcher;
+
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         uriMatcher.addURI(CONTENT_AUTHORITY, PATH_IMAGES, IMAGES);
@@ -62,6 +64,43 @@ public class ImagesProvider extends ContentProvider {
         Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
+    }
+
+    @Override
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        final SQLiteDatabase db = imagesDatabase.getWritableDatabase();
+        final int match = uriMatcher.match(uri);
+        switch (match) {
+            case IMAGES:
+                int numInserted = 0;
+                db.beginTransaction();
+                try {
+                    //standard SQL insert statement, that can be reused
+                    SQLiteStatement insert = db.compileStatement("insert into " + ImagesTable.TABLE_NAME
+                                    + "(" + ImagesTable.COLUMN_TITLE + "," + ImagesTable.COLUMN_LINK
+                                    + "," + ImagesTable.COLUMN_AUTHOR_NAME + ", " + ImagesTable.COLUMN_SMALL_CONTENT_URI
+                                    + "," + ImagesTable.COLUMN_BIG_CONTENT_URI + ")"
+                                    + " values " + "(?, ?, ?, ?, ?)");
+
+                    for (ContentValues value : values) {
+                        //bind the 1-indexed ?'s to the values specified
+                        insert.bindString(1, value.getAsString(ImagesTable.COLUMN_TITLE));
+                        insert.bindString(2, value.getAsString(ImagesTable.COLUMN_LINK));
+                        insert.bindString(3, value.getAsString(ImagesTable.COLUMN_AUTHOR_NAME));
+                        insert.bindString(4, value.getAsString(ImagesTable.COLUMN_SMALL_CONTENT_URI));
+                        insert.bindString(5, value.getAsString(ImagesTable.COLUMN_BIG_CONTENT_URI));
+                        insert.execute();
+                    }
+                    db.setTransactionSuccessful();
+                    numInserted = values.length;
+                } finally {
+                    db.endTransaction();
+                }
+                getContext().getContentResolver().notifyChange(uri, null);
+                return numInserted;
+            default:
+                throw new UnsupportedOperationException("unsupported uri: " + uri);
+        }
     }
 
     public String getType(Uri uri) {

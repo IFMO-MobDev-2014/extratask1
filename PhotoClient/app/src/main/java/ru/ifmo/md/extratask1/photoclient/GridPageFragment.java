@@ -50,6 +50,8 @@ public class GridPageFragment extends Fragment implements LoaderManager.LoaderCa
         mLastIndex = arguments.getInt(EXTRA_LAST_INDEX);
     }
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.grid_page_fragment, container, false);

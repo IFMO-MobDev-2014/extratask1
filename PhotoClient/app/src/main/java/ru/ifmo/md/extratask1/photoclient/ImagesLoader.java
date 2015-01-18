@@ -153,12 +153,12 @@ public class ImagesLoader extends IntentService {
             values.put(ImagesTable.COLUMN_AUTHOR_NAME, imageEntry.getAuthor().getName());
             values.put(ImagesTable.COLUMN_SMALL_CONTENT_URI, smallVersionURL);
             values.put(ImagesTable.COLUMN_BIG_CONTENT_URI, bigVersionURL);
-            getContentResolver().insert(ImagesProvider.CONTENT_URI, values);
-//            contentValueses.add(values);
+//            getContentResolver().insert(ImagesProvider.CONTENT_URI, values);
+            contentValueses.add(values);
         }
-//        ContentValues arrayValues[] = new ContentValues[contentValueses.size()];
-//        contentValueses.toArray(arrayValues);
-//        getContentResolver().bulkInsert(ImagesProvider.CONTENT_URI, arrayValues);
+        ContentValues arrayValues[] = new ContentValues[contentValueses.size()];
+        contentValueses.toArray(arrayValues);
+        getContentResolver().bulkInsert(ImagesProvider.CONTENT_URI, arrayValues);
 //        getContentResolver().notifyChange();
         broadcastStateSender.sendBroadcastState(BroadcastStateSender.STATE_COMPLETE);
     }

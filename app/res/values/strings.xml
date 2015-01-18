@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string name="app_name">Top Yandex.Photos</string>
+
+    <string name="menu_item_clear_cache">Clear cache</string>
+    <string name="menu_item_refresh">Refresh</string>
+    <string name="menu_item_save">Save</string>
+    <string name="menu_item_wallpaper">Set as wallpaper</string>
+    <string name="menu_item_browser">Open in browser</string>
+
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="title_list">List</string>
+    <string name="title_grid">Grid</string>
+
+    <string name="error_io">Input/Output error</string>
+    <string name="error_decoding">Image can\'t be decoded</string>
+    <string name="error_network_denied">Downloads are denied</string>
+    <string name="error_out_of_memory">Out Of Memory error</string>
+    <string name="error_unknown">Unknown error</string>
+    
+    <string name="descr_image">Image</string>
+
+</resources>

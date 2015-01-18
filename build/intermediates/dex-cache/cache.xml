@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Program Files (x86)\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.3\support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-d2173d36e782fa1d3f28e5e6281942ff95c70054.jar" />
+    </item>
+    <item
+        jar="D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-72b3617c3f276fb41d838569a2871823bf1a2764.jar" />
+    </item>
+    <item
+        jar="D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\pre-dexed\debug\classes-870231316daeb9f0fd78a23983fa9d430ca77b81.jar" />
+    </item>
+    <item
+        jar="D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\pre-dexed\debug\classes-159bd24ce1d0609d1b73a8728723ba74747cec0b.jar" />
+    </item>
+    <item
+        jar="D:\Kirill\Dropbox\study\IFMO\2year\Android\horizontGridView\sample\sample\build\intermediates\exploded-aar\sample\lib\unspecified\classes.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="4d033d367084b646e8523abec6f6cebc52d3be58">
+        <dex dex="D:\Kirill\Dropbox\study\IFMO\2year\Android\horizontGridView\sample\sample\build\intermediates\pre-dexed\debug\classes-17318fc1c70d722937ff401db2bd2d2487c66900.jar" />
+    </item>
+    <item
+        jar="D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\libs\universal-image-loader-1.9.3.jar"
+        jumboMode="false"
+        revision="21.1.1"
+        sha1="a85588bec3e2c4584d593d3f15df1677321bca72">
+        <dex dex="D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\pre-dexed\debug\universal-image-loader-1.9.3-20edb992af8366b555ab3ee21a0b8996311c0fe9.jar" />
+    </item>
+
+</items>

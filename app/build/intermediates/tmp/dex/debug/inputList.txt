@@ -1,0 +1,6 @@
+D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\classes\debug
+D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-d2173d36e782fa1d3f28e5e6281942ff95c70054.jar
+D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\pre-dexed\debug\universal-image-loader-1.9.3-20edb992af8366b555ab3ee21a0b8996311c0fe9.jar
+D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-72b3617c3f276fb41d838569a2871823bf1a2764.jar
+D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\pre-dexed\debug\classes-159bd24ce1d0609d1b73a8728723ba74747cec0b.jar
+D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\pre-dexed\debug\classes-870231316daeb9f0fd78a23983fa9d430ca77b81.jar

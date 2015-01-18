@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_set_wallpaper"
+        android:icon="@drawable/wallpaper"
+        app:showAsAction="ifRoom|withText" />
+
+    <item
+        android:id="@+id/action_open_in_browser"
+        android:icon="@drawable/browser"
+        app:showAsAction="ifRoom|withText" />
+
+    <item
+        android:id="@+id/action_save_to_gallery"
+        android:icon="@drawable/download"
+        app:showAsAction="ifRoom|withText" />
+
+</menu>

@@ -29,7 +29,6 @@ public class GridPageFragment extends Fragment implements LoaderManager.LoaderCa
     public static final String EXTRA_START_INDEX = "start_index";
     public static final String EXTRA_LAST_INDEX = "last_index";
 
-
     public GridPageFragment() {
         //Empty constructor
     }
@@ -69,6 +68,17 @@ public class GridPageFragment extends Fragment implements LoaderManager.LoaderCa
             }
         });
 
+        /*mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                mRefreshLayout.setEnabled(firstVisibleItem == 0);
+            }
+        });*/
+
         getLoaderManager().restartLoader(0, null, this);
         return rootView;
     }
@@ -76,10 +86,6 @@ public class GridPageFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-//        if (savedInstanceState != null) {
-//            mIsRefreshing = savedInstanceState.getBoolean(FRAGMENT_STATE_REFRESHING);
-//            mRefreshLayout.setRefreshing(mIsRefreshing);
-//        }
     }
 
     @Override

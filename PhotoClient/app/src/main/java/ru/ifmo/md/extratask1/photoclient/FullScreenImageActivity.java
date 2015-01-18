@@ -2,12 +2,16 @@ package ru.ifmo.md.extratask1.photoclient;
 
 import android.app.ProgressDialog;
 import android.app.WallpaperManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -40,6 +44,33 @@ public class FullScreenImageActivity extends ActionBarActivity {
     private GestureDetector gestureDetector;
     private ProgressDialog progressDialog;
 
+    private BroadcastReceiver mDownloadStateReceiver = new BroadcastStateReceiver();
+
+    private class BroadcastStateReceiver extends BroadcastReceiver {
+
+        public BroadcastStateReceiver() {
+
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final int stateCode = intent.getIntExtra(BroadcastStateSender.EXTRA_STATE_CODE, BroadcastStateSender.STATE_COMPLETE);
+            progressDialog.dismiss();
+            switch (stateCode) {
+                case BroadcastStateSender.STATE_COMPLETE:
+                    showBigImage();
+                    break;
+                case BroadcastStateSender.STATE_NO_CONNECTION:
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_connection), Toast.LENGTH_SHORT).show();
+                    break;
+                case BroadcastStateSender.STATE_ERROR:
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.error_update), Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,10 +159,27 @@ public class FullScreenImageActivity extends ActionBarActivity {
             progressDialog.setProgressStyle(android.R.style.Widget_Holo_ProgressBar_Horizontal);
             progressDialog.setIndeterminate(true);
             progressDialog.show();
-
             ImagesLoader.startActionLoadBigPhoto(getApplicationContext(), imageURL);
         } else {
             showBigImage();
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mDownloadStateReceiver = new BroadcastStateReceiver();
+        IntentFilter intentFilter = new IntentFilter(BroadcastStateSender.BROADCAST_ACTION);
+        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(mDownloadStateReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mDownloadStateReceiver != null) {
+            LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mDownloadStateReceiver);
+            mDownloadStateReceiver = null;
         }
     }
 
@@ -168,19 +216,19 @@ public class FullScreenImageActivity extends ActionBarActivity {
         //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.action_set_wallpaper:
-                setAsWallpaper();
+                actionSetAsWallpaper();
                 break;
             case R.id.action_open_in_browser:
-                openInBrowser();
+                actionOpenInBrowser();
                 break;
             case R.id.action_save_to_gallery:
-                saveToGallery();
+                actionSaveToGallery();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void setAsWallpaper() {
+    private void actionSetAsWallpaper() {
         try {
             WallpaperManager manager = WallpaperManager.getInstance(this);
             manager.setBitmap(imageBitmap);
@@ -191,28 +239,17 @@ public class FullScreenImageActivity extends ActionBarActivity {
         }
     }
 
-    private void openInBrowser() {
+    private void actionOpenInBrowser() {
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(imageURLonWeb));
         startActivity(browserIntent);
     }
 
-    private void saveToGallery() {
+    private void actionSaveToGallery() {
         String resultCode = MediaStore.Images.Media.insertImage(getContentResolver(), imageBitmap, title, "Author: " + authorName);
         if (resultCode != null)
             Toast.makeText(this, "Image has been saved in gallery.", Toast.LENGTH_LONG).show();
         else
             Toast.makeText(this, "Couldn't save image.", Toast.LENGTH_LONG).show();
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
 
 }

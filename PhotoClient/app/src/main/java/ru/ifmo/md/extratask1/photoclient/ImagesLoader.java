@@ -111,6 +111,8 @@ public class ImagesLoader extends IntentService {
                 ImageFeed resultFeed = parseFeedXML(is);
                 addPhotosToDatabase(resultFeed);
                 broadcastStateSender.sendBroadcastState(BroadcastStateSender.STATE_COMPLETE);
+            } else {
+                broadcastStateSender.sendBroadcastState(BroadcastStateSender.STATE_ERROR);
             }
         } catch (IOException e) {
             broadcastStateSender.sendBroadcastState(BroadcastStateSender.STATE_ERROR);
@@ -131,9 +133,9 @@ public class ImagesLoader extends IntentService {
 
     private void addPhotosToDatabase(ImageFeed imageFeed) {
         ArrayList<ImageEntry> imageEntries = imageFeed.getImageEntries();
+        ArrayList<ContentValues> contentValueses = new ArrayList<>();
         for (ImageEntry imageEntry : imageEntries) {
-            if (isAlreadyInDatabase(imageEntry))
-                continue;
+            //TODO: update progress by known number of new photos;
             //Find URLs of small and big versions
             String smallVersionURL = getMostCompatibleSmallImageURL(imageEntry.getVariants());
             String bigVersionURL = getMostCompatibleBigImageURL(imageEntry.getVariants());
@@ -152,7 +154,12 @@ public class ImagesLoader extends IntentService {
             values.put(ImagesTable.COLUMN_SMALL_CONTENT_URI, smallVersionURL);
             values.put(ImagesTable.COLUMN_BIG_CONTENT_URI, bigVersionURL);
             getContentResolver().insert(ImagesProvider.CONTENT_URI, values);
+//            contentValueses.add(values);
         }
+//        ContentValues arrayValues[] = new ContentValues[contentValueses.size()];
+//        contentValueses.toArray(arrayValues);
+//        getContentResolver().bulkInsert(ImagesProvider.CONTENT_URI, arrayValues);
+//        getContentResolver().notifyChange();
         broadcastStateSender.sendBroadcastState(BroadcastStateSender.STATE_COMPLETE);
     }
 
@@ -289,7 +296,8 @@ public class ImagesLoader extends IntentService {
                     }
                 } else if (event == XmlPullParser.END_TAG) {
                     if (tagName.equals("entry")) {
-                        resultFeed.getImageEntries().add(imageEntry);
+                        if (!isAlreadyInDatabase(imageEntry))
+                            resultFeed.getImageEntries().add(imageEntry);
                     }
                 }
                 event = parser.next();

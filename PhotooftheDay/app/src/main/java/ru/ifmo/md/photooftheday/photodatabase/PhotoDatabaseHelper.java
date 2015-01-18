@@ -27,6 +27,7 @@ public class PhotoDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + Tables.PHOTO + "(" +
                         PhotoContract.Photo._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                         PhotoContract.Photo.TITLE + " TEXT NOT NULL, " +
+                        PhotoContract.Photo.NAME + " TEXT NOT NULL, " +
                         PhotoContract.Photo.URL_THUMBNAIL + " TEXT, " +
                         PhotoContract.Photo.URL_FULL + " TEXT, " +
                         PhotoContract.Photo.VALID_STATE + " INTEGER CHECK(" +

@@ -68,8 +68,10 @@ public class PicturesDownloader extends IntentService {
             String downloadLink;
             String hrLink;
             String pageLink;
+            String title;
             JSONObject picture;
             Bitmap bitmap;
+            ByteArrayOutputStream bos;
 
             for (int i = 0; i < entries.length(); i++) {
                 picture = entries.getJSONObject(i);
@@ -77,6 +79,7 @@ public class PicturesDownloader extends IntentService {
                 downloadLink = picture.getJSONObject("img").getJSONObject(reducedSize).getString("href");
                 hrLink = picture.getJSONObject("img").getJSONObject(fullSize).getString("href");
                 pageLink = picture.getJSONObject("links").getString("alternate");
+                title = picture.getString("title");
 
                 URL picUrl = new URL(downloadLink);
                 bitmap = BitmapFactory.decodeStream(picUrl.openConnection().getInputStream());
@@ -84,13 +87,14 @@ public class PicturesDownloader extends IntentService {
 
                 bitmap = ThumbnailUtils.extractThumbnail(bitmap, bitmap.getWidth() ,bitmap.getWidth() , ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
 
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                bos = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, bos);
                 byte[] bArray = bos.toByteArray();
 
                 cv.put(DBPictures.COLUMN_PICTURE, bArray);
                 cv.put(DBPictures.COLUMN_PICTURE_HR, hrLink);
                 cv.put(DBPictures.COLUMN_PICTURE_LINK, pageLink);
+                cv.put(DBPictures.COLUMN_PICTURE_TITLE, title);
 
                 getContentResolver().insert(PicturesContentProvider.PICTURES_URI, cv);
 

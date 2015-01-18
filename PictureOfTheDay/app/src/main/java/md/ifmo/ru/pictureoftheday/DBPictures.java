@@ -16,13 +16,15 @@ public class DBPictures extends SQLiteOpenHelper {
     public static final String COLUMN_PICTURE = "picture";
     public static final String COLUMN_PICTURE_HR = "picturehr";
     public static final String COLUMN_PICTURE_LINK = "link";
+    public static final String COLUMN_PICTURE_TITLE = "title";
 
     private static final String INIT_PICTURES_TABLE =
             "CREATE TABLE " + TABLE_PICTURES + " (" +
                     COLUMN_ID + " INTEGER " + "PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_PICTURE + " BLOB, " +
                     COLUMN_PICTURE_HR + " TEXT, " +
-                    COLUMN_PICTURE_LINK + " TEXT );";
+                    COLUMN_PICTURE_LINK + " TEXT, " +
+                    COLUMN_PICTURE_TITLE + " TEXT );";
 
     public DBPictures(Context context) {
         super(context, DB_NAME, null, VERSION);

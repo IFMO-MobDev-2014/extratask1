@@ -72,7 +72,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 startService(new Intent(this, PicturesDownloader.class));
                 progressBar.setVisibility(View.VISIBLE);
             }
-            else showMessage("No internet connection");
+            else showMessage("No Internet Connection");
             return true;
         }
 
@@ -98,6 +98,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 Intent intent = new Intent(MainActivity.this, PictureViewActivity.class);
                 intent.putExtra("HR_LINK",list.get(position).hrLink);
                 intent.putExtra("WEB_LINK",list.get(position).pageLink);
+                intent.putExtra("TITLE",list.get(position).title);
                 startActivity(intent);
             }
         });

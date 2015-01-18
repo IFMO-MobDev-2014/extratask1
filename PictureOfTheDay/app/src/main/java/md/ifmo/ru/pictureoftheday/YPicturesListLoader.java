@@ -33,14 +33,17 @@ public class YPicturesListLoader extends AsyncTaskLoader<ArrayList<YPicture>> {
         );
 
         if (c != null) {
+            byte[] byteArray;
             c.moveToFirst();
+            YPicture img;
             while (!c.isBeforeFirst() && !c.isAfterLast()) {
-                byte[] byteArray = c.getBlob(c.getColumnIndex(DBPictures.COLUMN_PICTURE));
+                byteArray = c.getBlob(c.getColumnIndex(DBPictures.COLUMN_PICTURE));
                 bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-                YPicture img = new YPicture(
+                img = new YPicture(
                         bmp,
                         c.getString(c.getColumnIndex(DBPictures.COLUMN_PICTURE_HR)),
-                        c.getString(c.getColumnIndex(DBPictures.COLUMN_PICTURE_LINK))
+                        c.getString(c.getColumnIndex(DBPictures.COLUMN_PICTURE_LINK)),
+                        c.getString(c.getColumnIndex(DBPictures.COLUMN_PICTURE_TITLE))
                 );
                 list.add(img);
                 c.moveToNext();

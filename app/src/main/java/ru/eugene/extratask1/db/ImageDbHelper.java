@@ -10,7 +10,7 @@ import android.util.Log;
  */
 class ImageDbHelper extends SQLiteOpenHelper {
     private final static String NAME = "image_data_base";
-    public static final int VERSION = 17;
+    public static final int VERSION = 18;
 
     public ImageDbHelper(Context context) {
         super(context, NAME, null, VERSION);

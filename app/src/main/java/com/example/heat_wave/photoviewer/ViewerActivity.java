@@ -8,6 +8,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,6 +23,7 @@ import com.example.heat_wave.photoviewer.models.Photo;
 import com.example.heat_wave.photoviewer.tasks.DownloadImagesTask;
 import com.example.heat_wave.photoviewer.tasks.FiveHundredSearchTask;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class ViewerActivity extends Activity
@@ -51,7 +53,7 @@ public class ViewerActivity extends Activity
         progressBar.setMax(20);
         thumbnailList = new ArrayList<Bitmap>();
 
-        if (db.getPhotosCount() < 20)
+        if (!dbExists() || db.getPhotosCount() < 20)
             updatePhotos();
         else {
             for (int i = 1; i <= 20; i++) {
@@ -139,5 +141,10 @@ public class ViewerActivity extends Activity
         imagesLoaded = 0;
         new FiveHundredSearchTask(this).execute();
         Toast.makeText(this, "Updating photos...", Toast.LENGTH_SHORT).show();
+    }
+
+    public boolean dbExists() {
+        File database = getApplicationContext().getDatabasePath("databasename.db");
+        return database.exists();
     }
 }

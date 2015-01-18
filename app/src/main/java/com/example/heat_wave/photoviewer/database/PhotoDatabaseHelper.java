@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Debug;
 import android.util.Log;
 
 import com.example.heat_wave.photoviewer.models.Photo;
@@ -21,7 +22,7 @@ public class PhotoDatabaseHelper extends SQLiteOpenHelper {
     // Database Version
     private static final int DATABASE_VERSION = 1;
     // Database Name
-    private static final String DATABASE_NAME = "PhotoDB";
+    private static final String DATABASE_NAME = "photos";
 
     // Books table name
     private static final String TABLE_PHOTOS = "photos";
@@ -134,6 +135,7 @@ public class PhotoDatabaseHelper extends SQLiteOpenHelper {
     public int getPhotosCount() {
         String countQuery = "SELECT * FROM " + TABLE_PHOTOS;
         SQLiteDatabase db = this.getReadableDatabase();
+        Debug.waitForDebugger();
         Cursor cursor = db.rawQuery(countQuery, null);
         int cnt = cursor.getCount();
         cursor.close();

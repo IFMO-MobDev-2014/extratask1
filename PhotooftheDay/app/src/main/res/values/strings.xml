@@ -3,6 +3,7 @@
 
     <string name="app_name">Photo of the Day</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Reload</string>
+    <string name="title_activity_display_photo">DisplayPhotoActivity</string>
 
 </resources>

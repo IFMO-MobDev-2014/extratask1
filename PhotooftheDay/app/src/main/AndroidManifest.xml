@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="ru.ifmo.md.photooftheday">
-
-    <!--xmlns:tools="http://schemas.android.com/tools"-->
-    <!--<uses-sdk-->
-        <!--tools:node="replace" />-->
+    package="ru.ifmo.md.photooftheday" >
 
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        
         <provider
+            android:name=".photodatabase.PhotoProvider"
             android:authorities="ru.ifmo.md.photooftheday.photodatabase.PhotoProvider"
-            android:name="ru.ifmo.md.photooftheday.photodatabase.PhotoProvider"
             android:exported="false" />
-        
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
@@ -28,6 +25,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".DisplayPhotoActivity"
+            android:label="@string/title_activity_display_photo"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ru.ifmo.md.photooftheday.MainActivity" />
         </activity>
     </application>
 

@@ -37,7 +37,7 @@ public class JSONDownloadTask extends AsyncTask<Void, Void, JSONObject> {
     private static String sort = "highest_rating";
     private static String sortDirection = "desc";
     private static String counter = "20";
-    private static String[] imageSizes = {"3", "4"};
+    private static String[] imageSizes = {"2", "4"};
 //    private static String only = "0";
 //    private static String exclude = "0";
 

@@ -1,6 +1,5 @@
 package ru.ifmo.md.extratask1.photoclient;
 
-import android.app.Activity;
 import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Context;
@@ -35,17 +34,14 @@ public class ImagesLoader extends IntentService {
     public static final String ACTION_LOAD_FEED = "ru.ifmo.md.extratask1.LOAD_FEED";
     public static final String ACTION_LOAD_BIG_PHOTO = "ru.ifmo.md.extratask1.LOAD_BIG_PHOTO";
 
-    public static final String EXTRA_RESULT_CODE = "result_code";
     public static final String EXTRA_PHOTO_URL = "photo_url";
-    //    public static final String EXTRA_PHOTOS_TYPE = "photos_type";
-    public static final String NOTIFICATION = "ru.ifmo.md.extratask1.service.receiver";
 
     public static final String URL_RECENT_PHOTOS = "http://api-fotki.yandex.ru/api/recent/";
-    //    public static final String URL_TOP_PHOTOS = "http://api-fotki.yandex.ru/api/top/";
+//    public static final String URL_TOP_PHOTOS = "http://api-fotki.yandex.ru/api/top/";
 //    public static final String URL_DAY_PHOTOS = "http://api-fotki.yandex.ru/api/podhistory/";
     public static final int LIMIT_PHOTOS = 30;
 
-    private int resultCode = Activity.RESULT_CANCELED;
+    private BroadcastStateSender broadcastStateSender = new BroadcastStateSender(this);
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -60,8 +56,20 @@ public class ImagesLoader extends IntentService {
         super("ImagesLoaderIntentService");
     }
 
+    public boolean isNetworkAvailable() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        // if no network is available networkInfo will be null
+        // otherwise check if we are connected
+        return networkInfo != null && networkInfo.isConnected();
+    }
+
     @Override
     protected void onHandleIntent(Intent intent) {
+        if (!isNetworkAvailable()) {
+            broadcastStateSender.sendBroadcastState(BroadcastStateSender.STATE_NO_CONNECTION);
+            return;
+        }
         if (intent != null) {
             final String actionType = intent.getAction();
             switch (actionType) {
@@ -102,19 +110,23 @@ public class ImagesLoader extends IntentService {
                 InputStream is = entity.getContent();
                 ImageFeed resultFeed = parseFeedXML(is);
                 addPhotosToDatabase(resultFeed);
-                resultCode = Activity.RESULT_OK;
+                broadcastStateSender.sendBroadcastState(BroadcastStateSender.STATE_COMPLETE);
             }
         } catch (IOException e) {
-            resultCode = Activity.RESULT_CANCELED;
+            broadcastStateSender.sendBroadcastState(BroadcastStateSender.STATE_ERROR);
             e.printStackTrace();
         }
-        publishResult();
     }
 
     private void actionLoadBigPhoto(String imageURL) {
-        ImageFilesHandler.downloadAndSaveImage(getApplicationContext(), imageURL);
-        resultCode = Activity.RESULT_OK;
-        publishResult();
+        try {
+            ImageFilesHandler.downloadAndSaveImage(getApplicationContext(), imageURL);
+        } catch (IOException e) {
+            e.printStackTrace();
+            broadcastStateSender.sendBroadcastState(BroadcastStateSender.STATE_ERROR);
+            return;
+        }
+        broadcastStateSender.sendBroadcastState(BroadcastStateSender.STATE_COMPLETE);
     }
 
     private void addPhotosToDatabase(ImageFeed imageFeed) {
@@ -126,7 +138,12 @@ public class ImagesLoader extends IntentService {
             String smallVersionURL = getMostCompatibleSmallImageURL(imageEntry.getVariants());
             String bigVersionURL = getMostCompatibleBigImageURL(imageEntry.getVariants());
 
-            ImageFilesHandler.downloadAndSaveImage(getApplicationContext(), smallVersionURL);
+            try {
+                ImageFilesHandler.downloadAndSaveImage(getApplicationContext(), smallVersionURL);
+            } catch (IOException e) {
+                broadcastStateSender.sendBroadcastState(BroadcastStateSender.STATE_ERROR);
+                return;
+            }
 
             ContentValues values = new ContentValues();
             values.put(ImagesTable.COLUMN_TITLE, imageEntry.getTitle());
@@ -136,6 +153,7 @@ public class ImagesLoader extends IntentService {
             values.put(ImagesTable.COLUMN_BIG_CONTENT_URI, bigVersionURL);
             getContentResolver().insert(ImagesProvider.CONTENT_URI, values);
         }
+        broadcastStateSender.sendBroadcastState(BroadcastStateSender.STATE_COMPLETE);
     }
 
     final static String[] smallPriorities = new String[] {"M", "S", "L", "XS", "XXS"};
@@ -154,8 +172,8 @@ public class ImagesLoader extends IntentService {
         }
         return result;
     }
-
     final static String[] bigPriorities = new String[] {"XXXXL", "XXXL", "XXL", "XL", "L"};
+
     private String getMostCompatibleBigImageURL(ArrayList<ImageEntry.ImageVariant> variants) {
         String result = null;
         int bigCurrentIndex = bigPriorities.length;
@@ -284,20 +302,6 @@ public class ImagesLoader extends IntentService {
 
     private String buildPhotosURL(String photosType) {
         return photosType + "/?limit=" + LIMIT_PHOTOS;
-    }
-
-    private void publishResult() {
-        Intent intent = new Intent(NOTIFICATION);
-        intent.putExtra(EXTRA_RESULT_CODE, resultCode);
-        sendBroadcast(intent);
-    }
-
-    public boolean isNetworkAvailable() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        // if no network is available networkInfo will be null
-        // otherwise check if we are connected
-        return networkInfo != null && networkInfo.isConnected();
     }
 
 }

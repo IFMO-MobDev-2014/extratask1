@@ -1,19 +1,14 @@
 package ru.ifmo.md.extratask1.photoclient;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.app.WallpaperManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,20 +40,6 @@ public class FullScreenImageActivity extends ActionBarActivity {
     private GestureDetector gestureDetector;
     private ProgressDialog progressDialog;
 
-    private BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d("TAG", "Loading of big photo complete");
-            Bundle bundle = intent.getExtras();
-            if (bundle != null) {
-                int resultCode = bundle.getInt(ImagesLoader.EXTRA_RESULT_CODE);
-                if (resultCode == Activity.RESULT_OK) {
-                    Log.d("TAG", "Everything is OK");
-                    showBigImage();
-                }
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,13 +61,6 @@ public class FullScreenImageActivity extends ActionBarActivity {
             public void onClick(View ignore) {
             }
         });
-
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Downloading image...");
-        progressDialog.setProgressStyle(android.R.style.Widget_Holo_ProgressBar_Horizontal);
-        progressDialog.setIndeterminate(true);
-        progressDialog.show();
-
         showPictureByRowId(rowId);
     }
 
@@ -125,14 +99,6 @@ public class FullScreenImageActivity extends ActionBarActivity {
         });
     }
 
-    private int getNextRowId() {
-        int numRows = getNumberOfRows();
-        if (rowId + 1 >= numRows)
-            return 1;
-        else
-            return rowId + 1;
-    }
-
     private int getNumberOfRows() {
         Cursor cursor = getContentResolver().query(
                 ImagesProvider.CONTENT_URI,
@@ -157,10 +123,26 @@ public class FullScreenImageActivity extends ActionBarActivity {
         authorName = cursor.getString(cursor.getColumnIndex(ImagesTable.COLUMN_AUTHOR_NAME));
         cursor.close();
         if (!ImageFilesHandler.imageFileExists(getApplicationContext(), imageURL)) {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Downloading image...");
+            progressDialog.setProgressStyle(android.R.style.Widget_Holo_ProgressBar_Horizontal);
+            progressDialog.setIndeterminate(true);
+            progressDialog.show();
+
             ImagesLoader.startActionLoadBigPhoto(getApplicationContext(), imageURL);
         } else {
             showBigImage();
         }
+    }
+
+    // dismiss dialog if activity is destroyed
+    @Override
+    protected void onDestroy() {
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+            progressDialog = null;
+        }
+        super.onDestroy();
     }
 
     private void showBigImage() {
@@ -225,13 +207,11 @@ public class FullScreenImageActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(receiver, new IntentFilter(ImagesLoader.NOTIFICATION));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(receiver);
     }
 
 

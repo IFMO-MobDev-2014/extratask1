@@ -2,6 +2,7 @@
 <resources>
 
     <string name="no_connection">Internet connection is not available</string>
+    <string name="error_update">Some error has happened</string>
     <string name="app_name">YaRecent</string>
     <string name="hello_world">Hello world!</string>
     <string name="string_update">Update</string>

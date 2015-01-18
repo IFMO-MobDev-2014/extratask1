@@ -21,7 +21,7 @@ public class ImageFilesHandler {
 
     private static final String LOG_TAG = "ru.ifmo.md.extratask1.ImageFilesHandler.Log";
 
-    public static void downloadAndSaveImage(Context context, String imageURL) {
+    public static void downloadAndSaveImage(Context context, String imageURL) throws IOException {
         byte[] bytes = loadImageBytes(imageURL);
         if (bytes == null)
             return;
@@ -30,7 +30,7 @@ public class ImageFilesHandler {
         saveImageOnStorage(context, bitmap, imageName);
     }
 
-    public static byte[] loadImageBytes(String imageURL) {
+    public static byte[] loadImageBytes(String imageURL) throws IOException {
         HttpURLConnection connection = null;
         try {
             URL url = new URL(imageURL);
@@ -48,13 +48,10 @@ public class ImageFilesHandler {
             in.close();
             out.close();
             return out.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
         } finally {
             if (connection != null)
                 connection.disconnect();
         }
-        return null;
     }
 
     public static Bitmap loadImageFromStorage(Context context, String imageUrl)  {
@@ -79,15 +76,13 @@ public class ImageFilesHandler {
         return path.exists() && path.isFile();
     }
 
-    public static void saveImageOnStorage(Context context, Bitmap bitmap, String imageName) {
+    public static void saveImageOnStorage(Context context, Bitmap bitmap, String imageName) throws IOException {
         File directory = getImagesFolder(context);
         File path = new File(directory, imageName);
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(path);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             try {
                 if (out != null) {

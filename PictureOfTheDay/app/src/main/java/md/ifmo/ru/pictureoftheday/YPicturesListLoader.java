@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public class YPicturesListLoader extends AsyncTaskLoader<ArrayList<YPicture>> {
     Context context;
     Bitmap bmp;
+    boolean needed;
 
     public YPicturesListLoader(Context context) {
         super(context);
@@ -23,7 +24,6 @@ public class YPicturesListLoader extends AsyncTaskLoader<ArrayList<YPicture>> {
     @Override
     public ArrayList<YPicture> loadInBackground() {
         ArrayList<YPicture> list = new ArrayList<YPicture>();
-
         Cursor c = context.getContentResolver().query(
                 PicturesContentProvider.PICTURES_URI,
                 null,
@@ -38,9 +38,9 @@ public class YPicturesListLoader extends AsyncTaskLoader<ArrayList<YPicture>> {
             YPicture img;
             while (!c.isBeforeFirst() && !c.isAfterLast()) {
                 byteArray = c.getBlob(c.getColumnIndex(DBPictures.COLUMN_PICTURE));
-                bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
+                //bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
                 img = new YPicture(
-                        bmp,
+                        byteArray,
                         c.getString(c.getColumnIndex(DBPictures.COLUMN_PICTURE_HR)),
                         c.getString(c.getColumnIndex(DBPictures.COLUMN_PICTURE_LINK)),
                         c.getString(c.getColumnIndex(DBPictures.COLUMN_PICTURE_TITLE))

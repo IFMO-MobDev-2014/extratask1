@@ -6,16 +6,16 @@
         android:id="@+id/item1"
         app:showAsAction="always"
         android:title="save"
-        android:icon="@android:drawable/sym_call_incoming">
+        android:icon="@drawable/download">
     </item>
     <item
         android:id="@+id/wallpaper"
         app:showAsAction="always"
         android:title="wallpaper"
-        android:icon="@android:drawable/ic_menu_crop"/>
+        android:icon="@drawable/lockscreen"/>
     <item
         android:id="@+id/browser"
         app:showAsAction="ifRoom"
         android:title="browser"
-        android:icon="@android:drawable/ic_dialog_map"/>
+        android:icon="@drawable/browser"/>
 </menu>

@@ -123,7 +123,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
             } else {
                 progressBar.setVisibility(View.GONE);
                 getLoaderManager().restartLoader(PICTURES_LOADER_ID, null, MainActivity.this);
-                showMessage("Downloading Error");
+                showMessage("Download Error");
             }
         }
 

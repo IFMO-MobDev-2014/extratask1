@@ -1,6 +1,7 @@
 package md.ifmo.ru.pictureoftheday;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -45,7 +46,7 @@ public class MyPicturesListAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        imageView.setImageBitmap(list.get(position).bitmap);
+        imageView.setImageBitmap(BitmapFactory.decodeByteArray(list.get(position).bytebitmap, 0, list.get(position).bytebitmap.length));
         return imageView;
     }
 }

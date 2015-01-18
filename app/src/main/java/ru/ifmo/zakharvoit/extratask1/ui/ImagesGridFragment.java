@@ -68,8 +68,6 @@ public class ImagesGridFragment extends Fragment
         pictureSelection.addRaw(selection, selectionArgs);
         PictureCursor cursor = pictureSelection.query(getActivity().getContentResolver());
 
-        Log.d("CURSOR_SIZE_SUKA", cursor.getCount() + "");
-
         adapter = new ImagesAdapter(getActivity(), cursor);
 
         GridView imagesGrid = (GridView) rootView.findViewById(R.id.images_grid);

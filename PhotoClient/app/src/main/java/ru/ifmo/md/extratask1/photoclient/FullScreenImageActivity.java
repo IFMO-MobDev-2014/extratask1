@@ -55,7 +55,9 @@ public class FullScreenImageActivity extends ActionBarActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             final int stateCode = intent.getIntExtra(BroadcastStateSender.EXTRA_STATE_CODE, BroadcastStateSender.STATE_COMPLETE);
-            progressDialog.dismiss();
+            if (progressDialog != null) {
+                progressDialog.dismiss();
+            }
             switch (stateCode) {
                 case BroadcastStateSender.STATE_COMPLETE:
                     showBigImage();

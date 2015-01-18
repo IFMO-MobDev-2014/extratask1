@@ -61,6 +61,12 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle bundle) {
+        super.onSaveInstanceState(bundle);
+        bundle.putInt("currentItem", mAwesomePager.getCurrentItem());
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity_view_pager);
@@ -77,6 +83,9 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
         mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
         mAwesomePager.setAdapter(mPagerAdapter);
 
+        if (savedInstanceState != null) {
+            mAwesomePager.setCurrentItem(savedInstanceState.getInt("currentItem", 0));
+        }
 
         getContentResolver().registerContentObserver(ImagesProvider.CONTENT_URI, true, new ContentObserver(new Handler()) {
             @Override
@@ -90,7 +99,6 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
                 mPagerAdapter.notifyDataSetChanged();
             }
         });
-
     }
 
     private static final int IMAGES_TO_SHOW = 10;
@@ -133,6 +141,7 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
     protected void onResume() {
         super.onResume();
         mPagerAdapter.notifyDataSetChanged();
+        mAwesomePager.setAdapter(mPagerAdapter);
         mRefreshLayout.setRefreshing(mIsRefreshing);
 
         mUpdateReceiver = new BroadcastStateReceiver();

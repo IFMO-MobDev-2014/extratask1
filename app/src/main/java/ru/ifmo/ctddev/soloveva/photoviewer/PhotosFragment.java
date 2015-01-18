@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -149,8 +150,12 @@ public class PhotosFragment extends Fragment implements SwipeRefreshLayout.OnRef
         @Override
         protected void onPostExecute(PhotoList photoList) {
             progressBar.setVisibility(View.GONE);
-            photosAdapter.setPhotos(photoList.getPhotos());
             swipeRefreshLayout.setRefreshing(false);
+            if (photoList == null) {
+                Toast.makeText(getActivity(), R.string.inet_error, Toast.LENGTH_LONG).show();
+            } else {
+                photosAdapter.setPhotos(photoList.getPhotos());
+            }
         }
     }
 

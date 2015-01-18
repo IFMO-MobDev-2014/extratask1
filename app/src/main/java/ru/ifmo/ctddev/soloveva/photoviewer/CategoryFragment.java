@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -73,13 +74,17 @@ public class CategoryFragment extends Fragment {
         @Override
         protected void onPostExecute(PhotoList photoList) {
             progressBar.setVisibility(View.GONE);
-            viewPager.setAdapter(new PagesAdapter(
-                    getActivity().getSupportFragmentManager(),
-                    category,
-                    getResources().getString(R.string.page),
-                    photoList.getTotalPages()
-            ));
-            viewPager.setVisibility(View.VISIBLE);
+            if (photoList == null) {
+                Toast.makeText(getActivity(), R.string.inet_error, Toast.LENGTH_LONG).show();
+            } else {
+                viewPager.setAdapter(new PagesAdapter(
+                        getActivity().getSupportFragmentManager(),
+                        category,
+                        getResources().getString(R.string.page),
+                        photoList.getTotalPages()
+                ));
+                viewPager.setVisibility(View.VISIBLE);
+            }
         }
     }
 }

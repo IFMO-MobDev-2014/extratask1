@@ -9,6 +9,7 @@
 
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
+    <string name="inet_error">Check your Internet connection</string>
 
     <string-array name="categories">
         <item>Popular</item>

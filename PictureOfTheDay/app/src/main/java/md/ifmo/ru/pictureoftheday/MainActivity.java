@@ -72,7 +72,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 startService(new Intent(this, PicturesDownloader.class));
                 progressBar.setVisibility(View.VISIBLE);
             }
-            else showMessage("No internet connection");
+            else showMessage("No Internet Connection");
             return true;
         }
 
@@ -95,10 +95,10 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(MainActivity.this).edit();
-                editor.putInt(PictureViewActivity.APP_PREFERENCES_POSITION, position);
-                editor.apply();
                 Intent intent = new Intent(MainActivity.this, PictureViewActivity.class);
+                intent.putExtra("HR_LINK",list.get(position).hrLink);
+                intent.putExtra("WEB_LINK",list.get(position).pageLink);
+                intent.putExtra("TITLE",list.get(position).title);
                 startActivity(intent);
             }
         });
@@ -123,7 +123,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
             } else {
                 progressBar.setVisibility(View.GONE);
                 getLoaderManager().restartLoader(PICTURES_LOADER_ID, null, MainActivity.this);
-                showMessage("Downloading Error");
+                showMessage("Download Error");
             }
         }
 

@@ -1,9 +1,21 @@
 package md.ifmo.ru.pictureoftheday;
 
 import android.app.LoaderManager;
+import android.app.ProgressDialog;
+import android.app.WallpaperManager;
+import android.content.ContentValues;
+import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -12,98 +24,142 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 
-public class PictureViewActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<ArrayList<YPicture>> {
-    private static final int PICURES_LOADER_ID = 1;
-    public static final String APP_PREFERENCES_POSITION = "position";
-    SharedPreferences settings;
-    ArrayList<YPicture> list;
-    int position;
-    ViewPager pager;
-    PagerAdapter pagerAdapter;
-
+public class PictureViewActivity extends ActionBarActivity {
+    ImageView imageView;
+    Bitmap bitmap = null;
+    String hrLink;
+    String webLink;
+    String title;
+    LoadImage downloadImageTask;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        supportRequestWindowFeature(Window.FEATURE_ACTION_BAR);
-        getSupportActionBar().hide();
         setContentView(R.layout.activity_picture_view);
-        pager = (ViewPager) findViewById(R.id.pager);
-
-        settings = PreferenceManager.getDefaultSharedPreferences(this);
-        if (settings.contains(APP_PREFERENCES_POSITION)) {
-            position = settings.getInt(APP_PREFERENCES_POSITION, 0);
-        } else position = 0;
-
-
-        getLoaderManager().initLoader(PICURES_LOADER_ID, null, this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putInt(APP_PREFERENCES_POSITION, pager.getCurrentItem());
-        editor.apply();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (settings.contains(APP_PREFERENCES_POSITION)) {
-            position = settings.getInt(APP_PREFERENCES_POSITION, 0);
-        } else position = 0;
-        update();
-    }
-
-    private void update() {
-        if (list != null && position >= 0 && position < list.size()) {
-            pagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager());
-            pager.setAdapter(pagerAdapter);
-            pager.setCurrentItem(position);
+        imageView = (ImageView) findViewById(R.id.imageView);
+        Intent intent = getIntent();
+        hrLink = intent.getStringExtra("HR_LINK");
+        webLink = intent.getStringExtra("WEB_LINK");
+        title = intent.getStringExtra("TITLE");
+        setTitle(title);
+        downloadImageTask = new LoadImage();
+        downloadImageTask.execute(hrLink);
+        int i = 0;
+        while ((bitmap == null) && (i<Integer.MAX_VALUE)) {
+            i++;
         }
-    }
-
-    public Loader<ArrayList<YPicture>> onCreateLoader(int i, Bundle bundle) {
-        return new YPicturesListLoader(this);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<ArrayList<YPicture>> listLoader, final ArrayList<YPicture> list) {
-        this.list = list;
-        update();
+        imageView.setImageBitmap(bitmap);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 
     @Override
-    public void onLoaderReset(Loader<ArrayList<YPicture>> listLoader) {
-        new YPicturesListLoader(this);
+    public void onBackPressed() {
+        // TODO Auto-generated method stub
+        super.onBackPressed();
+        finish();
     }
 
-    private class MyFragmentPagerAdapter extends FragmentStatePagerAdapter {
 
-        public MyFragmentPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
 
+    private class LoadImage extends AsyncTask<String, String, Bitmap> {
         @Override
-        public Fragment getItem(int position) {
-            return PictureFullscreenFragment.newInstance(
-                    list.get(position).bitmap,
-                    list.get(position).hrLink,
-                    list.get(position).pageLink
-            );
+        protected void onPreExecute() {
+            super.onPreExecute();
         }
-
-        @Override
-        public int getCount() {
-            return list.size();
+        protected Bitmap doInBackground(String... args) {
+            try {
+                bitmap = BitmapFactory.decodeStream((InputStream)new URL(args[0]).getContent());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return bitmap;
         }
+        protected void onPostExecute(Bitmap image) {
+            if(image != null){
 
+                bitmap = image;
+            }else{
+                Toast.makeText(PictureViewActivity.this, "Image Does Not exist or Network Error", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_image, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case android.R.id.home:
+                finish();
+                return true;
+            case R.id.item1:
+                OutputStream fOut = null;
+                String strDirectory = Environment.getExternalStorageDirectory().toString();
+                Calendar c = Calendar.getInstance();
+                int seconds = c.get(Calendar.SECOND);
+                File f = new File(strDirectory, ""+seconds);
+                try {
+                    fOut = new FileOutputStream(f);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
+                    fOut.flush();
+                    fOut.close();
+                    ContentValues values = new ContentValues();
+                    values.put(MediaStore.Images.Media.TITLE, f.getName());
+                    values.put(MediaStore.Images.Media.DESCRIPTION, f.getName());
+                    values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
+                    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                    values.put(MediaStore.MediaColumns.DATA, f.getAbsolutePath());
+                    getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+                    Toast.makeText(this, "Picture Saved", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            case R.id.wallpaper:
+                WallpaperManager manager = WallpaperManager.getInstance(this);
+                try {
+                    manager.setBitmap(bitmap);
+                    Toast.makeText(this, "Wallpaper Set", Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
+                    Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            case R.id.browser:
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(webLink));
+                startActivity(browserIntent);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

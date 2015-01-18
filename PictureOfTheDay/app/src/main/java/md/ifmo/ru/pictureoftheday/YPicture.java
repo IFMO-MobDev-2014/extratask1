@@ -7,13 +7,15 @@ import android.graphics.Bitmap;
  */
 public class YPicture {
     public Bitmap bitmap;
+    public byte[] bytebitmap;
     public String hrLink;
     public String pageLink;
-
-    public YPicture(Bitmap bitmap, String link, String pageLink) {
-        this.bitmap = bitmap;
+    public String title;
+    public YPicture(byte[] bytebitmap, String link, String pageLink, String title) {
+        this.bytebitmap = bytebitmap;
         this.hrLink = link;
         this.pageLink = pageLink;
+        this.title = title;
 
     }
 }

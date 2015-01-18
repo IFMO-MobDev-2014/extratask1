@@ -126,9 +126,11 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         Log.e(": ", "-------------------------------------------------------------");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         viewNumber = (TextView)findViewById(R.id.page_number);
 
         loadToPicture = new TreeMap<>();
@@ -226,7 +228,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         bundle.putInt(START, PICTURE_PER_PAGE * pageNumber);
         loaderManager.initLoader(0, bundle, this);
         //Log.e("update text: ")
-        viewNumber.setText(pageNumber + " from " + numberOfpage);
+        viewNumber.setText((pageNumber + 1) + " from " + numberOfpage);
     }
 
     @Override

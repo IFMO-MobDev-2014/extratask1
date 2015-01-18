@@ -20,15 +20,23 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <ImageButton
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_computer"
+            android:text="Browser"
+            android:drawableLeft="@drawable/ic_action_computer"
             android:id="@+id/go_to_internet"/>
-        <ImageButton
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="20px"
+            android:layout_weight="1"/>
+
+        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_picture"
+            android:text="Wallpaper"
+            android:drawableLeft="@drawable/ic_action_picture"
             android:id="@+id/wall_paper"/>
 
     </LinearLayout>

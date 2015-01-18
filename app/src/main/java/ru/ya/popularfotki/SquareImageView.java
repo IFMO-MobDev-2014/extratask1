@@ -24,7 +24,8 @@ public class SquareImageView extends ImageView {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
     {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        //int mx = Math.max(getMeasuredHeight(), getMeasuredWidth());
-        setMeasuredDimension(getMeasuredWidth(), getMeasuredWidth()); //Snap to width
+        int mx = Math.max(getMeasuredHeight(), getMeasuredWidth());
+        //setMeasuredDimension(getMeasuredWidth(), getMeasuredWidth()); //Snap to width
+        setMeasuredDimension(mx, mx); //Snap to width
     }
 }

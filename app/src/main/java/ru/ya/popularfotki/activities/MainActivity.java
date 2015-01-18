@@ -19,11 +19,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.TreeMap;
 
 import ru.ya.popularfotki.OnePicture;
@@ -49,9 +51,12 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
             for (int i = 0; i < pictures.size(); i++) {
                 OnePicture picture = pictures.get(i);
                 if (picture.getAlreadyLoad()) throw new Error();
+
                 dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
                 DownloadManager.Request request = new DownloadManager.Request(Uri.parse(picture.getURLS()));
+                request.setVisibleInDownloadsUi(false);
                 Long id = dm.enqueue(request);
+
                 loadToPicture.put(id, (long) i);
             }
 
@@ -62,7 +67,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     private BroadcastReceiver broadcastFromDM = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.e("broadCast:", "after download");
+//            Log.e("broadCast:", "after download");
             long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
             DownloadManager.Query query = new DownloadManager.Query();
             query.setFilterById(downloadId);
@@ -74,12 +79,13 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
                     String uriString = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
                     int id = loadToPicture.get(Long.valueOf(reference)).intValue();
+                    loadToPicture.remove(Long.valueOf(reference));
                     pictures.get(id).setPath(uriString);
 
                     ContentValues values = new ContentValues();
                     values.put(FotkiSQLiteHelper.COLUMN_URL_S, pictures.get(id).getURLS());
                     values.put(FotkiSQLiteHelper.COLUMN_URL_XL, pictures.get(id).getHttpXL());
-                    values.put(FotkiSQLiteHelper.COLUMN_PATH, pictures.get(id).getPath());
+                    values.put(FotkiSQLiteHelper.COLUMN_PATH_S, pictures.get(id).getPath());
                     values.put(FotkiSQLiteHelper.COLUMN_YANDEX_ID, pictures.get(id).getYandexId());
                     getContentResolver().insert(FotkiContentProvider.FOTKI_URI, values);
                     //Log.e("after insert", "broadcast");
@@ -109,8 +115,12 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
                 Cursor cursor = getCursor();
                 cursor.moveToPosition(position);
-                int id = cursor.getColumnIndex(FotkiSQLiteHelper.COLUMN_PATH);
+                int id = cursor.getColumnIndex(FotkiSQLiteHelper.COLUMN_PATH_S);
                 Uri uri = Uri.parse(cursor.getString(id));
+
+                String yandexId = cursor.getString(cursor.getColumnIndex(FotkiSQLiteHelper.COLUMN_YANDEX_ID));
+
+                imageView.setTag(yandexId);
 
                 imageView.setImageURI(uri);
                 return mView;
@@ -118,11 +128,28 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         };
         getLoaderManager().initLoader(0, null, this);
         gridView.setAdapter(adapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                SquareImageView imageView = (SquareImageView)view.findViewById(R.id.picture);
+                String yandexId = (String)imageView.getTag();
+                Log.e("yandexId", yandexId);
+                Intent intent = new Intent(MainActivity.this, BigPicture.class);
+                intent.putExtra(FotkiSQLiteHelper.COLUMN_YANDEX_ID, yandexId);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        for (;!loadToPicture.isEmpty();) {
+            Map.Entry< Long, Long > value = loadToPicture.firstEntry();
+            Long key = value.getKey();
+            dm.remove(key);
+            loadToPicture.remove(key);
+        }
         unregisterReceiver(broadcastReceiver);
         unregisterReceiver(broadcastFromDM);
     }
@@ -160,7 +187,6 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        throw new Error();
     }
 
 

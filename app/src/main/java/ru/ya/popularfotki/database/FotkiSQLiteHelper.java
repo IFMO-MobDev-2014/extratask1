@@ -3,7 +3,6 @@ package ru.ya.popularfotki.database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 /**
  * Created by vanya on 17.01.15.
@@ -20,14 +19,16 @@ public class FotkiSQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_YANDEX_ID = "COLUMN_YANDEX_ID";
     public static final String COLUMN_URL_S = "COLUMN_URL_S";
     public static final String COLUMN_URL_XL = "COLUMN_URL_XL";
-    public static final String COLUMN_PATH = "COLUMN_PATH";
+    public static final String COLUMN_PATH_S = "COLUMN_PATH_S";
+    public static final String COLUMN_PATH_XL = "COLUMN_PATH_XL";
+
 
     //public static final String TYPE_TEXT = "text";
 
     public final static String PICTURES_TABLE= "PICTURES_TABLE";
 
     public FotkiSQLiteHelper(Context context) {
-        super(context, "MY_DATA_BASE", null, 11);
+        super(context, "MY_DATA_BASE", null, 12);
 //        Log.e("in constructor", "database");
     }
 
@@ -40,7 +41,8 @@ public class FotkiSQLiteHelper extends SQLiteOpenHelper {
                  + COLUMN_YANDEX_ID + " text unique not null, "
                  + COLUMN_URL_S + " text not null, "
                  + COLUMN_URL_XL + " text not null, "
-                 + COLUMN_PATH + " text ); "
+                 + COLUMN_PATH_S + " text, "
+                 + COLUMN_PATH_XL + " text )"
         );
     }
 

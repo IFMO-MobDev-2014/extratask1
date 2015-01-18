@@ -21,16 +21,21 @@
             </intent-filter>
         </activity>
 
-        <!--android:authorities="ru.ya.popularfotki.database.FotkiContentProvider"-->
+        <!-- android:authorities="ru.ya.popularfotki.database.FotkiContentProvider" -->
         <provider
-            android:authorities="@string/authority"
-            android:name=".database.FotkiContentProvider" />
+            android:name=".database.FotkiContentProvider"
+            android:authorities="@string/authority" />
 
         <service
             android:name=".UpdateIntentService"
             android:exported="false" >
         </service>
 
+        <activity
+            android:name=".activities.BigPicture"
+            android:windowActionBar="false"
+            android:label="@string/title_activity_big_picture" >
+        </activity>
     </application>
 
 </manifest>

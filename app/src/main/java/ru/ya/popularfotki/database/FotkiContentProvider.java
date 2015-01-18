@@ -77,6 +77,8 @@ public class FotkiContentProvider extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        throw new Error();
+        int count = fotkiSQLiteHelper.getWritableDatabase().update(FotkiSQLiteHelper.PICTURES_TABLE, values, selection, selectionArgs);
+        getContext().getContentResolver().notifyChange(uri, null);
+        return count;
     }
 }

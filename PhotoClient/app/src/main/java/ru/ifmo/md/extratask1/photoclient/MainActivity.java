@@ -10,12 +10,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import ru.ifmo.md.extratask1.photoclient.database.ImagesProvider;
@@ -44,7 +42,6 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
                 case BroadcastStateSender.STATE_COMPLETE:
                     mIsRefreshing = false;
                     mRefreshLayout.setRefreshing(false);
-                    Log.d("Tag", "new updates came");
                     break;
                 case BroadcastStateSender.STATE_NO_CONNECTION:
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_connection), Toast.LENGTH_SHORT).show();
@@ -98,9 +95,9 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
 
     private static final int IMAGES_TO_SHOW = 10;
 
-    private class PagerAdapter extends FragmentStatePagerAdapter {
+    private class PagerAdapter extends FixedFragmentStatePagerAdapter {
 
-        private PagerAdapter(FragmentManager fm) {
+        public PagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -115,16 +112,17 @@ public class MainActivity extends ActionBarActivity implements SwipeRefreshLayou
         }
 
         @Override
-        public int getItemPosition(Object object) {
-            return POSITION_NONE;
-        }
-
-        @Override
         public int getCount() {
             int numRows = getNumberOfRows();
             if (numRows == 0) {
+                //First launch
                 ImagesLoader.startActionLoadFeed(getApplicationContext());
-                mRefreshLayout.setRefreshing(true);
+                (new Handler()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mRefreshLayout.setRefreshing(true);
+                    }
+                }, 500);
                 return 0;
             }
             return (numRows + IMAGES_TO_SHOW - 1) / IMAGES_TO_SHOW;

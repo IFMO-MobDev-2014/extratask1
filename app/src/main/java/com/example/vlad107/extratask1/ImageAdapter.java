@@ -36,7 +36,7 @@ public class ImageAdapter extends BaseAdapter {
     public View getView(int position, View view, ViewGroup parent) {
         if (view == null) {
             view = new ImageView(context);
-            ((ImageView)view).setScaleType(ImageView.ScaleType.CENTER);
+            ((ImageView)view).setScaleType(ImageView.ScaleType.CENTER_CROP);
         }
         ((ImageView)view).setImageBitmap(list.get(position).image);
         return view;

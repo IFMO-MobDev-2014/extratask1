@@ -30,7 +30,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="&lt;-"
+            android:text="Prev"
             android:id="@+id/button"
             android:layout_weight="1"
             android:onClick="onClickPrev" />
@@ -38,7 +38,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="->"
+            android:text="Next"
             android:id="@+id/button2"
             android:layout_weight="1"
             android:onClick="onClickNext" />

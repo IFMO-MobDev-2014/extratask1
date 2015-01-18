@@ -96,4 +96,34 @@ public class PictureSelection extends AbstractSelection<PictureSelection> {
         addLike(PictureColumns.LARGE_LINK, value);
         return this;
     }
+
+    public PictureSelection myId(int... value) {
+        addEquals(PictureColumns.MY_ID, toObjectArray(value));
+        return this;
+    }
+
+    public PictureSelection myIdNot(int... value) {
+        addNotEquals(PictureColumns.MY_ID, toObjectArray(value));
+        return this;
+    }
+
+    public PictureSelection myIdGt(int value) {
+        addGreaterThan(PictureColumns.MY_ID, value);
+        return this;
+    }
+
+    public PictureSelection myIdGtEq(int value) {
+        addGreaterThanOrEquals(PictureColumns.MY_ID, value);
+        return this;
+    }
+
+    public PictureSelection myIdLt(int value) {
+        addLessThan(PictureColumns.MY_ID, value);
+        return this;
+    }
+
+    public PictureSelection myIdLtEq(int value) {
+        addLessThanOrEquals(PictureColumns.MY_ID, value);
+        return this;
+    }
 }

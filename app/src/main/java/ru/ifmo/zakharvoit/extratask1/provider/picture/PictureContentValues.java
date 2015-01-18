@@ -52,4 +52,11 @@ public class PictureContentValues extends AbstractContentValues {
     }
 
 
+
+    public PictureContentValues putMyId(int value) {
+        mContentValues.put(PictureColumns.MY_ID, value);
+        return this;
+    }
+
+
 }

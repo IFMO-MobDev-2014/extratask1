@@ -27,6 +27,8 @@ public class PictureColumns implements BaseColumns {
 
     public static final String LARGE_LINK = "large_link";
 
+    public static final String MY_ID = "my_id";
+
 
     public static final String DEFAULT_ORDER = TABLE_NAME + "." +_ID;
 
@@ -35,7 +37,8 @@ public class PictureColumns implements BaseColumns {
             _ID,
             TITLE,
             CONTENTS,
-            LARGE_LINK
+            LARGE_LINK,
+            MY_ID
     };
     // @formatter:on
 
@@ -45,6 +48,7 @@ public class PictureColumns implements BaseColumns {
             if (c == TITLE || c.contains("." + TITLE)) return true;
             if (c == CONTENTS || c.contains("." + CONTENTS)) return true;
             if (c == LARGE_LINK || c.contains("." + LARGE_LINK)) return true;
+            if (c == MY_ID || c.contains("." + MY_ID)) return true;
         }
         return false;
     }

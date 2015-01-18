@@ -20,7 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String TAG = DatabaseHelper.class.getSimpleName();
 
     public static final String DATABASE_FILE_NAME = "extratask1.db";
-    private static final int DATABASE_VERSION = 8;
+    private static final int DATABASE_VERSION = 9;
     private static DatabaseHelper sInstance;
     private final Context mContext;
     private final DatabaseHelperCallbacks mOpenHelperCallbacks;
@@ -31,7 +31,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             + PictureColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
             + PictureColumns.TITLE + " TEXT NOT NULL, "
             + PictureColumns.CONTENTS + " BLOB NOT NULL, "
-            + PictureColumns.LARGE_LINK + " TEXT NOT NULL "
+            + PictureColumns.LARGE_LINK + " TEXT NOT NULL, "
+            + PictureColumns.MY_ID + " INTEGER NOT NULL "
             + " );";
 
     // @formatter:on

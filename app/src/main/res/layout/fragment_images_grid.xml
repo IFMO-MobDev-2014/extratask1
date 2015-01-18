@@ -1,0 +1,18 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ru.ifmo.zakharvoit.extratask1.ui.ImagesGridFragment">
+
+    <GridView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnWidth="100dp"
+        android:stretchMode="columnWidth"
+        android:gravity="center"
+        android:padding="2dp"
+        android:verticalSpacing="2dp"
+        android:horizontalSpacing="2dp"
+        android:numColumns="auto_fit"
+        android:id="@+id/images_grid" />
+
+</LinearLayout>

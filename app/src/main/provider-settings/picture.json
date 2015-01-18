@@ -14,6 +14,11 @@
             "name": "large_link",
             "type": "String",
             "nullable": false
+        },
+        {
+            "name": "my_id",
+            "type": "Integer",
+            "nullable": "false"
         }
     ]
 }

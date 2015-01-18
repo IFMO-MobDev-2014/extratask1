@@ -43,4 +43,11 @@ public class PictureCursor extends AbstractCursor {
         Integer index = getCachedColumnIndexOrThrow(PictureColumns.LARGE_LINK);
         return getString(index);
     }
+
+    /**
+     * Get the {@code my_id} value.
+     */
+    public int getMyId() {
+        return getIntegerOrNull(PictureColumns.MY_ID);
+    }
 }

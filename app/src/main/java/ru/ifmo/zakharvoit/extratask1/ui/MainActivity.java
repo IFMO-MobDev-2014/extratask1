@@ -1,20 +1,14 @@
 package ru.ifmo.zakharvoit.extratask1.ui;
 
-import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.Toast;
 
 import ru.ifmo.zakharvoit.extratask1.R;
@@ -22,29 +16,38 @@ import ru.ifmo.zakharvoit.extratask1.images.Image;
 import ru.ifmo.zakharvoit.extratask1.images.ImagesDownloadService;
 import ru.ifmo.zakharvoit.extratask1.images.ImagesResultReceiver;
 import ru.ifmo.zakharvoit.extratask1.provider.picture.PictureContentValues;
-import ru.ifmo.zakharvoit.extratask1.provider.picture.PictureCursor;
 import ru.ifmo.zakharvoit.extratask1.provider.picture.PictureSelection;
 
-public class MainActivity extends ActionBarActivity
-        implements LoaderManager.LoaderCallbacks<Cursor>,
-                GridView.OnItemClickListener {
-
-    private ImagesAdapter adapter;
-    private int loadersCount = 0;
-
+public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        adapter = new ImagesAdapter(this, new PictureSelection()
-                .query(getContentResolver()));
+        ViewPager pager = (ViewPager) findViewById(R.id.images_pager);
+        pager.setAdapter(new PagerAdapter(getSupportFragmentManager(), 100));
+    }
 
-        GridView imagesGrid = (GridView) findViewById(R.id.images_grid);
-        imagesGrid.setAdapter(adapter);
-        imagesGrid.setOnItemClickListener(this);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
-        getLoaderManager().initLoader(loadersCount++, null, this);
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_reload) {
+            ImagesResultReceiver receiver = new ImagesResultReceiver();
+            receiver.setReceiver(createReceiver(this));
+
+            Intent intent = new Intent(this, ImagesDownloadService.class);
+            intent.putExtra(ImagesDownloadService.RESULT_RECEIVER_EXTRA_KEY, receiver);
+            startService(intent);
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private ImagesResultReceiver.Receiver createReceiver(final Context context) {
@@ -87,6 +90,7 @@ public class MainActivity extends ActionBarActivity
                     contentValues.putTitle(image.getTitle());
                     contentValues.putContents(image.getContents());
                     contentValues.putLargeLink(image.getLargeLink());
+                    contentValues.putMyId(i);
                     contentValues.insert(getContentResolver());
                 }
                 images = null;
@@ -100,62 +104,5 @@ public class MainActivity extends ActionBarActivity
                 images = null;
             }
         };
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_reload) {
-            ImagesResultReceiver receiver = new ImagesResultReceiver();
-            receiver.setReceiver(createReceiver(this));
-
-            Intent intent = new Intent(this, ImagesDownloadService.class);
-            intent.putExtra(ImagesDownloadService.RESULT_RECEIVER_EXTRA_KEY, receiver);
-            startService(intent);
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Log.d("LoaderCallbacks", "Create loader");
-        return new CursorLoader(this, new PictureSelection().uri(), null, null, null, null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.d("LoaderCallbacks", "Load finished " + data.getCount());
-        adapter.swapCursor(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        Log.d("LoaderCallbacks", "Load reset");
-        adapter.swapCursor(null);
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.d("MainActivity.onItemClick", "Clicked " + id);
-
-        PictureCursor cursor = new PictureSelection()
-                .id(id).query(getContentResolver());
-        cursor.moveToFirst();
-
-        String title = cursor.getTitle();
-        String link = cursor.getLargeLink();
-
-        Intent intent = new Intent(this, FullImageActivity.class);
-        intent.putExtra(FullImageActivity.IMAGE_TITLE_EXTRA, title);
-        intent.putExtra(FullImageActivity.IMAGE_LINK_EXTRA, link);
-        startActivity(intent);
     }
 }

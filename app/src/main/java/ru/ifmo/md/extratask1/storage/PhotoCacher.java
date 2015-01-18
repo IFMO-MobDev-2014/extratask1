@@ -1,4 +1,4 @@
-package ru.ifmo.md.extratask1;
+package ru.ifmo.md.extratask1.storage;
 
 import android.content.Context;
 import android.graphics.Bitmap;

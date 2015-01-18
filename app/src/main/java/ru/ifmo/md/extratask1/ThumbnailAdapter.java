@@ -11,6 +11,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.ifmo.md.extratask1.storage.PhotoCacher;
+
 /**
  * Created by pinguinson on 16.01.2015.
  */

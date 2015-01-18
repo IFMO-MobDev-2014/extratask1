@@ -1,4 +1,4 @@
-package ru.ifmo.md.extratask1;
+package ru.ifmo.md.extratask1.loading;
 
 import android.content.Context;
 
@@ -6,6 +6,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+
+import ru.ifmo.md.extratask1.activities.MainActivity;
+import ru.ifmo.md.extratask1.activities.SinglePhotoActivity;
+import ru.ifmo.md.extratask1.storage.PhotoCacher;
 
 /**
  * Created by pinguinson on 17.01.2015.
@@ -35,8 +39,8 @@ public class PhotoLoadTask implements PhotoTask {
     }
 
     public void afterRun() {
-        if (ctx instanceof PhotoPreview) {
-            PhotoPreview activity = (PhotoPreview) ctx;
+        if (ctx instanceof SinglePhotoActivity) {
+            SinglePhotoActivity activity = (SinglePhotoActivity) ctx;
             activity.onImageLoad();
         } else if (ctx instanceof MainActivity) {
             MainActivity activity = (MainActivity) ctx;

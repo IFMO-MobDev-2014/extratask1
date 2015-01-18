@@ -1,4 +1,4 @@
-package ru.ifmo.md.extratask1;
+package ru.ifmo.md.extratask1.activities;
 
 import android.app.WallpaperManager;
 import android.content.Intent;
@@ -18,10 +18,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
+import ru.ifmo.md.extratask1.storage.PhotoCacher;
+import ru.ifmo.md.extratask1.loading.PhotoLoadTask;
+import ru.ifmo.md.extratask1.R;
+import ru.ifmo.md.extratask1.loading.TimeoutTaskRunner;
+
 /**
  * Created by pinguinson on 17.01.2015.
  */
-public class PhotoPreview extends ActionBarActivity {
+public class SinglePhotoActivity extends ActionBarActivity {
     public static final long IMAGE_PREVIEW_TIMEOUT = 60 * 1000;
 
     ImageView imageView;
@@ -50,6 +55,7 @@ public class PhotoPreview extends ActionBarActivity {
         setContentView(R.layout.activity_single_image);
 
         imageView = (ImageView) findViewById(R.id.preview_container);
+        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         url = getIntent().getStringExtra("url");
         resourceId = new File(url).getName();
         cacher = new PhotoCacher(this);
@@ -73,7 +79,6 @@ public class PhotoPreview extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.image_preview, menu);
         return true;
     }

@@ -7,7 +7,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
-import ru.ifmo.md.extratask1.MainActivity;
+import ru.ifmo.md.extratask1.activities.MainActivity;
 import ru.ifmo.md.extratask1.Photo;
 
 /**
@@ -33,7 +33,6 @@ public class FiveHundredSearchTask extends AsyncTask<Void, Void, ArrayList<Photo
             for (int i = 0; i < searchResults.length(); ++i) {
                 JSONArray current = searchResults.getJSONObject(i).getJSONArray("images");
                 String fullUrl = current.getJSONObject(0).getString("https_url");
-                Log.d(TAG, fullUrl);
                 pictures.add(new Photo(fullUrl));
                 if (pictures.size() == MainActivity.MAX_IMAGES) {
                     break;

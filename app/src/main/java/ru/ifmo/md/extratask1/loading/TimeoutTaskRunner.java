@@ -1,4 +1,4 @@
-package ru.ifmo.md.extratask1;
+package ru.ifmo.md.extratask1.loading;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

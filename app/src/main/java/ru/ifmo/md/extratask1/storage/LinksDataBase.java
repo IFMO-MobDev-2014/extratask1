@@ -1,4 +1,4 @@
-package ru.ifmo.md.extratask1;
+package ru.ifmo.md.extratask1.storage;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -9,11 +9,13 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.ifmo.md.extratask1.Photo;
+
 /**
  * Created by pinguinson on 16.01.2015.
  */
-public class UrlDataBase extends SQLiteOpenHelper {
-    public UrlDataBase(Context context) {
+public class LinksDataBase extends SQLiteOpenHelper {
+    public LinksDataBase(Context context) {
         super(context, "imagedb", null, 1);
     }
 

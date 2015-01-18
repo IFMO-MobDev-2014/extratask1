@@ -1,4 +1,4 @@
-package ru.ifmo.md.extratask1;
+package ru.ifmo.md.extratask1.loading;
 
 /**
  * Created by pinguinson on 16.01.2015.

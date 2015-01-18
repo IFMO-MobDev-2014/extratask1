@@ -9,6 +9,8 @@ import android.widget.GridView;
 
 import java.util.List;
 
+import ru.ifmo.md.extratask1.activities.MainActivity;
+
 
 /**
  * Created by pinguinson on 16.01.2015.
@@ -18,7 +20,7 @@ public class PageFragment extends Fragment {
     ThumbnailAdapter adapter;
     private int pageNumber;
 
-    static PageFragment newInstance(int page) {
+    public static PageFragment newInstance(int page) {
         PageFragment pageFragment = new PageFragment();
         Bundle arguments = new Bundle();
         arguments.putInt("page_number", page);

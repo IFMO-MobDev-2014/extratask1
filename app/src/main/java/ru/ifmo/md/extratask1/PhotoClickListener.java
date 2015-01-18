@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 
+import ru.ifmo.md.extratask1.activities.SinglePhotoActivity;
+
 /**
  * Created by pinguinson on 17.01.2015.
  */
@@ -19,7 +21,7 @@ public class PhotoClickListener implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        Intent viewIntent = new Intent(ctx, PhotoPreview.class);
+        Intent viewIntent = new Intent(ctx, SinglePhotoActivity.class);
         viewIntent.putExtra("url", url);
         ctx.startActivity(viewIntent);
     }

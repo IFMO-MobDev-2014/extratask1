@@ -1,4 +1,4 @@
-package ru.ifmo.md.extratask1;
+package ru.ifmo.md.extratask1.activities;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -8,15 +8,19 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.List;
 
+import ru.ifmo.md.extratask1.PageFragment;
+import ru.ifmo.md.extratask1.Photo;
+import ru.ifmo.md.extratask1.storage.LinksDataBase;
+import ru.ifmo.md.extratask1.storage.PhotoCacher;
+import ru.ifmo.md.extratask1.loading.PhotoLoadTask;
+import ru.ifmo.md.extratask1.R;
+import ru.ifmo.md.extratask1.loading.TimeoutTaskRunner;
 import ru.ifmo.md.extratask1.api500px.FiveHundredSearchTask;
 
 /**
@@ -27,10 +31,10 @@ public class MainActivity extends ActionBarActivity {
     public static final int IMAGES_PER_PAGE = 6;
     public static final int MAX_IMAGES = PAGE_COUNT * IMAGES_PER_PAGE;
     public static final int IMAGE_LOADING_TIMEOUT = 60 * 1000;
-    UrlDataBase helper;
+    public List<Photo> allPhotos;
+    LinksDataBase helper;
     ViewPager pager;
     MyFragmentPagerAdapter adapter;
-    List<Photo> allPhotos;
     int imagesLoaded;
     SwipeRefreshLayout mSwipeRefreshLayout;
     ProgressBar progressBar;
@@ -70,7 +74,7 @@ public class MainActivity extends ActionBarActivity {
 
         progressBar = (ProgressBar) findViewById(R.id.progress);
         progressBar.setMax(MAX_IMAGES);
-        helper = new UrlDataBase(this);
+        helper = new LinksDataBase(this);
         List<Photo> photos = helper.getUrls();
         if (photos.size() == 0) {
             updatePhotos();

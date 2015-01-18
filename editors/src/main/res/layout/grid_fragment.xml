@@ -1,0 +1,23 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingLeft="1dp"
+    android:paddingRight="1dp"
+    android:paddingTop="1dp"
+    android:paddingBottom="1dp"
+    android:id="@+id/relative">
+
+    <GridView
+        android:id="@+id/gridView"
+        android:layout_width="fill_parent"
+        android:layout_margin="0dp"
+        android:gravity="fill"
+        android:numColumns="auto_fit"
+        android:columnWidth="75dp"
+        android:verticalSpacing="1dp"
+        android:horizontalSpacing="1dp"
+        android:drawSelectorOnTop="true"
+        android:layout_height="fill_parent">
+    </GridView>
+</RelativeLayout>

@@ -29,7 +29,7 @@ public class FotkiContentProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Log.e("in: ", " query");
+        //Log.e("in: ", " query");
         Cursor cursor = fotkiSQLiteHelper.getReadableDatabase().query(FotkiSQLiteHelper.PICTURES_TABLE,
                 projection, selection, selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(), uri);

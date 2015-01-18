@@ -33,9 +33,11 @@
 
         <activity
             android:name=".activities.BigPicture"
-            android:windowActionBar="false"
+            android:windowActionBar="true"
             android:label="@string/title_activity_big_picture" >
         </activity>
     </application>
 
 </manifest>
+
+    <!--android:windowActionBar="false"-->

@@ -11,7 +11,7 @@
         android:verticalSpacing="1dp"
         android:horizontalSpacing="1dp"
         android:numColumns="3"
-        android:layout_weight="5"/>
+        android:layout_weight="7"/>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -22,8 +22,19 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Next"
-            android:id="@+id/next_button"/>
+            android:text="Prev"
+            android:id="@+id/prev_button"/>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="20px"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="BAB"
+            android:id="@+id/page_number"/>
 
         <Space
             android:layout_width="0dp"
@@ -33,8 +44,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Prev"
-            android:id="@+id/prev_button"/>
+            android:text="Next"
+            android:id="@+id/next_button"/>
 
     </LinearLayout>
 

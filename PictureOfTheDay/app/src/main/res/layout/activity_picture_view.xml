@@ -12,5 +12,6 @@
     <WebView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/webView" />
+        android:id="@+id/webView"
+        android:visibility="gone" />
 </RelativeLayout>

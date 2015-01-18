@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Yandex photos of the day</string>
+    <string name="refresh">Refresh</string>
+    <string name="title_activity_image_view">Photo</string>
+    <string name="downloading_error">Download error</string>
+    <string name="no_internet">Check internet connection</string>
+
+</resources>

@@ -2,7 +2,6 @@ package me.loskutov.popularphotosviewer;
 
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,7 +28,6 @@ class ImageDownloadTask extends AsyncTask<Void, Void, Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         runnable.run();
-        Log.d("d", "dloaded");
     }
 
     @Override

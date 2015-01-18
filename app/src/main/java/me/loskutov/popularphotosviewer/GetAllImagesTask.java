@@ -8,7 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -38,7 +37,6 @@ class GetAllImagesTask extends AsyncTask <Void, Integer, Void> {
                             List<Photo> photos,
                             List<Bitmap> bitmaps,
                             boolean update) {
-        Log.d("lal", "GetAllImagesTask");
         this.context = context;
         this.adapter = adapter;
         this.photos = photos;
@@ -53,7 +51,6 @@ class GetAllImagesTask extends AsyncTask <Void, Integer, Void> {
         if (update) {
             progressDialog.setProgress(values[0] + 1);
         }
-        Log.d("notified", values[0].toString());
     }
 
     @Override
@@ -92,9 +89,6 @@ class GetAllImagesTask extends AsyncTask <Void, Integer, Void> {
 
     @Override
     protected Void doInBackground(Void... voids) {
-
-        Log.d("doinbg:", "" + photos.size());
-
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpGet httpGet = new HttpGet("http://api-fotki.yandex.ru/api/top/");
         httpGet.setHeader("Accept", "application/json");

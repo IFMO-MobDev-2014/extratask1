@@ -95,9 +95,6 @@ public class MainActivity extends ActionBarActivity implements MyResultReceiver.
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         if (id == R.id.action_refresh) {
             Toast.makeText(this, "refreshing", Toast.LENGTH_SHORT).show();

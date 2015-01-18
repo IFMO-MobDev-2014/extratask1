@@ -52,9 +52,6 @@ public class ImageActivity extends ActionBarActivity implements MyResultReceiver
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -69,7 +66,6 @@ public class ImageActivity extends ActionBarActivity implements MyResultReceiver
                 progressBar.setVisibility(View.INVISIBLE);
                 Bitmap bitmap = data.getParcelable("bitmap");
                 imageView.setImageBitmap(bitmap);
-                imageView.setScaleType(ImageView.ScaleType.CENTER);
                 break;
             case Constants.RECEIVER_FAILED:
                 Toast.makeText(this, "failed to refresh", Toast.LENGTH_SHORT).show();

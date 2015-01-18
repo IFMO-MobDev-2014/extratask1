@@ -1,3 +1,0 @@
-D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\classes\debug
-D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\pre-dexed\debug\universal-image-loader-1.9.3-20edb992af8366b555ab3ee21a0b8996311c0fe9.jar
-D:\Kirill\Dropbox\study\IFMO\2year\Android\LAST\app\build\intermediates\pre-dexed\debug\android-support-v4-f9548e7a8046adbec673d069eb1ee2ce64f448c3.jar

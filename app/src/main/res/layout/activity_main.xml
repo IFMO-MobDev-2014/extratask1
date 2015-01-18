@@ -27,18 +27,16 @@
 
     </LinearLayout>
 
-
-
-    <GridView
-        android:id="@+id/gridView1"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:columnWidth="90dp"
-        android:gravity="center"
-        android:horizontalSpacing="0dp"
-        android:numColumns="auto_fit"
-        android:stretchMode="columnWidth"
-        android:verticalSpacing="0dp" >
-    </GridView>
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="350dp">
+        <android.support.v4.view.PagerTitleStrip
+            android:id="@+id/pagerTitleStrip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top">
+        </android.support.v4.view.PagerTitleStrip>
+    </android.support.v4.view.ViewPager>
 
 </LinearLayout>

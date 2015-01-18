@@ -23,14 +23,16 @@ public class MySQLiteDatabase extends ContentProvider {
     final String LOG_TAG = "DB";
     static final int DB_VERSION = 1;
     private static final String DB_NAME = "urls.db";
-    public static final String TABLE_NAME = "urls";
+    public static final String TABLE_NAME = "urls2";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_URL = "url";
+    public static final String NUMBER = "num";
 
 
     public static final String DB_CREATE =
             "create table " + TABLE_NAME + "(" +
                     COLUMN_ID + " integer primary key autoincrement, " +
+                    NUMBER + " integer," +
                     COLUMN_URL + " text" +
                     ");";
 
@@ -186,7 +188,6 @@ public class MySQLiteDatabase extends ContentProvider {
     }
 
     private class DBHelper extends SQLiteOpenHelper {
-//        Context context;
         public DBHelper(Context context) {
             super(context, DB_NAME, null, DB_VERSION);
             Log.d(LOG_TAG, "DBHelper constr");
@@ -195,7 +196,6 @@ public class MySQLiteDatabase extends ContentProvider {
         public void onCreate(final SQLiteDatabase db) {
             Log.d(LOG_TAG, "create db!!!!!!!!!!!!");
             db.execSQL(DB_CREATE);
-//            db.insert(WEATHER_TABLE, null, cv);
         }
 
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

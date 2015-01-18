@@ -59,8 +59,9 @@ public class MyIntentService extends IntentService {
     final String KEY = "242909272044152ae00d4923bb414c7f";
     final String KEY_SECRET = "d02ef92a210d0384";
 //    String FlickrQuery_url = "https://api.flickr.com/services/rest/?method=flickr.photos.search";
-String FlickrQuery_url = "https://api.flickr.com/services/rest/?method=flickr.photos.getRecent";
-    String FlickrQuery_per_page = "&per_page=10";
+    String FlickrQuery_url = "https://api.flickr.com/services/rest/?method=flickr.photos.getRecent";
+    public static int COUNT = 27;
+    String FlickrQuery_per_page = "&per_page=" + COUNT;
     String FlickrQuery_nojsoncallback = "&nojsoncallback=12";
     String FlickrQuery_format = "&format=json";
 //    String FlickrQuery_tag = "&tags=";

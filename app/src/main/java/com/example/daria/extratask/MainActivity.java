@@ -1,6 +1,5 @@
 package com.example.daria.extratask;
 
-import android.app.Activity;
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -18,10 +17,17 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -29,51 +35,62 @@ import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.support.v4.app.FragmentManager;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.IllegalFormatException;
+import java.util.List;
 
 
-public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String DEBUG_TAG = "MainActivity";
 
-    public GridView gridview;
     MyBroadcastReceiver myBroadcastReceiver;
     Button load;
     public ArrayList<Bitmap> images = new ArrayList<>();
-    ImageAdapter adapter;
     public static final Uri DB_URI = Uri.parse("content://com.example.daria.extratask.providers.urls/urls");
     public static final String PATH = "/data/data/com.example.daria.extratask/cache";
     private static final int LOADER_ID = 1;
     private LoaderManager.LoaderCallbacks<Cursor> mCallbacks;
 
+    ViewPager pager;
+    PagerAdapter pagerAdapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
         mCallbacks = this;
+        pager = (ViewPager) findViewById(R.id.pager);
+        pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
+        pager.setAdapter(pagerAdapter);
+        pager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                Log.d(DEBUG_TAG, "onPageSelected, position = " + position);
+            }
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
         LoaderManager lm = getLoaderManager();
         lm.initLoader(LOADER_ID, null, mCallbacks);
-        setContentView(R.layout.activity_main);
-        gridview = (GridView) findViewById(R.id.gridView1);
         load = (Button) findViewById(R.id.load);
         Cursor cur = getContentResolver().query(DB_URI, null, null, null, null);
-        adapter = new ImageAdapter(this, cur);
-        gridview.setAdapter(adapter);
 
         load.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toClick();
-            }
-        });
-        gridview.setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(), FullImageActivity.class);
-                intent.putExtra("position", position);
-                startActivity(intent);
             }
         });
         myBroadcastReceiver = new MyBroadcastReceiver();
@@ -157,8 +174,9 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
         public void onReceive(Context context, Intent intent) {
             Log.d(DEBUG_TAG, "start BR");
             int progress = intent.getIntExtra("time", 0);
+            double per = progress / (double)MyIntentService.COUNT * 100;
             if (progress != 0) {
-                progressDialog.setProgress(progress * 10);
+                progressDialog.setProgress((int)per);
             }
             ArrayList<String> urls = intent.getStringArrayListExtra("urls");
             if (urls == null) return;
@@ -167,6 +185,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
             for (int i = 0; i < urls.size(); i++) {
                 ContentValues cv = new ContentValues();
                 cv.put(MySQLiteDatabase.COLUMN_URL, urls.get(i));
+                cv.put(MySQLiteDatabase.NUMBER, i);
                 getContentResolver().insert(MainActivity.DB_URI, cv);
             }
             progressDialog.hide();

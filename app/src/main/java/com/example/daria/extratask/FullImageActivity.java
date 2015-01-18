@@ -53,6 +53,8 @@ public class FullImageActivity extends Activity {
         curImage = position;
         cur = getContentResolver().query(MainActivity.DB_URI, null, null, null, null);
         text.setText((curImage + 1) + " of " + cur.getCount());
+        
+        Toast.makeText(getApplicationContext(), "Slide to the left: previous, \nto the right: next, \nup: return to the Gallery", Toast.LENGTH_LONG).show();
         cur.moveToPosition(curImage);
         String url = cur.getString(cur.getColumnIndex(MySQLiteDatabase.COLUMN_URL));
         String name = url.substring(url.lastIndexOf("/") + 1);
@@ -116,7 +118,6 @@ public class FullImageActivity extends Activity {
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent);
                     }else if (detector.isSwipeLeft(e1, e2, velocityX)) {
-                        showToast("Next");
                         curImage = Math.min(cur.getCount() - 1, curImage + 1);
                         text.setText((curImage + 1) + " of " + cur.getCount());
                         cur.moveToNext();
@@ -125,7 +126,6 @@ public class FullImageActivity extends Activity {
                         Bitmap bitmap = BitmapFactory.decodeFile(MainActivity.PATH + "/" + name);
                         imageView.setImageBitmap(bitmap);
                     } else if (detector.isSwipeRight(e1, e2, velocityX)) {
-                        showToast("Previous");
                         curImage = Math.max(0, curImage - 1);
                         text.setText((curImage + 1) + " of " + cur.getCount());
                         cur.moveToPrevious();

@@ -1,6 +1,7 @@
 package com.example.izban.app;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,10 +30,18 @@ public class MainFragment extends Fragment implements android.support.v4.app.Loa
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView;
+        GridView gridView;
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            rootView = inflater.inflate(R.layout.fragment_main_landscape, container, false);
+            gridView = ((GridView)rootView.findViewById(R.id.gridView2));
+        } else {
+            rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            gridView = ((GridView)rootView.findViewById(R.id.gridView));
+        }
         adapter = new ImagesAdapter(getActivity(), android.R.layout.simple_list_item_1);
-        ((GridView)rootView.findViewById(R.id.gridView)).setAdapter(adapter);
-        ((GridView)rootView.findViewById(R.id.gridView)).setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        gridView.setAdapter(adapter);
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(getActivity(), ImageActivity.class);
@@ -40,7 +49,7 @@ public class MainFragment extends Fragment implements android.support.v4.app.Loa
                 startActivity(intent);
             }
         });
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(0, null, this).forceLoad();
 
         return rootView;
     }

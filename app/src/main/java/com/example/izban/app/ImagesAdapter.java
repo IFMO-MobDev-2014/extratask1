@@ -15,21 +15,21 @@ import java.io.IOException;
  * Created by izban on 17.01.15.
  */
 
-class MyImageView extends ImageView {
-
-    public MyImageView(Context context) {
-        super(context);
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int width = getMeasuredWidth();
-        setMeasuredDimension(width, width);
-    }
-}
-
 public class ImagesAdapter extends ArrayAdapter<MyImage> {
+    static class MyImageView extends ImageView {
+
+        public MyImageView(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            int width = getMeasuredWidth();
+            setMeasuredDimension(width, width);
+        }
+    }
+
     public ImagesAdapter(Context context, int resource) {
         super(context, resource);
     }

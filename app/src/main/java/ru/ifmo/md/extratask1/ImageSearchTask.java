@@ -2,7 +2,6 @@ package ru.ifmo.md.extratask1;
 
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.ResponseHandler;
@@ -30,7 +29,6 @@ public class ImageSearchTask extends AsyncTask<Void, Void, ArrayList<String>> {
                 .appendQueryParameter("limit", "50")
                 .appendQueryParameter("format", "json")
                 .build().toString();
-        Log.i("Look at mah url", uri);
         HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(uri);
         ResponseHandler<String> responseHandler = new BasicResponseHandler();

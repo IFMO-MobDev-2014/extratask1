@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 
-/**
- * Created by anton on 17/01/15.
- */
 public class ImageClickListener implements View.OnClickListener {
     String url;
     Context ctx;

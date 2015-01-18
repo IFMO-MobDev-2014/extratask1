@@ -6,7 +6,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,7 +53,6 @@ public class ResultsList extends ActionBarActivity {
         helper = new DbHelper(this);
 
         List<String> urls = helper.getUrls();
-        Log.i("I have", "" + urls.size() + " urls");
         if (urls.size() == 0) {
             updatePhotos();
         } else {

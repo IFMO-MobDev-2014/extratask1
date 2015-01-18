@@ -30,7 +30,7 @@
         </activity>
 
         <activity
-            android:name=".FullImageActivity"
+            android:name=".FullScreenImageActivity"
             android:label="@string/title_full_image_activity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

@@ -14,8 +14,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -30,13 +32,13 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     private GridView gridView;
     private ImageAdapter mAdapter;
     private Cursor mCursor;
+    private GestureDetector gestureDetector;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Bundle bundle = intent.getExtras();
             if (bundle != null) {
-
             }
         }
     };
@@ -45,6 +47,16 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        gestureDetector = initGestureDetector();
+
+        View view = findViewById(R.id.grid_view);
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
+        });
+
         if (!isNetworkAvailable()) {
             Toast.makeText(this, getResources().getString(R.string.no_connection), Toast.LENGTH_SHORT).show();
             return;
@@ -61,23 +73,73 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 Cursor cursor = (Cursor) parent.getItemAtPosition(position);
                 int rowId = cursor.getInt(cursor.getColumnIndex(ImagesTable.COLUMN_ID));
                 cursor.close();
-                Intent intent = new Intent(getApplicationContext(), FullImageActivity.class);
-                intent.putExtra(FullImageActivity.EXTRA_ROW_ID, rowId);
+                Intent intent = new Intent(getApplicationContext(), FullScreenImageActivity.class);
+                intent.putExtra(FullScreenImageActivity.EXTRA_ROW_ID, rowId);
                 startActivity(intent);
             }
         });
-        getLoaderManager().initLoader(0, null, this);
+        Log.d("Tag", "count = " + getNumberOfRows());
+        showNextXPhotos(10);
+    }
 
-        Cursor cursor = getContentResolver().query(ImagesProvider.CONTENT_URI,
-                new String[] {ImagesTable.COLUMN_ID},
-                null, null, null);
-        Log.d("Tag", "count = " + cursor.getCount());
-        cursor.close();
+    private void showNextXPhotos(int number) {
+        int startIndex = getLastIndex(getApplicationContext());
+        int numRows = getNumberOfRows();
+        if (startIndex >= numRows) {
+            //Recycle Images
+            startIndex = 1;
+        }
+        int lastIndex = startIndex + number;
+        if (lastIndex > numRows) {
+            startIndex = Math.max(numRows - number, 1);
+            lastIndex = Math.min(startIndex + number, numRows);
+        }
+        setLastIndex(getApplicationContext(), lastIndex);
+        Bundle args = new Bundle();
+        args.putInt("start_index", startIndex);
+        args.putInt("last_index", lastIndex);
+        getLoaderManager().restartLoader(0, args, this);
+    }
+
+    private void showPreviousXPhotos(int number) {
+        int lastIndex = getLastIndex(getApplicationContext());
+        int numRows = getNumberOfRows();
+        int startIndex = lastIndex - number;
+        if (lastIndex <= 0) {
+            startIndex = 1;
+            lastIndex = Math.min(startIndex + number, numRows);
+        }
+        setLastIndex(getApplicationContext(), startIndex);
+        Bundle args = new Bundle();
+        args.putInt("start_index", startIndex);
+        args.putInt("last_index", lastIndex);
+        getLoaderManager().restartLoader(0, args, this);
+    }
+
+    private GestureDetector initGestureDetector() {
+        return new GestureDetector(getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
+            private MySwipeDetector detector = new MySwipeDetector();
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                try {
+                    if (detector.isSwipeLeft(e1, e2, velocityX)) {
+                        Log.d("Tag", "swipe LEFT");
+                        showNextXPhotos(10);
+                    } else if (detector.isSwipeRight(e1, e2, velocityX)) {
+                        Log.d("Tag", "swipe RIGHT");
+                        showPreviousXPhotos(10);
+                    }
+                } catch (Exception e) {
+                }
+                return false;
+            }
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        showNextXPhotos(10);
         registerReceiver(receiver, new IntentFilter(ImagesLoader.NOTIFICATION));
     }
 
@@ -113,9 +175,6 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         if (id == R.id.action_update) {
             Log.d("Tag", "Updating start");
             return true;
-        } else {
-            Log.d("Tag", "Next page");
-            getLoaderManager().restartLoader(0, null, this);
         }
 
         return super.onOptionsItemSelected(item);
@@ -145,18 +204,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        int startIndex = getLastIndex(getApplicationContext());
-        int numRows = getNumberOfRows();
-        if (startIndex >= numRows) {
-            //Recycle Images
-            startIndex = 1;
-        }
-        int lastIndex = startIndex + 10;
-        if (lastIndex > numRows) {
-            startIndex = Math.max(numRows - 10, 1);
-            lastIndex = Math.min(startIndex + 10, numRows);
-        }
-        setLastIndex(getApplicationContext(), lastIndex);
+        int startIndex = args.getInt("start_index");
+        int lastIndex = args.getInt("last_index");
         final String whereClause = ImagesTable.COLUMN_ID + " >= " + startIndex + " AND " +
                                    ImagesTable.COLUMN_ID + " < " + lastIndex;
         return new CursorLoader(this, ImagesProvider.CONTENT_URI, null, whereClause, null, null);

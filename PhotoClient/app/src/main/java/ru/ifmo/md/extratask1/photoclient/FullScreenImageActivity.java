@@ -13,8 +13,11 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -26,7 +29,7 @@ import ru.ifmo.md.extratask1.photoclient.database.ImagesTable;
 /**
  * Created by sergey on 16.01.15.
  */
-public class FullImageActivity extends ActionBarActivity {
+public class FullScreenImageActivity extends ActionBarActivity {
 
     public static final String EXTRA_ROW_ID = "extra_row_id";
 
@@ -37,6 +40,7 @@ public class FullImageActivity extends ActionBarActivity {
     private String title;
     private String authorName;
     private int rowId;
+    private GestureDetector gestureDetector;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -60,7 +64,54 @@ public class FullImageActivity extends ActionBarActivity {
         imageView = (ImageView) findViewById(R.id.full_image_view);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         rowId = getIntent().getIntExtra(EXTRA_ROW_ID, 1);
+        gestureDetector = initGestureDetector();
+        View view = findViewById(R.id.layout_full_image);
+        view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
+        });
+        view.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View ignore) {
+            }
+        });
         showPictureByRowId(rowId);
+    }
+
+    private GestureDetector initGestureDetector() {
+        return new GestureDetector(getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
+            private MySwipeDetector detector = new MySwipeDetector();
+
+            @Override
+            public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                try {
+                    if (detector.isSwipeDown(e1, e2, velocityY)) {
+                        return false;
+                    } else if (detector.isSwipeUp(e1, e2, velocityY)) {
+                        //Close activity and show gallery
+                        finish();
+                    } else if (detector.isSwipeLeft(e1, e2, velocityX)) {
+                        int numRows = getNumberOfRows();
+                        rowId = rowId + 1;
+                        if (rowId >= numRows) {
+                            rowId = numRows - 1;
+                            return false;
+                        }
+                        showPictureByRowId(rowId);
+                    } else if (detector.isSwipeRight(e1, e2, velocityX)) {
+                        rowId = rowId - 1;
+                        if (rowId <= 0) {
+                            rowId = 1;
+                            return false;
+                        }
+                        showPictureByRowId(rowId);
+                    }
+                } catch (Exception e) {
+                }
+                return false;
+            }
+        });
     }
 
     private int getNextRowId() {
@@ -74,7 +125,7 @@ public class FullImageActivity extends ActionBarActivity {
     private int getNumberOfRows() {
         Cursor cursor = getContentResolver().query(
                 ImagesProvider.CONTENT_URI,
-                new String[] { ImagesTable.COLUMN_ID },
+                new String[]{ImagesTable.COLUMN_ID},
                 null, null, null);
         int result = cursor.getCount();
         cursor.close();
@@ -86,7 +137,7 @@ public class FullImageActivity extends ActionBarActivity {
                 ImagesProvider.CONTENT_URI,
                 null,
                 ImagesTable.COLUMN_ID + " = ?",
-                new String[] {String.valueOf(pictureRowId)},
+                new String[]{String.valueOf(pictureRowId)},
                 null);
         cursor.moveToFirst();
         imageURLonWeb = cursor.getString(cursor.getColumnIndex(ImagesTable.COLUMN_LINK));
@@ -99,6 +150,14 @@ public class FullImageActivity extends ActionBarActivity {
         } else {
             showBigImage();
         }
+    }
+
+    private void showBigImage() {
+        imageBitmap = ImageFilesHandler.loadImageFromStorage(getApplicationContext(), imageURL);
+        imageView.setImageBitmap(imageBitmap);
+        getSupportActionBar().setTitle(title);
+//        ((TextView) findViewById(R.id.tv_image_title)).setText(title);
+
     }
 
     @Override
@@ -126,10 +185,6 @@ public class FullImageActivity extends ActionBarActivity {
             case R.id.action_save_to_gallery:
                 saveToGallery();
                 break;
-            case R.id.action_next_big_picture:
-                rowId = getNextRowId();
-                showPictureByRowId(rowId);
-                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -156,11 +211,6 @@ public class FullImageActivity extends ActionBarActivity {
             Toast.makeText(this, "Image has been saved in gallery.", Toast.LENGTH_LONG).show();
         else
             Toast.makeText(this, "Couldn't save image.", Toast.LENGTH_LONG).show();
-    }
-
-    private void showBigImage() {
-        imageBitmap = ImageFilesHandler.loadImageFromStorage(getApplicationContext(), imageURL);
-        imageView.setImageBitmap(imageBitmap);
     }
 
     @Override

@@ -3,26 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_set_wallpaper"
-        android:icon="@android:drawable/ic_menu_mapmode"
+        android:icon="@drawable/wallpaper"
         android:title="@string/action_set_as_wallpaper"
         app:showAsAction="ifRoom|withText" />
 
     <item
         android:id="@+id/action_open_in_browser"
-        android:icon="@android:drawable/ic_menu_slideshow"
+        android:icon="@drawable/browser"
         android:title="@string/action_open_in_browser"
         app:showAsAction="ifRoom|withText" />
 
     <item
         android:id="@+id/action_save_to_gallery"
-        android:icon="@android:drawable/ic_menu_save"
+        android:icon="@drawable/download"
         android:title="@string/action_save_to_gallery"
-        app:showAsAction="ifRoom|withText" />
-
-    <item
-        android:id="@+id/action_next_big_picture"
-        android:icon="@android:drawable/ic_menu_send"
-        android:title="Next picture"
         app:showAsAction="ifRoom|withText" />
 
 </menu>

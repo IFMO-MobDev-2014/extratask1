@@ -209,7 +209,6 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
                     values.put(PhotoContract.Photo.VALID_STATE, 1);
                     getContentResolver().update(PhotoProvider.PHOTO_CONTENT_URI, values, null, null);
                 }
-                // TODO: remove all invalid images
             }
             Cursor cursor = getContentResolver().query(PhotoProvider.PHOTO_CONTENT_URI, null,
                     PhotoContract.Photo.VALID_STATE + " = 0", null, null);

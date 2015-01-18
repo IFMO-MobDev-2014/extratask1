@@ -21,8 +21,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.IOException;
-
 import ru.ifmo.md.extratask1.photoclient.database.ImagesProvider;
 import ru.ifmo.md.extratask1.photoclient.database.ImagesTable;
 
@@ -190,11 +188,11 @@ public class FullScreenImageActivity extends ActionBarActivity {
     }
 
     private void setAsWallpaper() {
-        WallpaperManager manager = WallpaperManager.getInstance(this);
         try {
+            WallpaperManager manager = WallpaperManager.getInstance(this);
             manager.setBitmap(imageBitmap);
             Toast.makeText(this, "Wallpaper has been changed.", Toast.LENGTH_LONG).show();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "Couldn't set wallpaper.", Toast.LENGTH_LONG).show();
         }

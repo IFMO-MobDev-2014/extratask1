@@ -38,6 +38,11 @@ public class MainActivity extends ActionBarActivity implements MyResultReceiver.
             return Constants.PICTURES / Constants.ON_PAGE;
         }
 
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return String.format("images %d - %d of %d", position * Constants.ON_PAGE + 1, (position + 1) * Constants.ON_PAGE, Constants.PICTURES);
+        }
+
     }
 
     @Override

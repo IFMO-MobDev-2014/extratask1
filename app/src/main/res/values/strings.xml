@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">app</string>
+    <string name="app_name">ImageViewer</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="action_refresh">Refresh</string>
-    <string name="title_activity_image">ImageActivity</string>
+    <string name="title_activity_image">Detail view</string>
 
     <string name="portrait_columns">2</string>
     <string name="portrait_rows">4</string>

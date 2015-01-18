@@ -121,7 +121,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="fact.xml" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="fact.xml" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/fact.xml">
           <provider editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="544">
@@ -144,10 +144,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="IServise.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="IServise.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/alexey/extratask1/IServise.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-1.5557432" vertical-offset="1074" max-vertical-offset="1666">
+            <state vertical-scroll-proportion="0.0" vertical-offset="1074" max-vertical-offset="1666">
               <caret line="28" column="41" selection-start-line="28" selection-start-column="41" selection-end-line="28" selection-end-column="41" />
               <folding>
                 <element signature="e#3592#3600#0" expanded="true" />
@@ -867,8 +867,8 @@
         <option value="$PROJECT_DIR$/app/src/main/res/layout/lel.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/alexey/extratask1/BoxAdapter.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/alexey/extratask1/MainActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/res/layout/fact.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/example/alexey/extratask1/IServise.java" />
+        <option value="$PROJECT_DIR$/app/src/main/res/layout/fact.xml" />
       </list>
     </option>
   </component>
@@ -1396,6 +1396,16 @@
         <state />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/alexey/extratask1/IServise.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1074" max-vertical-offset="1666">
+          <caret line="28" column="41" selection-start-line="28" selection-start-column="41" selection-end-line="28" selection-end-column="41" />
+          <folding>
+            <element signature="e#3592#3600#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/fact.xml">
       <provider editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="187">
@@ -1405,16 +1415,6 @@
       </provider>
       <provider selected="true" editor-type-id="android-designer">
         <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/example/alexey/extratask1/IServise.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.5557432" vertical-offset="1074" max-vertical-offset="1666">
-          <caret line="28" column="41" selection-start-line="28" selection-start-column="41" selection-end-line="28" selection-end-column="41" />
-          <folding>
-            <element signature="e#3592#3600#0" expanded="true" />
-          </folding>
-        </state>
       </provider>
     </entry>
   </component>

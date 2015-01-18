@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -35,11 +36,14 @@ public class FullImageActivity extends ActionBarActivity {
 
     private void showImage() {
         final ImageView imageView = (ImageView) findViewById(R.id.full_size_image);
+        final TextView label = (TextView) findViewById(R.id.full_size_label);
         final Context context = this;
 
         Intent intent = getIntent();
         final String title = intent.getStringExtra(IMAGE_TITLE_EXTRA);
         final String url = intent.getStringExtra(IMAGE_LINK_EXTRA);
+
+        label.setText(title);
 
         final ProgressDialog progress = new ProgressDialog(this);
         progress.show();

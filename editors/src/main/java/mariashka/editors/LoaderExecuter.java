@@ -53,10 +53,10 @@ public class LoaderExecuter implements PhotoLoadListener {
     public void onLoadFinished(List<PhotoItem> data) {
         if (data == null) {
             Toast.makeText(main.getApplicationContext(),
-                    "Can't connect to the server", Toast.LENGTH_LONG).show();
+                    "Can't connect to the server", Toast.LENGTH_SHORT).show();
 
             Toast.makeText(main.getApplicationContext(),
-                    "Please check your Internet connection", Toast.LENGTH_LONG).show();
+                    "Please check your Internet connection", Toast.LENGTH_SHORT).show();
             main.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             return;
         }
@@ -70,10 +70,7 @@ public class LoaderExecuter implements PhotoLoadListener {
     @Override
     public void onCancelLoad(List<PhotoItem> data) {
         Toast.makeText(main.getApplicationContext(),
-                "Loading was canceled by user", Toast.LENGTH_LONG).show();
-        Toast.makeText(main.getApplicationContext(),
-                "To get all start sync again", Toast.LENGTH_SHORT).show();
-        main.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                "Loading was canceled by user", Toast.LENGTH_SHORT).show();
     }
 
     private void storeData(List<PhotoItem> items) {

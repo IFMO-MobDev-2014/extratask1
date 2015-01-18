@@ -78,6 +78,7 @@ public class SpinnerFragment extends DialogFragment
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Loading data from memory");
         progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
 
         return progressDialog;
@@ -110,8 +111,8 @@ public class SpinnerFragment extends DialogFragment
 
     @Override
     public void onLoaderReset(Loader<List<PhotoItem>> loader) {}
-
     @Override
+
     public void onCancel(DialogInterface dialog) {
         super.onCancel(dialog);
         List<PhotoItem> items = loader.getList();
@@ -120,7 +121,6 @@ public class SpinnerFragment extends DialogFragment
 
         onCancelLoad(items);
     }
-
     private void hideDialog() {
         handler.post(new Runnable() {
             @Override

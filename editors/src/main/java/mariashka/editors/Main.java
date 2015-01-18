@@ -2,58 +2,37 @@ package mariashka.editors;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import mariashka.editors.provider.photos.PhotosColumns;
-import mariashka.editors.provider.photos.PhotosCursor;
-
-
 public class Main extends ActionBarActivity implements MemExecutable{
     private List<PhotoItem> items = new ArrayList<>();
     public LoaderExecuter execLoad;
     public MemoryExecuter execMem;
-    GridView gridView;
-    GridAdapter adapter;
-    public static boolean isUpdating = false;
+    MainAdapter adapter;
+    LayoutInflater inflater;
+    ViewPager vpPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        execMem = new MemoryExecuter(this);
-        if (!isUpdating)
-            execMem.execute();
-        gridView = (GridView) findViewById(R.id.gridView);
-        adapter = new GridAdapter(this, R.layout.img_view, items);
-        gridView.setAdapter(adapter);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(), FullScreenActivity.class);
-                intent.putExtra("page", position);
-                startActivity(intent);
-            }
-        });
-
+        inflater = LayoutInflater.from(this);
+        vpPager = (ViewPager) findViewById(R.id.pager);
         execLoad = new LoaderExecuter(this);
+        execMem = new MemoryExecuter(this);
+        execMem.execute();
     }
-
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -77,25 +56,26 @@ public class Main extends ActionBarActivity implements MemExecutable{
         return super.onOptionsItemSelected(item);
     }
 
-    public List<PhotoItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<PhotoItem> items) {
-        this.items = items;
-    }
-
     public void syncOnClick(MenuItem item) {
         execLoad.execute();
     }
 
+    public void onGridItemClick(GridView g, View v, int position, long id) {
+        Intent intent = new Intent(this, FullScreenActivity.class);
+        intent.putExtra("page", position);
+        startActivity(intent);
+    }
 
     @Override
     public void notifyGrid(List<PhotoItem> i) {
-        adapter.clear();
-        for (int j = 0; j < i.size(); j++) {
-            adapter.add(i.get(j));
+        if (i.size() == 0)
+            Toast.makeText(this, "Press sync to load photos", Toast.LENGTH_LONG).show();
+        items = i;
+        List<GridPhotoFragment> fragments = new ArrayList<>();
+        for (int j = 0; j < i.size(); j += 20) {
+            fragments.add(new GridPhotoFragment(i.subList(j, Math.min(j + 20, i.size())), this, j));
         }
-        adapter.notifyDataSetChanged();
+        adapter = new MainAdapter(getSupportFragmentManager(), fragments);
+        vpPager.setAdapter(adapter);
     }
 }

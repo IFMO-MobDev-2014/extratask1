@@ -23,10 +23,6 @@ public class GridAdapter extends ArrayAdapter<PhotoItem> {
     private int layoutResourceId;
     private List<PhotoItem> data = new ArrayList<>();
 
-    public void setData(List<PhotoItem> i) {
-        data = i;
-    }
-
     public GridAdapter(Context context, int layoutResourceId, List<PhotoItem> data) {
         super(context, layoutResourceId, data);
         this.layoutResourceId = layoutResourceId;
@@ -53,6 +49,15 @@ public class GridAdapter extends ArrayAdapter<PhotoItem> {
         {
             super(context);
         }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+
+            int width = getMeasuredWidth();
+            setMeasuredDimension(width, width);
+        }
+
 
         @Override
         public void setImageBitmap(Bitmap bm)

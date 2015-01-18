@@ -1,6 +1,4 @@
-package ru.ifmo.md.photooftheday.photosdownloader;
-
-import android.os.Build;
+package ru.ifmo.md.photooftheday.photodownloader;
 
 /**
  * Created by vadim on 17/01/15.

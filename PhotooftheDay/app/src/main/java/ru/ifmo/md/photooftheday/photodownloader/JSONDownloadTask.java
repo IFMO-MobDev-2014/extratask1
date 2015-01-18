@@ -1,4 +1,4 @@
-package ru.ifmo.md.photooftheday.photosdownloader;
+package ru.ifmo.md.photooftheday.photodownloader;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,56 +23,47 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Created by vadim on 17/01/15.
  */
-public class PhotosDownloadTask extends AsyncTask<PhotosParams, Void, List<Bitmap>> {
-    public static final String TAG = "PhotosDownloadTask";
+public class JSONDownloadTask extends AsyncTask<Void, Void, JSONObject> {
+    public static final String TAG = JSONDownloadTask.class.getSimpleName();
 
     private static final String API_URL = "https://api.500px.com/v1/photos";
     private static final String CONSUMER_KEY = "EeLvrefbDq9ZgIhCNk95vSjOMHwaogEGkJjNRayk";
 
-    @Override
-    protected List<Bitmap> doInBackground(final PhotosParams... params) {
-        final PhotosParams param = params[0];
-        final String request = API_URL + "?" +
-                "feature=" + param.feature + "&" +
-                "sort=" + param.sort + "&" +
-                "sort_direction=" + param.sortDirection + "&" +
-                "only=" + param.only + "&" +
-                "exclude=" + param.exclude + "&" +
-                "rpp=" + param.counter + "&" +
-                "image_size" + param.imageSize + "&" +
-                "consumer_key=" + CONSUMER_KEY;
-        Log.v(TAG, "URL: " + request);
-        JSONObject object = handle(new HttpGet(request));
+    private static String feature = "fresh_today";
+    private static String sort = "highest_rating";
+    private static String sortDirection = "desc";
+    private static String counter = "20";
+    private static String[] imageSizes = {"3", "4"};
+//    private static String only = "0";
+//    private static String exclude = "0";
 
-        try {
-            if (object != null) {
-                JSONArray photos = object.getJSONArray("photos");
-                List<Bitmap> result = new ArrayList<>();
-                for (int i = 0; i < photos.length(); ++i) {
-                    URL url = new URL(photos.getJSONObject(0).getString("image_url"));
-                    InputStream inputStream = url.openStream();
-                    result.add(BitmapFactory.decodeStream(inputStream));
-                }
-                return result;
-            } else {
-                Log.w(TAG, "failed to download JSONObject");
-            }
-        } catch (JSONException e) {
-            Log.e(TAG, e.getMessage(), e);
-        } catch (MalformedURLException e) {
-            Log.e(TAG, e.getMessage(), e);
-        } catch (IOException e) {
-            Log.e(TAG, e.getMessage(), e);
+    private static String request;
+    static {
+        request = "feature=" + feature + "&" +
+                "sort=" + sort + "&" +
+                "sort_direction=" + sortDirection + "&" +
+                "rpp=" + counter;
+        for (String imageSize : imageSizes) {
+            request += "&image_size[]=" + imageSize;
         }
-        return null;
     }
 
-    /* copy-paste from https://github.com/500px/500px-android-sdk/blob/master/src/main/java/com/fivehundredpx/api/PxApi.java */
+    @Override
+    protected JSONObject doInBackground(Void... voids) {
+        Log.d(TAG, "doInBackground() starts");
+        long startTime = System.currentTimeMillis();
+        final String url = API_URL + "?" + request + "&consumer_key=" + CONSUMER_KEY;
+        Log.v(TAG, "URL: " + url);
+        JSONObject object = handle(new HttpGet(url));
+        Log.d(TAG, "doInBackground() complete in " + (System.currentTimeMillis() - startTime) + ".ms");
+        return object;
+    }
+
+    // copy-paste from https://github.com/500px/500px-android-sdk/blob/master/src/main/java/com/fivehundredpx/api/PxApi.java
     private JSONObject handle(HttpUriRequest request) {
         try {
             DefaultHttpClient client = new DefaultHttpClient();

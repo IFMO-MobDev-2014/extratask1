@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ImageSearchTask extends AsyncTask<Void, Void, ArrayList<String>> {
+public class ImageSearchTask extends AsyncTask<Void, Void, ArrayList<Image>> {
     ResultsList screen;
 
     public ImageSearchTask(ResultsList screen) {
@@ -23,17 +23,17 @@ public class ImageSearchTask extends AsyncTask<Void, Void, ArrayList<String>> {
     }
 
     @Override
-    protected ArrayList<String> doInBackground(Void... sth) {
+    protected ArrayList<Image> doInBackground(Void... sth) {
         String uri = Uri.parse("http://api-fotki.yandex.ru/api/recent/")
                 .buildUpon()
-                .appendQueryParameter("limit", "50")
+                .appendQueryParameter("limit", "60")
                 .appendQueryParameter("format", "json")
                 .build().toString();
         HttpClient client = new DefaultHttpClient();
         HttpGet request = new HttpGet(uri);
         ResponseHandler<String> responseHandler = new BasicResponseHandler();
         JSONObject responseJson;
-        ArrayList<String> urls = new ArrayList<>();
+        ArrayList<Image> images = new ArrayList<>();
 
         try {
             String responseStr = client.execute(request, responseHandler);
@@ -44,9 +44,10 @@ public class ImageSearchTask extends AsyncTask<Void, Void, ArrayList<String>> {
 
                 for (int i = 0; i < resultsCount; i++) {
                     JSONObject result = results.getJSONObject(i);
-                    JSONObject images = result.getJSONObject("img");
-                    String photoUrl = images.getJSONObject("M").getString("href");
-                    urls.add(photoUrl);
+                    JSONObject imageSizes = result.getJSONObject("img");
+                    String url = imageSizes.getJSONObject("M").getString("href");
+                    String title = result.getString("title");
+                    images.add(new Image(url, title));
                 }
             } catch (JSONException ignore) {
             } // Yandex.Fotki JSON is a valid JSON
@@ -54,7 +55,7 @@ public class ImageSearchTask extends AsyncTask<Void, Void, ArrayList<String>> {
             e.printStackTrace();
         }
 
-        return urls;
+        return images;
     }
 
     @Override
@@ -64,8 +65,8 @@ public class ImageSearchTask extends AsyncTask<Void, Void, ArrayList<String>> {
     }
 
     @Override
-    protected void onPostExecute(ArrayList<String> urls) {
-        super.onPostExecute(urls);
-        screen.onImageSearchFinished(urls);
+    protected void onPostExecute(ArrayList<Image> images) {
+        super.onPostExecute(images);
+        screen.onImageSearchFinished(images);
     }
 }

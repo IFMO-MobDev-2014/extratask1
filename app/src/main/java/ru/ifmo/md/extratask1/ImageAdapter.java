@@ -14,28 +14,28 @@ import java.util.List;
 
 public class ImageAdapter extends BaseAdapter {
     private GridView gallery;
-    private List<String> urls;
+    private List<Image> images;
     private ImageCacher cacher;
     private Context context;
 
     public ImageAdapter(GridView gallery, Context ctx) {
-        this.urls = new ArrayList<>();
+        this.images = new ArrayList<>();
         this.cacher = new ImageCacher(ctx);
         this.gallery = gallery;
         this.context = ctx;
     }
 
-    public void setData(List<String> urls) {
-        this.urls = urls;
+    public void setData(List<Image> images) {
+        this.images = images;
         notifyDataSetChanged();
     }
 
     public int getCount() {
-        return urls.size();
+        return images.size();
     }
 
     public Object getItem(int position) {
-        return urls.get(position);
+        return images.get(position);
     }
 
     public long getItemId(int position) {
@@ -44,12 +44,12 @@ public class ImageAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView = (SquareImageView) LayoutInflater.from(context).inflate(R.layout.grid_image, null);
-        String url = urls.get(position);
+        Image image = images.get(position);
 
-        String resId = new File(url).getName();
+        String resId = new File(image.url).getName();
         if (cacher.isAvailable(resId)) {
             cacher.putToImageView(imageView, resId);
-            imageView.setOnClickListener(new ImageClickListener(context, url));
+            imageView.setOnClickListener(new ImageClickListener(context, image));
         } else {
             imageView.setImageResource(R.drawable.image_error);
         }

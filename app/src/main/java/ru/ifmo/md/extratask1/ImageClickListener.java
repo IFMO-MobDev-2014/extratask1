@@ -5,19 +5,20 @@ import android.content.Intent;
 import android.view.View;
 
 public class ImageClickListener implements View.OnClickListener {
-    String url;
+    Image image;
     Context ctx;
 
-    public ImageClickListener(Context ctx, String url) {
+    public ImageClickListener(Context ctx, Image image) {
         super();
         this.ctx = ctx;
-        this.url = url;
+        this.image = image;
     }
 
     @Override
     public void onClick(View view) {
         Intent viewIntent = new Intent(ctx, ImagePreview.class);
-        viewIntent.putExtra("url", url);
+        viewIntent.putExtra("url", image.url);
+        viewIntent.putExtra("title", image.title);
         ctx.startActivity(viewIntent);
     }
 }

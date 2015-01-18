@@ -9,9 +9,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by anton on 17/01/15.
- */
 public class DbHelper extends SQLiteOpenHelper {
     public DbHelper(Context context) {
         super(context, "imagedb", null, 1);
@@ -21,7 +18,8 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table images ("
                 + "_id integer primary key autoincrement,"
-                + "url text);");
+                + "url text,"
+                + "title text)");
     }
 
     @Override
@@ -29,30 +27,32 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL("drop table if exists images");
     }
 
-    public List<String> getUrls() {
-        List<String> urls = new ArrayList<>();
+    public List<Image> getImages() {
+        List<Image> images = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.query("images", null, null, null, null, null, null);
 
         c.moveToFirst();
         while (!c.isAfterLast()) {
             String url = c.getString(1);
-            urls.add(url);
+            String image = c.getString(2);
+            images.add(new Image(url, image));
             c.moveToNext();
         }
         c.close();
 
-        return urls;
+        return images;
     }
 
-    public void setUrls(List<String> urls) {
+    public void setImages(List<Image> images) {
         SQLiteDatabase db = getWritableDatabase();
 
         db.execSQL("delete from images");
 
-        for (String url : urls) {
+        for (Image image : images) {
             ContentValues values = new ContentValues();
-            values.put("url", url);
+            values.put("url", image.url);
+            values.put("title", image.title);
             db.insert("images", null, values);
         }
     }

@@ -1,5 +1,6 @@
 package ru.ifmo.md.extratask1;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
@@ -41,14 +42,18 @@ public class ImagePreview extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_preview);
 
+        Intent intent = getIntent();
         imgView = (ImageView) findViewById(R.id.preview_container);
-        String url = getIntent().getStringExtra("url");
+        String url = intent.getStringExtra("url");
+        String title = intent.getStringExtra("title");
         url = url.replace("_M", "_XXL");
         resId = new File(url).getName();
         cacher = new ImageCacher(this);
 
         ImageLoadTask loadTask = new ImageLoadTask(cacher, this, url);
         TimeoutTaskRunner.runTask(loadTask, IMAGE_PREVIEW_TIMEOUT);
+
+        setTitle(title);
     }
 
     public void onImageLoad() {

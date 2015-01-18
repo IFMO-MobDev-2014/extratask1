@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/home/sultan/Documents/Year2/android/extratask1/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="/home/sultan/Documents/Year2/android/extratask1/app/build/intermediates/pre-dexed/debug/classes-eb9b1af27a6f7cfbd7bfa6f243d1e22135224ae5.jar" />
+    </item>
+    <item
+        jar="/home/sultan/.gradle/caches/modules-2/files-2.1/com.google.code.gson/gson/2.3/5fc52c41ef0239d1093a1eb7c3697036183677ce/gson-2.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="5fc52c41ef0239d1093a1eb7c3697036183677ce">
+        <dex dex="/home/sultan/Documents/Year2/android/extratask1/app/build/intermediates/pre-dexed/debug/gson-2.3-a92c34d4f3cfd393645bd6682ca9ef15b0c7aedc.jar" />
+    </item>
+    <item
+        jar="/home/sultan/.gradle/caches/modules-2/files-2.1/com.googlecode.flickrj-android/flickrj-android/2.1.0/8ff4a341260f9f438456d990396589d51a61e36/flickrj-android-2.1.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="08ff4a341260f9f438456d990396589d51a61e36">
+        <dex dex="/home/sultan/Documents/Year2/android/extratask1/app/build/intermediates/pre-dexed/debug/flickrj-android-2.1.0-5db319ed0e1e7216198a76436c6b90f85c9b5ab4.jar" />
+    </item>
+    <item
+        jar="/home/sultan/Documents/Year2/android/extratask1/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/libs/internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="/home/sultan/Documents/Year2/android/extratask1/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-d0599c8da196fa3ecf27668bc5f988a4a61ae2f2.jar" />
+    </item>
+    <item
+        jar="/home/sultan/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-android/1.6.1-RC1/fe76e182946faad493a50968f3344e848b467b42/slf4j-android-1.6.1-RC1.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="fe76e182946faad493a50968f3344e848b467b42">
+        <dex dex="/home/sultan/Documents/Year2/android/extratask1/app/build/intermediates/pre-dexed/debug/slf4j-android-1.6.1-RC1-12cab79f11bff629d95fe5b806500f30a3e24b51.jar" />
+    </item>
+    <item
+        jar="/usr/share/android-studio/data/sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="/home/sultan/Documents/Year2/android/extratask1/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-ee6adc1e6e7c1b1598b6e6d645f6a7d99d029778.jar" />
+    </item>
+    <item
+        jar="/home/sultan/Documents/Year2/android/extratask1/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="/home/sultan/Documents/Year2/android/extratask1/app/build/intermediates/pre-dexed/debug/classes-434a7b3749954ad1c7e361809e51c7a6a5492ab4.jar" />
+    </item>
+
+</items>

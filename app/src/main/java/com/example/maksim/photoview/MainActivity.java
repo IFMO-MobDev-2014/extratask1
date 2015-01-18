@@ -11,6 +11,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -27,6 +28,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     int currentPosition = 0;
     List <Image> allImages;
     GridView view;
+    float startX = 0;
+    float finalX = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

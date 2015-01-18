@@ -6,6 +6,7 @@ import android.content.Loader;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -13,6 +14,8 @@ public class FullScreenImage extends ActionBarActivity implements LoaderManager.
 
     public static int position;
     ImageView view;
+    float startX = 0;
+    float finalX = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,26 @@ public class FullScreenImage extends ActionBarActivity implements LoaderManager.
             position = 0;
         }
         getLoaderManager().restartLoader(2, null, FullScreenImage.this);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN: {
+                startX = event.getX();
+                break;
+            }
+            case MotionEvent.ACTION_UP: {
+                finalX = event.getX();
+                if (finalX > startX) {
+                    onPrev(view);
+                } else {
+                    onNext(view);
+                }
+                break;
+            }
+        }
+        return true;
     }
 
     @Override

@@ -94,7 +94,11 @@ public class MainActivity extends ActionBarActivity {
                     contentValues.insert(getContentResolver());
                 }
                 images = null;
-                dialog.dismiss();
+                try {
+                    dialog.dismiss();
+                } catch (Exception ignore) {
+                    
+                }
             }
 
             @Override

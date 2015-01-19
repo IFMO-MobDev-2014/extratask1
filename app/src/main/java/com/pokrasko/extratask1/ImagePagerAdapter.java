@@ -21,6 +21,7 @@ public class ImagePagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return widthNumber * heightNumber;
+        return ((Double) Math.ceil((double) MainActivity.AMOUNT / (widthNumber * heightNumber)))
+                .intValue();
     }
 }

@@ -23,7 +23,7 @@ public class PageFragment extends Fragment {
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
-        fragment.setRetainInstance(true);
+        //fragment.setRetainInstance(true);
         return fragment;
     }
 
@@ -38,7 +38,8 @@ public class PageFragment extends Fragment {
                 List<Bitmap> screen = MainActivity.images.subList(10 * pos, 10 * (pos + 1));
                 gridView.setAdapter(new GridAdapter(getActivity(), screen, 10 * pos));
             } else {
-                List<Bitmap> screen = MainActivity.images.subList(12 * pos, 12 * (pos + 1));
+                List<Bitmap> screen = MainActivity.images.subList(12 * pos,
+                        Math.min(100, 12 * (pos + 1)));
                 gridView.setAdapter(new GridAdapter(getActivity(), screen, 12 * pos));
             }
         }

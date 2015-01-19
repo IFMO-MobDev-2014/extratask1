@@ -50,6 +50,7 @@ public class MainActivity extends ActionBarActivity implements ImageResultReceiv
         } else {
             pager.setAdapter(new ImagePagerAdapter(getSupportFragmentManager(), 3, 4));
         }
+        pager.setCurrentItem(0);
 
         receiver = new ImageResultReceiver(new Handler());
         receiver.setReceiver(this);
@@ -65,6 +66,9 @@ public class MainActivity extends ActionBarActivity implements ImageResultReceiv
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle savedInstanceState) {
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -99,6 +103,7 @@ public class MainActivity extends ActionBarActivity implements ImageResultReceiv
                 } else {
                     pager.setAdapter(new ImagePagerAdapter(getSupportFragmentManager(), 3, 4));
                 }
+                pager.setCurrentItem(0);
                 break;
             case ImageResultReceiver.PROGRESS:
                 bar.setProgress(bundle.getInt("progress"));

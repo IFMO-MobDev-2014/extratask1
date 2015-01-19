@@ -67,7 +67,12 @@ public class ImageUpdater extends IntentService {
 
                 getContentResolver().delete(ImageContentProvider.CONTENT_IMAGES_URI, null, null);
                 JSONObject entry;
-                for (int i = 0; i < MainActivity.AMOUNT; ++i) {
+
+                for (int i = 0; i < MainActivity.AMOUNT; i++) {
+                    deleteFile("full" + index);
+                }
+
+                for (int i = 0; i < MainActivity.AMOUNT; i++) {
                     Bundle bundle = new Bundle();
                     bundle.putInt("progress", i);
                     receiver.send(ImageResultReceiver.PROGRESS, bundle);
@@ -112,8 +117,7 @@ public class ImageUpdater extends IntentService {
             } else {
                 size = "preview";
             }
-            deleteFile("preview" + index);
-            deleteFile("full" + index);
+            deleteFile(size + index);
             FileOutputStream fos = this.openFileOutput(size + index, Context.MODE_PRIVATE);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.close();

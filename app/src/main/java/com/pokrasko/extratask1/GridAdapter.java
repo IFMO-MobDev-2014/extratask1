@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -32,6 +33,11 @@ public class GridAdapter extends ArrayAdapter<Bitmap> {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (ImageUpdater.running) {
+                    Toast.makeText(parent.getContext(), "Images are being refreshed",
+                            Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Intent intent = new Intent(getContext(), FullActivity.class);
                 intent.putExtra("index", number + position);
                 getContext().startActivity(intent);

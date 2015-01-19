@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Extra task 1</string>
+    
+    <string name="preview_mod">M</string>
+    <string name="full_mod">XXL</string>
+
+    <string name="browser_menu">Open in browser</string>
+    <string name="save_menu">Save to storage</string>
+    <string name="wallpaper_menu">Set as wallpaper</string>
+    
+    <string name="saved">Image was saved as </string>
+    <string name="not_saved">I/O error: image wasn't saved</string>
+    <string name="wait_wallpaper">Nothing to set as wallpaper. Wait for an image</string>
+    <string name="set_wallpaper">Image was set as wallpaper</string>
+    <string name="not_set_wallpaper">I/O error: image wasn't set as wallpaper</string>
+    <string name="not_loaded">Error: image isn't been loaded</string>
+    <string name="not_loadeds">Error: images aren't been loaded</string>
+    <string name="busy_updater">Images are being refreshed</string>
+
+</resources>

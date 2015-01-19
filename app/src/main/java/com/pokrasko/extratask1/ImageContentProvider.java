@@ -17,10 +17,11 @@ public class ImageContentProvider extends ContentProvider {
     private static final int IMAGES = 0;
     private static final int IMAGE_ID = 1;
 
-    private static final String ID_FIELD = "id";
-    private static final String INDEX_FIELD = "ind";
-    private static final String LINK_FIELD = "hLink";
-    private static final String PAGE_FIELD = "aLink";
+    static final String ID_FIELD = "id";
+    static final String INDEX_FIELD = "ind";
+    static final String TITLE_FIELD = "title";
+    static final String FULL_FIELD = "hLink";
+    static final String PAGE_FIELD = "aLink";
 
     private static final String AUTHORITY = "com.pokrasko.extratask1";
     private static final String IMAGES_PATH = "images";
@@ -32,7 +33,8 @@ public class ImageContentProvider extends ContentProvider {
     private static final String CREATE_IMAGES_TABLE = "CREATE TABLE " + IMAGES_TABLE +
             " (" + ID_FIELD + " INTEGER PRIMARY KEY AUTOINCREMENT" +
             ", " + INDEX_FIELD + " INTEGER" +
-            ", " + LINK_FIELD + " TEXT NOT NULL UNIQUE" +
+            ", " + TITLE_FIELD + " TEXT NOT NULL UNIQUE" +
+            ", " + FULL_FIELD + " TEXT NOT NULL UNIQUE" +
             ", " + PAGE_FIELD + " TEXT NOT NULL UNIQUE);";
 
     private static final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);

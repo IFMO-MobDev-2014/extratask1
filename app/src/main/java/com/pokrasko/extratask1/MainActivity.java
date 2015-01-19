@@ -9,8 +9,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -71,23 +69,6 @@ public class MainActivity extends ActionBarActivity implements ImageResultReceiv
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onReceiveResult(int code, Bundle bundle) {
         switch (code) {
             case ImageResultReceiver.OK:
@@ -109,7 +90,7 @@ public class MainActivity extends ActionBarActivity implements ImageResultReceiv
                 bar.setProgress(bundle.getInt("progress"));
                 break;
             case ImageResultReceiver.ERROR:
-                Toast.makeText(this, "Connection error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.not_loadeds, Toast.LENGTH_SHORT).show();
                 layout.setRefreshing(false);
                 bar.setProgress(0);
                 break;

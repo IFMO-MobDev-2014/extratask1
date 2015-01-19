@@ -27,7 +27,7 @@ public class ImageUpdater extends IntentService {
     public static boolean running = false;
 
     public ImageUpdater() {
-        super("Image Updater");
+        super("ImageUpdater");
     }
 
     @Override
@@ -36,19 +36,32 @@ public class ImageUpdater extends IntentService {
 
         receiver = intent.getParcelableExtra("receiver");
         index = intent.getIntExtra("index", -1);
+        boolean image = intent.getBooleanExtra("image", false);
 
         if (index != -1) {
             try {
                 receiver.send(ImageResultReceiver.PROGRESS, Bundle.EMPTY);
+
                 Cursor cursor = getContentResolver().query(ImageContentProvider.CONTENT_IMAGES_URI,
-                        null, "ind=" + index, null, null);
+                        null, ImageContentProvider.INDEX_FIELD + "=" + index, null, null);
                 cursor.moveToFirst();
-                String link = cursor.getString(2);
+                String title = cursor.getString(cursor.getColumnIndex(ImageContentProvider.TITLE_FIELD));
+                String full = cursor.getString(cursor.getColumnIndex(ImageContentProvider.FULL_FIELD));
+                String page = cursor.getString(cursor.getColumnIndex(ImageContentProvider.PAGE_FIELD));
                 cursor.close();
-                Bitmap image = BitmapFactory.decodeStream(new URL(link).openConnection()
-                        .getInputStream());
-                saveImage(image, index, true);
-                receiver.send(ImageResultReceiver.OK, Bundle.EMPTY);
+
+                if (image) {
+                    Bitmap bitmap = BitmapFactory.decodeStream(new URL(full).openConnection()
+                            .getInputStream());
+                    saveImage(bitmap, index, true);
+                }
+
+                Bundle bundle = new Bundle();
+                bundle.putString("title", title);
+                bundle.putString("full", full);
+                bundle.putString("page", page);
+                bundle.putBoolean("image", image);
+                receiver.send(ImageResultReceiver.OK, bundle);
             } catch (Exception e) {
                 receiver.send(ImageResultReceiver.ERROR, Bundle.EMPTY);
             }
@@ -84,16 +97,18 @@ public class ImageUpdater extends IntentService {
                     String fLink = entry.getJSONObject("img")
                             .getJSONObject(getBaseContext().getString(R.string.full_mod))
                             .getString("href");
+                    String title = entry.getString("title");
                     String aLink = entry.getJSONObject("links").getString("alternate");
                     ContentValues values = new ContentValues();
-                    values.put("ind", i);
-                    values.put("hLink", fLink);
-                    values.put("aLink", aLink);
+                    values.put(ImageContentProvider.INDEX_FIELD, i);
+                    values.put(ImageContentProvider.TITLE_FIELD, title);
+                    values.put(ImageContentProvider.FULL_FIELD, fLink);
+                    values.put(ImageContentProvider.PAGE_FIELD, aLink);
                     getContentResolver().insert(ImageContentProvider.CONTENT_IMAGES_URI, values);
 
                     URL url = new URL(pLink);
-                    Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                    saveImage(image, i, false);
+                    Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                    saveImage(bitmap, i, false);
                 }
                 receiver.send(ImageResultReceiver.OK, Bundle.EMPTY);
             } catch (Exception e) {

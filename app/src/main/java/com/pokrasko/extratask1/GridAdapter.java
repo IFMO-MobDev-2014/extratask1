@@ -34,8 +34,8 @@ public class GridAdapter extends ArrayAdapter<Bitmap> {
             @Override
             public void onClick(View v) {
                 if (ImageUpdater.running) {
-                    Toast.makeText(parent.getContext(), "Images are being refreshed",
-                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(parent.getContext(), R.string.busy_updater, Toast.LENGTH_SHORT)
+                            .show();
                     return;
                 }
                 Intent intent = new Intent(getContext(), FullActivity.class);

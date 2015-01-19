@@ -23,7 +23,6 @@ public class PageFragment extends Fragment {
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
-        //fragment.setRetainInstance(true);
         return fragment;
     }
 

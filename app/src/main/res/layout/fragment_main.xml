@@ -13,7 +13,7 @@
         android:numColumns="3"
         android:verticalSpacing="15dp"
         android:horizontalSpacing="15dp"
-        android:stretchMode="spacingWidth"
+        android:stretchMode="columnWidth"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"

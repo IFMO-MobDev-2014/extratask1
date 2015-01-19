@@ -4,7 +4,7 @@
     <string name="app_name">Extra task 1</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="preview_mod">S</string>
+    <string name="preview_mod">M</string>
     <string name="full_mod">XXL</string>
 
 </resources>

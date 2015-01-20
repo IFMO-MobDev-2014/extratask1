@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="ru.ifmo.md.photoclient" >
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.SET_WALLPAPER"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/icon"
+        android:label="Yandex Photo Client"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="ru.ifmo.md.photoclient.MainActivity"
+            android:label="Yandex Photo Client" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="ru.ifmo.md.photoclient.FullScreenActivity"/>
+
+        <provider
+            android:name="ru.ifmo.md.photoclient.MyContentProvider"
+            android:authorities="ru.ifmo.md.photoclient"
+            android:exported="false" />
+
+        <service
+            android:name="ru.ifmo.md.photoclient.MyIntentService"
+            android:exported="false" />
+
+    </application>
+
+</manifest>

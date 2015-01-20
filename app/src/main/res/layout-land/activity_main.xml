@@ -6,17 +6,22 @@
 
     <GridView
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:id="@+id/gridView"
         android:verticalSpacing="1dp"
         android:horizontalSpacing="1dp"
-        android:numColumns="5"
+        android:numColumns="6"
         android:layout_weight="7"/>
+
+    <Space
+        android:layout_width="20px"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1">
 
         <Button
@@ -33,7 +38,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="BAB"
+            android:text="@string/page_number_default"
             android:id="@+id/page_number"/>
 
         <Space

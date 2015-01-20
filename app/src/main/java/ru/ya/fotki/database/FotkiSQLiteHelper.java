@@ -28,7 +28,7 @@ public class FotkiSQLiteHelper extends SQLiteOpenHelper {
     public final static String PICTURES_TABLE= "PICTURES_TABLE";
 
     public FotkiSQLiteHelper(Context context) {
-        super(context, "MY_DATA_BASE", null, 12);
+        super(context, "MY_DATA_BASE", null, 15);
 //        Log.e("in constructor", "database");
     }
 

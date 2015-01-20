@@ -4,6 +4,7 @@ import android.app.DownloadManager;
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -13,6 +14,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,7 +26,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -39,12 +40,14 @@ import ru.ya.fotki.database.FotkiSQLiteHelper;
 
 
 public class MainActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-    public static final int PICTURE_PER_PAGE = 12;
+    public static final int PICTURE_PER_PAGE = 10;
     public static final String START = "START";
+    public static final String COUNT_PICTURE_FOR_DOWNLOAD = "PICTURE_FOR_DOWNLOAD";
 
     private DownloadManager downloadManager;
     private ArrayList<OnePicture> pictures;
     private ProgressDialog progressDialog;
+    private ContentResolver contentResolver;
     GridView gridView;
     int pageNumber;
     int numberOfPage;
@@ -52,20 +55,14 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     LoaderManager loaderManager;
     TextView viewNumber;
 
+
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.e("onBroadCast", "form intent");
             pictures = (ArrayList<OnePicture>) intent.getSerializableExtra(UpdateIntentService.ON_POST_EXECUTE);
             Log.e("list:", "size: " + pictures.size());
-
-//            progressDialog = new ProgressDialog(MainActivity.this);
-//            progressDialog.setMessage("Download images");
-//            progressDialog.setTitle("Title");
-//            progressDialog.setIndeterminate(false);
-            //progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            //progressDialog.show();
-            progressDialog.cancel();
+            if (progressDialog != null) progressDialog.cancel();
 
             if (pictures.size() > 0) {
                 progressDialog = new ProgressDialog(MainActivity.this);
@@ -75,11 +72,18 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 progressDialog.show();
             }
             for (int i = 0; i < pictures.size(); i++) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 OnePicture picture = pictures.get(i);
                 if (picture.getAlreadyLoad()) throw new Error();
                 if (downloadManager == null)
                     downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
                 DownloadManager.Request request = new DownloadManager.Request(Uri.parse(picture.getURLS()));
+                //request.setDestinationInExternalFilesDir(MainActivity.this,
+                        //Environment.getExternalStorageDirectory().getPath() + "/Fotki",  "/small/picture.png");
                 Long id = downloadManager.enqueue(request);
 
                 loadToPicture.put(id, (long) i);
@@ -116,8 +120,10 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                     values.put(FotkiSQLiteHelper.COLUMN_YANDEX_ID, pictures.get(id).getYandexId());
                     getContentResolver().insert(FotkiContentProvider.FOTKI_URI, values);
                     if (loadToPicture.isEmpty()) {
+                        pageNumber = (getCountPictures() + PICTURE_PER_PAGE - 1) / PICTURE_PER_PAGE - 1;
+                        //Log.e("pageNumber: ", pageNumber + "");
                         progressDialog.dismiss();
-                        hardUpdate();
+                        softUpdate();
                     }
                 }
             }
@@ -131,18 +137,24 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        viewNumber = (TextView)findViewById(R.id.page_number);
+        contentResolver = getContentResolver();
+        viewNumber = (TextView) findViewById(R.id.page_number);
         loadToPicture = new TreeMap<>();
         gridView = (GridView) findViewById(R.id.gridView);
-        String [] from = {};
+        String[] from = {};
         int[] to = {};
+
         adapter = new SimpleCursorAdapter(this, R.layout.item, null, from, to, 0) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
                 View mView = (convertView == null) ? inflater.inflate(R.layout.item, parent, false) : convertView;
+//                View mView = super.getView(position, convertView, parent);
                 SquareImageView imageView = (SquareImageView) mView.findViewById(R.id.picture);
+
                 Cursor cursor = getCursor();
+                Log.e("count position:", cursor.getCount() + " " + position);
+                Log.e("is closed: ", cursor.isClosed() + "");
                 cursor.moveToPosition(position);
                 int id = cursor.getColumnIndex(FotkiSQLiteHelper.COLUMN_PATH_S);
                 Uri uri = Uri.parse(cursor.getString(id));
@@ -153,15 +165,13 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
             }
         };
         loaderManager = getLoaderManager();
-        pageNumber = 0;
-        softUpdate();
 
         gridView.setAdapter(adapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SquareImageView imageView = (SquareImageView)view.findViewById(R.id.picture);
-                String yandexId = (String)imageView.getTag();
+                SquareImageView imageView = (SquareImageView) view.findViewById(R.id.picture);
+                String yandexId = (String) imageView.getTag();
                 Log.e("yandexId", yandexId);
                 Intent intent = new Intent(MainActivity.this, BigPicture.class);
                 intent.putExtra(FotkiSQLiteHelper.COLUMN_YANDEX_ID, yandexId);
@@ -170,16 +180,24 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
         });
         initButton();
+        if (getCountPictures() < PICTURE_PER_PAGE) {
+            updateLastPage();
+        }
+        else {
+            pageNumber = 0;
+            softUpdate();
+        }
     }
 
     void clearDownloadManager() {
-       for (;!loadToPicture.isEmpty();) {
-            Map.Entry< Long, Long > value = loadToPicture.firstEntry();
+        for (; !loadToPicture.isEmpty(); ) {
+            Map.Entry<Long, Long> value = loadToPicture.firstEntry();
             Long key = value.getKey();
             downloadManager.remove(key);
             loadToPicture.remove(key);
         }
     }
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -202,32 +220,31 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         registerReceiver(broadcastFromDM, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
 
-    private void hardUpdate() {
-        pageNumber = 0;
-        softUpdate();
+    public int getCountPictures() {
+        return contentResolver.query(FotkiContentProvider.FOTKI_URI, null, null, null, null).getCount();
     }
 
     private void softUpdate() {
-        Log.e("soft Update", "!!!!!!!!!!!!!!!!!!! " + pageNumber);
+//        Log.e("soft Update", "!!!!!!!!!!!!!!!!!!! " + pageNumber);
         loaderManager.destroyLoader(0);
+
         String sortOrder = FotkiSQLiteHelper.COLUMN_ID + " " + FotkiSQLiteHelper.DESC;
         Cursor cursor = getContentResolver().query(FotkiContentProvider.FOTKI_URI, null, null, null, sortOrder);
         cursor.moveToFirst();
-        Log.e("count in cursor: ", "" + cursor.getCount());
         numberOfPage = (cursor.getCount() + PICTURE_PER_PAGE - 1) / PICTURE_PER_PAGE;
         Bundle bundle = new Bundle();
         bundle.putInt(START, PICTURE_PER_PAGE * pageNumber);
         loaderManager.initLoader(0, bundle, this);
         //Log.e("update text: ")
+
         viewNumber.setText((pageNumber + 1) + " from " + numberOfPage);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Integer firstId = args.getInt(START);
-        String sortOrder = FotkiSQLiteHelper.COLUMN_ID + " " + FotkiSQLiteHelper.DESC;
-        return new CursorLoader(this, FotkiContentProvider.FOTKI_URI, null, null, null, sortOrder +
-                " LIMIT " + PICTURE_PER_PAGE + " OFFSET " + firstId );
+        String sortOrder = FotkiSQLiteHelper.COLUMN_ID + " " + FotkiSQLiteHelper.ASC;
+        return new CursorLoader(this, FotkiContentProvider.FOTKI_URI, null, null, null, sortOrder + " LIMIT " + PICTURE_PER_PAGE + " OFFSET " + firstId);
     }
 
     @Override
@@ -248,18 +265,23 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         return true;
     }
 
+    void updateLastPage() {
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setMessage("Download images");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.show();
+        Intent intent = new Intent(this, UpdateIntentService.class);
+        int cntPictures = getCountPictures();
+        //getResources().getConfiguration().getLayoutDirection();
+        int cntDownload = PICTURE_PER_PAGE - (cntPictures % PICTURE_PER_PAGE);
+        intent.putExtra(COUNT_PICTURE_FOR_DOWNLOAD, cntDownload);
+        startService(intent);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.refresh_button) {
-            progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setMessage("Download images");
-            //progressDialog.setTitle("Download images");
-            //progressDialog.setIndeterminate(false);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.show();
-        //    Toast.makeText(this, "updating", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(this, UpdateIntentService.class);
-            startService(intent);
+            updateLastPage();
             return true;
         }
         if (item.getItemId() == R.id.clear_button) {
@@ -272,18 +294,22 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         findViewById(R.id.prev_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (pageNumber > 0)
+                if (pageNumber > 0) {
                     pageNumber--;
-                softUpdate();
+                    softUpdate();
+                }
             }
         });
         findViewById(R.id.next_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("next", "onClick " + pageNumber + " " + numberOfPage);
-                if (pageNumber + 1 < numberOfPage)
+//                Log.e("next", "onClick " + pageNumber + " " + numberOfPage);
+                if (pageNumber + 1 < numberOfPage) {
                     pageNumber++;
-                softUpdate();
+                    softUpdate();
+                } else {
+                    updateLastPage();
+                }
             }
         });
     }

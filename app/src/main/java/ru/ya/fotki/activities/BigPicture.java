@@ -1,6 +1,5 @@
 package ru.ya.fotki.activities;
 
-import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.app.WallpaperManager;
@@ -14,9 +13,13 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -24,7 +27,7 @@ import ru.ya.fotki.R;
 import ru.ya.fotki.database.FotkiContentProvider;
 import ru.ya.fotki.database.FotkiSQLiteHelper;
 
-public class BigPicture extends Activity {
+public class BigPicture extends ActionBarActivity {
     DownloadManager downloadManager;
     Long downloadId;
     String yandexId;
@@ -39,6 +42,7 @@ public class BigPicture extends Activity {
             long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
             DownloadManager.Query query = new DownloadManager.Query();
             query.setFilterById(downloadId);
+            if (downloadManager == null) downloadManager = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
             Cursor c = downloadManager.query(query);
             long reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
             if (reference == downloadId && c.moveToFirst()) {
@@ -52,7 +56,7 @@ public class BigPicture extends Activity {
                             FotkiSQLiteHelper.COLUMN_YANDEX_ID + "=?", new String[]{yandexId});
                     imageView.setImageURI(Uri.parse(pathXL));
                 }
-                progressDialog.dismiss();
+                if (progressDialog != null) progressDialog.dismiss();
             }
         }
     };
@@ -61,6 +65,7 @@ public class BigPicture extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.e("----------------------------------", "bigPicture");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_big_picture);
 
@@ -83,38 +88,24 @@ public class BigPicture extends Activity {
         } else {
             imageView.setImageURI(Uri.parse(pathXL));
         }
-        findViewById(R.id.go_to_internet).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com"));
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(URLXL));
-                startActivity(browserIntent);
-            }
-        });
         wallpaperManager = WallpaperManager.getInstance(this);
-        findViewById(R.id.wall_paper).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(pathXL));
-                    Log.e("bitmap: ", "" + bitmap.getHeight());
-                    wallpaperManager.setBitmap(bitmap);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                };
-            }
-        });
-        findViewById(R.id.save_to_galery).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(pathXL));
-                    MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "mmmyPhoto", null);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+//        findViewById(R.id.go_to_internet).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                //Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com"));
+//            }
+//        });
+//        findViewById(R.id.save_to_galery).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                try {
+//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(pathXL));
+//                    MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "mmmyPhoto", null);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
     }
 
     @Override
@@ -128,24 +119,30 @@ public class BigPicture extends Activity {
         super.onPause();
         unregisterReceiver(DMBroadcastReceiver);
     }
-//
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        if (item.getItemId() == R.id.go_to_internet) {
-//            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com"));
-//            startActivity(browserIntent);
-//        }
-//        if (item.getItemId() == R.id.clear_button) {
-//            getContentResolver().delete(FotkiContentProvider.FOTKI_URI, FotkiSQLiteHelper.COLUMN_ID + ">0", null);
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_big_picture, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.go_to_internet) {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(URLXL));
+            startActivity(browserIntent);
+        }
+        if (item.getItemId() == R.id.wall_paper) {
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(pathXL));
+                Log.e("bitmap: ", "" + bitmap.getHeight());
+                wallpaperManager.setBitmap(bitmap);
+                Toast.makeText(BigPicture.this, "Set as wallpaper", Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }

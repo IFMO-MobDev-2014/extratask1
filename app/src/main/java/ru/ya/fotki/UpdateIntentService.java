@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
+import ru.ya.fotki.activities.MainActivity;
 import ru.ya.fotki.database.FotkiContentProvider;
 import ru.ya.fotki.database.FotkiSQLiteHelper;
 
@@ -33,12 +34,10 @@ public class UpdateIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-//        Log.e("srart", "intent");
-//        Intent tmp = new Intent("abacaba");
-//        sendBroadcast(tmp);
         DefaultHttpClient client = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet("http://api-fotki.yandex.ru/api/top/?format=json;limit=20");
-
+        int cntPictures = intent.getIntExtra(MainActivity.COUNT_PICTURE_FOR_DOWNLOAD, -1);
+        if (cntPictures == -1) throw new Error();
+        HttpGet httpGet = new HttpGet("http://api-fotki.yandex.ru/api/top/?format=json;limit=100");
         try {
             HttpResponse response = client.execute(httpGet);
             StatusLine statusLine = response.getStatusLine();
@@ -50,13 +49,9 @@ public class UpdateIntentService extends IntentService {
                 StringBuilder sb = new StringBuilder();
                 String line = null;
                 while ((line = reader.readLine()) != null) {
-                    //Log.e("next line: ", line);
                     sb.append(line).append("\n");
                 }
                 String result = sb.toString();
-
-                //Log.e("start Intent Service: ", "3");
-                //Log.e("json:", ":" + result + ":\n");
 
                 JSONObject jsonObject = new JSONObject(result);
 
@@ -65,8 +60,8 @@ public class UpdateIntentService extends IntentService {
                 for (int i = 0; i < entries.length(); i++) {
                     JSONObject entry = entries.getJSONObject(i);
                     String yandexId = entry.getString("id");
-                    String httpS = entry.getJSONObject("img").getJSONObject("S").getString("href");
-                    String httpXL = entry.getJSONObject("img").getJSONObject("XL").getString("href");
+                    String httpS = entry.getJSONObject("img").getJSONObject("XXXS").getString("href");
+                    String httpXL = entry.getJSONObject("img").getJSONObject("XXXS").getString("href");
                     pictures[i] = new OnePicture(httpS, httpXL, yandexId);
                 }
 //                Log.e("start Intent Service: ", "4");
@@ -84,12 +79,13 @@ public class UpdateIntentService extends IntentService {
                 }
                 ArrayList < OnePicture > secondArray = new ArrayList<>();
                 for (OnePicture picture : pictures)
-                    if (!picture.getAlreadyLoad())
+                    if (!picture.getAlreadyLoad() && cntPictures > 0) {
                         secondArray.add(picture);
+                        cntPictures--;
+                    }
 
                 Intent resultIntent = new Intent(ON_POST_EXECUTE);
                 resultIntent.putExtra(ON_POST_EXECUTE, secondArray);
-                //Log.e("send broad cast", "intent");
                 sendBroadcast(resultIntent);
                 return;
             } else {

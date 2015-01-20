@@ -3,6 +3,7 @@ package ru.ya.fotki.database;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 
@@ -41,42 +42,44 @@ public class FotkiContentProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        Log.e("insert:", "contentProvider");
-        long id = fotkiSQLiteHelper.getWritableDatabase().insert(FotkiSQLiteHelper.PICTURES_TABLE, null, values);
-        upd(uri);
-        return Uri.parse(PICTURE_PATH + "/" + id);
+        //Log.e("insert:", "contentProvider");
+        SQLiteDatabase db = fotkiSQLiteHelper.getWritableDatabase();
+        getContext().getContentResolver().notifyChange(uri, null);
+        db.insert(FotkiSQLiteHelper.PICTURES_TABLE, null, values);
+        return null;
     }
 
-    private void upd(Uri uri) {
-        if (flagUpdate) {
-            Log.e("upd:", "CP");
-            getContext().getContentResolver().notifyChange(uri, null);
-        }
-    }
+//    private void upd(Uri uri) {
+//        if (flagUpdate) {
+//            Log.e("upd:", "CP");
+//        }
 
+//
+//    @Override
+//    public int bulkInsert(Uri uri, ContentValues[] values) {
+//        flagUpdate = false;
+//        for (ContentValues value : values)
+//            insert(uri, value);
+//        flagUpdate = true;
+//        upd(uri);
+//        return 0;
+//    }
 
     @Override
-    public int bulkInsert(Uri uri, ContentValues[] values) {
-        flagUpdate = false;
-        for (ContentValues value : values)
-            insert(uri, value);
-        flagUpdate = true;
-        upd(uri);
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        SQLiteDatabase db = fotkiSQLiteHelper.getWritableDatabase();
+        db.delete(FotkiSQLiteHelper.PICTURES_TABLE, selection, selectionArgs);
+        getContext().getContentResolver().notifyChange(uri, null);
+        db.close();
         return 0;
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
-        int count = fotkiSQLiteHelper.getWritableDatabase().delete(
-                FotkiSQLiteHelper.PICTURES_TABLE, selection, selectionArgs);
-        getContext().getContentResolver().notifyChange(uri, null);
-        return count;
-    }
-
-    @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        int count = fotkiSQLiteHelper.getWritableDatabase().update(FotkiSQLiteHelper.PICTURES_TABLE, values, selection, selectionArgs);
+        SQLiteDatabase db = fotkiSQLiteHelper.getWritableDatabase();
+        db.update(FotkiSQLiteHelper.PICTURES_TABLE, values, selection, selectionArgs);
         getContext().getContentResolver().notifyChange(uri, null);
-        return count;
+        db.close();
+        return 0;
     }
 }

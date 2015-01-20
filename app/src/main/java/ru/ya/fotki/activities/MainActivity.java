@@ -43,6 +43,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     public static final int PICTURE_PER_PAGE = 12;
     public static final String START = "START";
     public static final String COUNT_PICTURE_FOR_DOWNLOAD = "PICTURE_FOR_DOWNLOAD";
+    public static final String PAGE_NUMBER = "PAGE_NUMBER";
 
     private DownloadManager downloadManager;
     private ArrayList<OnePicture> pictures;
@@ -54,7 +55,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     TreeMap<Long, Long> loadToPicture;
     LoaderManager loaderManager;
     TextView viewNumber;
-    ArrayAdapter < OnePicture > adapter;
+    ArrayAdapter<OnePicture> adapter;
     LayoutInflater layoutInflater;
     //SimpleCursorAdapter adapter;
 
@@ -110,6 +111,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
                     progressDialog.incrementProgressBy(1);
                     String uriString = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                    c.close();
                     Log.e("uri String:", uriString);
                     int id = loadToPicture.get(Long.valueOf(reference)).intValue();
                     loadToPicture.remove(Long.valueOf(reference));
@@ -132,7 +134,6 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     };
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -143,7 +144,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         loadToPicture = new TreeMap<>();
         gridView = (GridView) findViewById(R.id.gridView);
 
-        adapter = new ArrayAdapter<OnePicture>(this, R.layout.item){
+        adapter = new ArrayAdapter<OnePicture>(this, R.layout.item) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View mView;
@@ -158,9 +159,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                 return mView;
             }
         };
-
         gridView.setAdapter(adapter);
-
         loaderManager = getLoaderManager();
         gridView.setAdapter(adapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -175,14 +174,16 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
             }
 
         });
+
         initButton();
-        if (getCountPictures() < PICTURE_PER_PAGE) {
+        //Log.e("page number: ", pageNumber + "");
+
+        if (getCountPictures() < PICTURE_PER_PAGE)
             updateLastPage();
-        }
         else {
-            pageNumber = 0;
             softUpdate();
         }
+
     }
 
     void clearDownloadManager() {
@@ -217,7 +218,10 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     }
 
     public int getCountPictures() {
-        return contentResolver.query(FotkiContentProvider.FOTKI_URI, null, null, null, null).getCount();
+        Cursor cursor = contentResolver.query(FotkiContentProvider.FOTKI_URI, null, null, null, null);
+        int cnt = cursor.getCount();
+        cursor.close();
+        return cnt;
     }
 
     private void softUpdate() {
@@ -225,15 +229,21 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         loaderManager.destroyLoader(0);
 
         String sortOrder = FotkiSQLiteHelper.COLUMN_ID + " " + FotkiSQLiteHelper.DESC;
-        Cursor cursor = getContentResolver().query(FotkiContentProvider.FOTKI_URI, null, null, null, sortOrder);
-        cursor.moveToFirst();
-        numberOfPage = (cursor.getCount() + PICTURE_PER_PAGE - 1) / PICTURE_PER_PAGE;
+        int count = getCountPictures();
+        //Cursor cursor = getContentResolver().query(FotkiContentProvider.FOTKI_URI, null, null, null, sortOrder);
+        //cursor.moveToFirst();
+        //numberOfPage = (cursor.getCount() + PICTURE_PER_PAGE - 1) / PICTURE_PER_PAGE;
+        numberOfPage = (count + PICTURE_PER_PAGE - 1) / PICTURE_PER_PAGE;
         Bundle bundle = new Bundle();
         bundle.putInt(START, PICTURE_PER_PAGE * pageNumber);
         loaderManager.initLoader(0, bundle, this);
         //Log.e("update text: ")
 
-        viewNumber.setText((pageNumber + 1) + " from " + numberOfPage);
+        updateTextView();
+    }
+
+    private void updateTextView() {
+        viewNumber.setText(Math.min(numberOfPage, (pageNumber + 1)) + " from " + numberOfPage);
     }
 
     @Override
@@ -245,6 +255,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        //oldCursor.close();
         if (cursor == null) throw new Error();
         int sz = cursor.getCount();
         adapter.clear();
@@ -254,6 +265,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
             String yandexId = cursor.getString(cursor.getColumnIndex(FotkiSQLiteHelper.COLUMN_YANDEX_ID));
             adapter.add(new OnePicture(URIS, yandexId));
         }
+        cursor.close();
+        //oldCursor = cursor;
     }
 
     @Override
@@ -291,7 +304,8 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         if (item.getItemId() == R.id.clear_button) {
             getContentResolver().delete(FotkiContentProvider.FOTKI_URI, FotkiSQLiteHelper.COLUMN_ID + ">0", null);
             pageNumber = 0;
-            viewNumber.setText("0 from 1");
+            numberOfPage = 0;
+            updateTextView();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -320,6 +334,27 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         });
     }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        pageNumber = savedInstanceState.getInt(PAGE_NUMBER, 0);
+        //updateTextView();
+        Log.e("count: ", getCountPictures() + "");
+        if (getCountPictures() < PICTURE_PER_PAGE)
+            updateLastPage();
+        else {
+            softUpdate();
+        }
+        Log.e("pageNumber: ", "" + pageNumber);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(PAGE_NUMBER, pageNumber);
+
+
+    }
 }
 
 

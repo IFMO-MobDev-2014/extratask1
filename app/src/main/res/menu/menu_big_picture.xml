@@ -5,7 +5,7 @@
    <item android:id="@+id/go_to_internet"
           android:title="@string/action_settings"
           app:showAsAction="always"
-          android:icon="@drawable/ic_action_computer"
+          android:icon="@drawable/ic_action_web_site"
           android:orderInCategory="100" />
 
    <item android:id="@+id/wall_paper"
@@ -18,7 +18,7 @@
    <item android:id="@+id/save_picture"
           android:title="@string/action_settings"
           app:showAsAction="ifRoom"
-          android:icon="@drawable/ic_action_storage"
+          android:icon="@drawable/ic_action_save"
           android:orderInCategory="100" />
 
 

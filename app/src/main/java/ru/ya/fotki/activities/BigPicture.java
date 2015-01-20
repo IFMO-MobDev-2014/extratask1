@@ -40,18 +40,20 @@ public class BigPicture extends ActionBarActivity {
     ImageView imageView;
     ProgressDialog progressDialog;
     String URLXL;
+    String URIS;
     String URIXL;
 
     BroadcastReceiver DMBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+            long downloadIdNew = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
+            downloadId = (long)-1;
             DownloadManager.Query query = new DownloadManager.Query();
-            query.setFilterById(downloadId);
+            query.setFilterById(downloadIdNew);
             if (downloadManager == null) downloadManager = (DownloadManager)getSystemService(DOWNLOAD_SERVICE);
             Cursor c = downloadManager.query(query);
             long reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-            if (reference == downloadId && c.moveToFirst()) {
+            if (reference == downloadIdNew && c.moveToFirst()) {
                 int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
                 if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
                     URIXL = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
@@ -70,8 +72,8 @@ public class BigPicture extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.e("----------------------------------", "bigPicture");
         super.onCreate(savedInstanceState);
+        downloadId = (long) -1;
         setContentView(R.layout.activity_big_picture);
 
         Intent intent = getIntent();
@@ -82,9 +84,12 @@ public class BigPicture extends ActionBarActivity {
         if (cursor == null || cursor.getCount() != 1) throw new Error();
         cursor.moveToFirst();
         URIXL = cursor.getString(cursor.getColumnIndex(FotkiSQLiteHelper.COLUMN_PATH_XL));
+        URIS = cursor.getString(cursor.getColumnIndex(FotkiSQLiteHelper.COLUMN_PATH_S));
         URLXL = cursor.getString(cursor.getColumnIndex(FotkiSQLiteHelper.COLUMN_URL_XL));
+        cursor.close();
         imageView = (ImageView) findViewById(R.id.big_image);
         if (URIXL == null) {
+            imageView.setImageURI(Uri.parse(URIS));
             progressDialog = new ProgressDialog(this);
             progressDialog.setMessage("Download image");
             progressDialog.show();
@@ -118,6 +123,13 @@ public class BigPicture extends ActionBarActivity {
     protected void onResume() {
         super.onResume();
         registerReceiver(DMBroadcastReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (downloadId != -1 && downloadManager != null)  downloadManager.remove(downloadId);
+        if (progressDialog != null) progressDialog.dismiss();
     }
 
     @Override

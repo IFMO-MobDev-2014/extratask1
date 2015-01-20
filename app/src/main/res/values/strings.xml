@@ -8,5 +8,7 @@
     <string name="authority">ru.ya.fotki.database.FotkiContentProvider</string>
     <string name="title_activity_big_picture">BigPicture</string>
     <string name="page_number_default">1 from 1</string>
+    <string name="prev">Prev</string>
+    <string name="next">Next</string>
 
 </resources>

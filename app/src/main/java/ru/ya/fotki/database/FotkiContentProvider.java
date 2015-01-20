@@ -70,7 +70,6 @@ public class FotkiContentProvider extends ContentProvider {
         SQLiteDatabase db = fotkiSQLiteHelper.getWritableDatabase();
         db.delete(FotkiSQLiteHelper.PICTURES_TABLE, selection, selectionArgs);
         getContext().getContentResolver().notifyChange(uri, null);
-        db.close();
         return 0;
     }
 
@@ -79,7 +78,6 @@ public class FotkiContentProvider extends ContentProvider {
         SQLiteDatabase db = fotkiSQLiteHelper.getWritableDatabase();
         db.update(FotkiSQLiteHelper.PICTURES_TABLE, values, selection, selectionArgs);
         getContext().getContentResolver().notifyChange(uri, null);
-        db.close();
         return 0;
     }
 }

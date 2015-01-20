@@ -12,16 +12,22 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
 
 import ru.ya.fotki.R;
 import ru.ya.fotki.database.FotkiContentProvider;
@@ -34,7 +40,7 @@ public class BigPicture extends ActionBarActivity {
     ImageView imageView;
     ProgressDialog progressDialog;
     String URLXL;
-    String pathXL;
+    String URIXL;
 
     BroadcastReceiver DMBroadcastReceiver = new BroadcastReceiver() {
         @Override
@@ -48,13 +54,12 @@ public class BigPicture extends ActionBarActivity {
             if (reference == downloadId && c.moveToFirst()) {
                 int columnIndex = c.getColumnIndex(DownloadManager.COLUMN_STATUS);
                 if (DownloadManager.STATUS_SUCCESSFUL == c.getInt(columnIndex)) {
-                    pathXL = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
-                    //Log.e("uriStirng:", pathXL);
+                    URIXL = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
                     ContentValues values = new ContentValues();
-                    values.put(FotkiSQLiteHelper.COLUMN_PATH_XL, pathXL);
+                    values.put(FotkiSQLiteHelper.COLUMN_PATH_XL, URIXL);
                     getContentResolver().update(FotkiContentProvider.FOTKI_URI, values,
                             FotkiSQLiteHelper.COLUMN_YANDEX_ID + "=?", new String[]{yandexId});
-                    imageView.setImageURI(Uri.parse(pathXL));
+                    imageView.setImageURI(Uri.parse(URIXL));
                 }
                 if (progressDialog != null) progressDialog.dismiss();
             }
@@ -76,17 +81,18 @@ public class BigPicture extends ActionBarActivity {
                 FotkiSQLiteHelper.COLUMN_YANDEX_ID + "=?", selectionArgs, null);
         if (cursor == null || cursor.getCount() != 1) throw new Error();
         cursor.moveToFirst();
-        pathXL = cursor.getString(cursor.getColumnIndex(FotkiSQLiteHelper.COLUMN_PATH_XL));
+        URIXL = cursor.getString(cursor.getColumnIndex(FotkiSQLiteHelper.COLUMN_PATH_XL));
         URLXL = cursor.getString(cursor.getColumnIndex(FotkiSQLiteHelper.COLUMN_URL_XL));
         imageView = (ImageView) findViewById(R.id.big_image);
-        if (pathXL == null) {
+        if (URIXL == null) {
             progressDialog = new ProgressDialog(this);
             progressDialog.setMessage("Download image");
             progressDialog.show();
             downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-            downloadId = downloadManager.enqueue(new DownloadManager.Request(Uri.parse(URLXL)));
+            downloadId = downloadManager.enqueue( new  DownloadManager.Request(Uri.parse(URLXL)).
+                         setDestinationInExternalFilesDir(BigPicture.this, Environment.DIRECTORY_DOWNLOADS, "picture.jpg"));
         } else {
-            imageView.setImageURI(Uri.parse(pathXL));
+            imageView.setImageURI(Uri.parse(URIXL));
         }
         wallpaperManager = WallpaperManager.getInstance(this);
 //        findViewById(R.id.go_to_internet).setOnClickListener(new View.OnClickListener() {
@@ -99,7 +105,7 @@ public class BigPicture extends ActionBarActivity {
 //            @Override
 //            public void onClick(View v) {
 //                try {
-//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(pathXL));
+//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(URIXL));
 //                    MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "mmmyPhoto", null);
 //                } catch (IOException e) {
 //                    e.printStackTrace();
@@ -134,7 +140,7 @@ public class BigPicture extends ActionBarActivity {
         }
         if (item.getItemId() == R.id.wall_paper) {
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(pathXL));
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(URIXL));
                 Log.e("bitmap: ", "" + bitmap.getHeight());
                 wallpaperManager.setBitmap(bitmap);
                 Toast.makeText(BigPicture.this, "Set as wallpaper", Toast.LENGTH_LONG).show();
@@ -142,7 +148,41 @@ public class BigPicture extends ActionBarActivity {
                 e.printStackTrace();
             }
         }
-        return super.onOptionsItemSelected(item);
+        if (item.getItemId() == R.id.save_picture) {
+            Log.e("save picture:", "1");
+            Log.e("URI XL: ", URIXL);
+            if (URIXL == null) return false;
+            Log.e("save picture:", "2");
+            File src = new File(URIXL.substring(7));
+            String name = src.getName();
+            String dstPath = Environment.getExternalStorageDirectory().getPath() + File.separatorChar +
+                    Environment.DIRECTORY_DOWNLOADS + File.separatorChar + name;
+            File dst = new File(dstPath);
+            try {
+                copy(src, dst);
+                Toast.makeText(BigPicture.this, "Image saved. path: " + dstPath, Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("some thing bad", "save image");
+            }
+        }
+        return false;
     }
 
+    public void copy(File src, File dst) throws IOException {
+        Log.e("src: ", src.toString());
+        Log.e("dst: ", dst.toString());
+        OutputStream out = new FileOutputStream(dst);
+        InputStream in = new FileInputStream(src);
+
+        // Transfer bytes from in to out
+        Log.e("in ", "copy");
+        byte[] buf = new byte[10];
+        int len;
+        while ((len = in.read(buf)) > 0) {
+            out.write(buf, 0, len);
+        }
+        in.close();
+        out.close();
+    }
 }

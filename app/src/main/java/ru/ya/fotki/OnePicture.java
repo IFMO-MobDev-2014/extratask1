@@ -8,9 +8,14 @@ import java.io.Serializable;
 public class OnePicture implements Serializable{
     private String URLS;
     private String URLXL;
+    private String URIS;
     private String yandexId;
-    private String Path;
     private Boolean alreadyLoad;
+
+    public OnePicture(String URIS, String yandexId) {
+        this.URIS = URIS;
+        this.yandexId = yandexId;
+    }
 
     public OnePicture(String URLS, String URLXL, String yandexId) {
         this.URLS = URLS;
@@ -26,16 +31,16 @@ public class OnePicture implements Serializable{
         return URLXL;
     }
 
-    public String getPath() {
-        return Path;
+    public String getURIS() {
+        return URIS;
     }
 
     public String getURLS() {
         return URLS;
     }
 
-    public void setPath(String path) {
-        this.Path = path;
+    public void setURIS(String URIS) {
+        this.URIS = URIS;
     }
 
     public String getHttpXL() {

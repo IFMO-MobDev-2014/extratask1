@@ -60,8 +60,8 @@ public class UpdateIntentService extends IntentService {
                 for (int i = 0; i < entries.length(); i++) {
                     JSONObject entry = entries.getJSONObject(i);
                     String yandexId = entry.getString("id");
-                    String httpS = entry.getJSONObject("img").getJSONObject("XXXS").getString("href");
-                    String httpXL = entry.getJSONObject("img").getJSONObject("XXXS").getString("href");
+                    String httpS = entry.getJSONObject("img").getJSONObject("S").getString("href");
+                    String httpXL = entry.getJSONObject("img").getJSONObject("XL").getString("href");
                     pictures[i] = new OnePicture(httpS, httpXL, yandexId);
                 }
 //                Log.e("start Intent Service: ", "4");

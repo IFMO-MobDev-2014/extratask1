@@ -26,7 +26,7 @@ public class MyContentProvider extends ContentProvider {
     public static final String COLUMN_PHOTO_TAB = "weather_icon";
 
 
-    public static final String AUTHORITY = "ru.ifmo.md.lesson8";
+    public static final String AUTHORITY = "ru.ifmo.md.photoclient";
     public static final int DATABASE_VERSION = 1;
 
     public static final String TABLE_CITIES_CREATE = "create table "

@@ -1,4 +1,4 @@
-package ru.ya.popularfotki;
+package ru.ya.fotki;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -20,8 +20,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import ru.ya.popularfotki.database.FotkiContentProvider;
-import ru.ya.popularfotki.database.FotkiSQLiteHelper;
+import ru.ya.fotki.database.FotkiContentProvider;
+import ru.ya.fotki.database.FotkiSQLiteHelper;
 
 public class UpdateIntentService extends IntentService {
     public static final String ON_POST_EXECUTE = "ON_POST_EXECUTE111";

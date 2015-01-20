@@ -1,4 +1,4 @@
-package ru.ya.popularfotki;
+package ru.ya.fotki;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

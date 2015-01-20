@@ -1,4 +1,4 @@
-package ru.ya.popularfotki.database;
+package ru.ya.fotki.database;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -6,14 +6,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
-import ru.ya.popularfotki.R;
-
 /**
  * Created by vanya on 17.01.15.
  */
 public class FotkiContentProvider extends ContentProvider {
     //public static String AUTHORITY;
-    public static final String AUTHORITY = "ru.ya.popularfotki.database.FotkiContentProvider";
+    public static final String AUTHORITY = "ru.ya.fotki.database.FotkiContentProvider";
     public static final String PICTURE_PATH = "PICTURE_PATH";
     private static Boolean flagUpdate = true;
     private FotkiSQLiteHelper fotkiSQLiteHelper;

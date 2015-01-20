@@ -1,4 +1,4 @@
-package ru.ya.popularfotki;
+package ru.ya.fotki;
 
 import android.content.Context;
 import android.util.AttributeSet;

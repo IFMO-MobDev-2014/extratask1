@@ -1,6 +1,5 @@
-package ru.ya.popularfotki.activities;
+package ru.ya.fotki.activities;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
@@ -15,21 +14,15 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import java.io.IOException;
 
-import ru.ya.popularfotki.R;
-import ru.ya.popularfotki.UpdateIntentService;
-import ru.ya.popularfotki.database.FotkiContentProvider;
-import ru.ya.popularfotki.database.FotkiSQLiteHelper;
+import ru.ya.fotki.R;
+import ru.ya.fotki.database.FotkiContentProvider;
+import ru.ya.fotki.database.FotkiSQLiteHelper;
 
 public class BigPicture extends Activity {
     DownloadManager downloadManager;

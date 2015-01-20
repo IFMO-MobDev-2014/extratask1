@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:id="@+id/big_image"
+        android:scaleType="fitCenter"
+        android:layout_weight="7"/>
+
+</LinearLayout>
+    <!--//android:layout_gravity="center"-->
+
+
+
+<!--<Button-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:text="Browser"-->
+<!--android:drawableLeft="@drawable/ic_action_computer"-->
+<!--android:id="@+id/go_to_internet"/>-->
+
+<!--<Space-->
+<!--android:layout_width="0dp"-->
+<!--android:layout_height="20px"-->
+<!--android:layout_weight="1"/>-->
+
+<!--<Button-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:text="Save"-->
+<!--android:drawableLeft="@drawable/ic_action_storage"-->
+<!--android:id="@+id/save_to_galery"/>-->
+<!--<Space-->
+<!--android:layout_width="0dp"-->
+<!--android:layout_height="20px"-->
+<!--android:layout_weight="1"/>-->
+
+<!--<Button-->
+<!--android:layout_width="wrap_content"-->
+<!--android:layout_height="wrap_content"-->
+<!--android:text="Wallpaper"-->
+<!--android:drawableLeft="@drawable/ic_action_picture"-->
+<!--android:id="@+id/wall_paper"/>-->
+
+
+
+    <!--ImageView-->
+    <!--android:id="@+id/big_image"-->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--android:layout_width="0dp"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:scaleType="fitCenter"-->
+    <!--android:layout_weight="8"/>-->
+

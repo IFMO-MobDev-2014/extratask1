@@ -96,27 +96,11 @@ public class BigPicture extends ActionBarActivity {
             downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
             downloadId = downloadManager.enqueue( new  DownloadManager.Request(Uri.parse(URLXL)).
                          setDestinationInExternalFilesDir(BigPicture.this, Environment.DIRECTORY_DOWNLOADS, "picture.jpg"));
+            Log.e("add:", "to download manager:  " + downloadId);
         } else {
             imageView.setImageURI(Uri.parse(URIXL));
         }
         wallpaperManager = WallpaperManager.getInstance(this);
-//        findViewById(R.id.go_to_internet).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.google.com"));
-//            }
-//        });
-//        findViewById(R.id.save_to_galery).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                try {
-//                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.parse(URIXL));
-//                    MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "mmmyPhoto", null);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
     }
 
     @Override
@@ -128,7 +112,6 @@ public class BigPicture extends ActionBarActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (downloadId != -1 && downloadManager != null)  downloadManager.remove(downloadId);
         if (progressDialog != null) progressDialog.dismiss();
     }
 
@@ -136,6 +119,10 @@ public class BigPicture extends ActionBarActivity {
     protected void onPause() {
         super.onPause();
         unregisterReceiver(DMBroadcastReceiver);
+        if (downloadId != -1 && downloadManager != null) {
+            Log.e("remove download id:", "" + downloadId);
+            downloadManager.remove(downloadId);
+        }
     }
 
     @Override

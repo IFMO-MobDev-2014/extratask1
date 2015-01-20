@@ -57,7 +57,6 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     TextView viewNumber;
     ArrayAdapter<OnePicture> adapter;
     LayoutInflater layoutInflater;
-    //SimpleCursorAdapter adapter;
 
 
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -126,7 +125,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
                         pageNumber = (getCountPictures() + PICTURE_PER_PAGE - 1) / PICTURE_PER_PAGE - 1;
                         //Log.e("pageNumber: ", pageNumber + "");
                         progressDialog.dismiss();
-                        softUpdate();
+                        update();
                     }
                 }
             }
@@ -181,7 +180,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         if (getCountPictures() < PICTURE_PER_PAGE)
             updateLastPage();
         else {
-            softUpdate();
+            update();
         }
 
     }
@@ -224,7 +223,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         return cnt;
     }
 
-    private void softUpdate() {
+    private void update() {
 //        Log.e("soft Update", "!!!!!!!!!!!!!!!!!!! " + pageNumber);
         loaderManager.destroyLoader(0);
 
@@ -305,7 +304,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
             getContentResolver().delete(FotkiContentProvider.FOTKI_URI, FotkiSQLiteHelper.COLUMN_ID + ">0", null);
             pageNumber = 0;
             numberOfPage = 0;
-            updateTextView();
+            update();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -316,7 +315,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
             public void onClick(View v) {
                 if (pageNumber > 0) {
                     pageNumber--;
-                    softUpdate();
+                    update();
                 }
             }
         });
@@ -326,7 +325,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
 //                Log.e("next", "onClick " + pageNumber + " " + numberOfPage);
                 if (pageNumber + 1 < numberOfPage) {
                     pageNumber++;
-                    softUpdate();
+                    update();
                 } else {
                     updateLastPage();
                 }
@@ -343,7 +342,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         if (getCountPictures() < PICTURE_PER_PAGE)
             updateLastPage();
         else {
-            softUpdate();
+            update();
         }
         Log.e("pageNumber: ", "" + pageNumber);
     }

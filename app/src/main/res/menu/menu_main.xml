@@ -3,19 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/upcoming"
-        android:title="Upcoming"
+        android:title="@string/upcoming"
         app:showAsAction="always"></item>
     <item
         android:id="@+id/popular"
-        android:title="Popular"
+        android:title="@string/popular"
         app:showAsAction="always"></item>
     <item
         android:id="@+id/editors"
-        android:title="Editors"
+        android:title="@string/editors"
         app:showAsAction="always"></item>
     <item
         android:id="@+id/refresh"
-        android:title="Refresh"
+        android:title="@string/refresh"
         android:icon="@android:drawable/stat_notify_sync_noanim"
         app:showAsAction="always"></item>
 

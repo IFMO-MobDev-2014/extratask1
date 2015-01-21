@@ -107,8 +107,16 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void updatePageAndTitle() {
-        getSupportActionBar().setTitle(currentCategory);
-        pageNumberText.setText("Page " + pageNumber);
+        if (currentCategory.equals(POPULAR_CATEGORY)) {
+            getSupportActionBar().setTitle(R.string.popular);
+        }
+        if (currentCategory.equals(UPCOMING_CATEGORY)) {
+            getSupportActionBar().setTitle(R.string.upcoming);
+        }
+        if (currentCategory.equals(EDITORS_CATEGORY)) {
+            getSupportActionBar().setTitle(R.string.editors);
+        }
+        pageNumberText.setText(getString(R.string.page) + pageNumber);
     }
 
     //MainActivity --Done
@@ -117,12 +125,6 @@ public class MainActivity extends ActionBarActivity {
     //wallpaper save etc
     //isOnline --Done
 
-    public boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -185,14 +187,14 @@ public class MainActivity extends ActionBarActivity {
     public BroadcastReceiver onServiceStart = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (isNetworkAvailable()) {
+            if (intent.getBooleanExtra("isNetworkAvailable", false)) {
                 progressBar.setVisibility(View.VISIBLE);
                 progressBar.setProgress(0);
                 isServiceWorking = true;
                 activity.registerReceiver(onServiceFinish, finishFilter);
                 activity.registerReceiver(loadingProgress, progressFilter);
             } else {
-                Toast.makeText(activity, "No internet connection", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, getString(R.string.noInternetConnection), Toast.LENGTH_SHORT).show();
             }
         }
     };

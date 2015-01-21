@@ -28,6 +28,10 @@
         <service
             android:name=".ThumbnailDownloadService"
             android:enabled="true"></service>
+
+        <service
+            android:name=".LocalActionsService"
+            android:enabled="true"></service>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

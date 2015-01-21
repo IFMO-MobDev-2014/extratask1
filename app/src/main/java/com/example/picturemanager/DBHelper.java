@@ -19,14 +19,16 @@ public class DBHelper extends SQLiteOpenHelper {
     public static final String PICTURES_CATEGORY = "CATEGORY";
     public static final String PICTURES_PAGE = "PAGE";
     public static final String PICTURES_NAME = "NAME";
+    public static final String PICTURES_BROWSER_LINK = "BROWSER_LINK";
     public static final String PICTURES_SMALL_PICTURE = "SMALL_PICTURE";
     public static final String PICTURES_HAS_BIG_PICTURE = "HAS_BIG_PICTURE";
     public static final String PICTURES_BIG_PICTURE = "BIG_PICTURE";
     public static final String PICTURES_LINK = "LINK";
     public static final String PICTURES_ON_CREATE = "create table if not exists " + PICTURES_TABLE_NAME + "("
             + PICTURES_COLUMN_ID + " integer primary key autoincrement, " + PICTURES_CATEGORY + " text, "
-            + PICTURES_PAGE + " integer, " + PICTURES_NAME + " text, " + PICTURES_SMALL_PICTURE + " blob, "
-            + PICTURES_HAS_BIG_PICTURE + " integer, " + PICTURES_BIG_PICTURE + " blob, " + PICTURES_LINK + " text);";
+            + PICTURES_PAGE + " integer, " + PICTURES_NAME + " text, " + PICTURES_BROWSER_LINK + " text, "
+            + PICTURES_SMALL_PICTURE + " blob, " + PICTURES_HAS_BIG_PICTURE + " integer, "
+            + PICTURES_BIG_PICTURE + " blob, " + PICTURES_LINK + " text);";
     public static final String PICTURES_ON_DESTROY = "drop table if exists " + PICTURES_TABLE_NAME;
 
     public DBHelper(Context context) {

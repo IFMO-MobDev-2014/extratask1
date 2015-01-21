@@ -6,19 +6,19 @@
     <item
         android:id="@+id/action_save"
         android:orderInCategory="100"
-        android:title="Save"
+        android:title="@string/save"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_set_as_walpaper"
         android:orderInCategory="100"
-        android:title="Set as wallpaper"
+        android:title="@string/setAsWallpaper"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_open_in_browser"
         android:orderInCategory="100"
-        android:title="Open in Browser"
+        android:title="@string/openInBrowser"
         app:showAsAction="always" />
 
 </menu>

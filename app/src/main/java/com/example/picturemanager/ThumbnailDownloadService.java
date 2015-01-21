@@ -95,6 +95,7 @@ public class ThumbnailDownloadService extends IntentService {
             for (int i = 0; i < imagesPerPage; i++) {
                 String link = jsonArray.getJSONObject(i).getString("image_url");
                 String name = jsonArray.getJSONObject(i).getString("name");
+                String browserLink = jsonArray.getJSONObject(i).getString("url");
                 String linkToBigImage = jsonArray2.getJSONObject(i).getString("image_url");
                 URL imageURL = new URL(link);
                 HttpURLConnection connection = (HttpURLConnection) imageURL.openConnection();
@@ -110,6 +111,7 @@ public class ThumbnailDownloadService extends IntentService {
                 cv.put(DBHelper.PICTURES_SMALL_PICTURE, bArray);
                 cv.put(DBHelper.PICTURES_PAGE, pageNumber);
                 cv.put(DBHelper.PICTURES_CATEGORY, category);
+                cv.put(DBHelper.PICTURES_BROWSER_LINK, browserLink);
                 getContentResolver().insert(DBContentProvider.PICTURES, cv);
                 Intent progress = new Intent();
                 progress.setAction(PROGRESS_BROADCAST);
@@ -128,7 +130,6 @@ public class ThumbnailDownloadService extends IntentService {
         broadcast.putExtra("category", category);
         broadcast.putExtra("pageNumber", pageNumber);
         sendBroadcast(broadcast);
-        Log.d("BROADCAST", "SENT!");
     }
 
 }

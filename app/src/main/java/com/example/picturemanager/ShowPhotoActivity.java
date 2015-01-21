@@ -1,8 +1,10 @@
 package com.example.picturemanager;
 
 import android.app.LoaderManager;
+import android.content.Intent;
 import android.content.Loader;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,16 +15,19 @@ import android.widget.ImageView;
 
 public class ShowPhotoActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<MyImage> {
 
-    ImageView image;
-    int photoId;
+    private ImageView imageView;
+    private MyImage image;
+    private int photoId;
+    boolean loaded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_photo);
         photoId = getIntent().getIntExtra("id", 0);
-        image = (ImageView) findViewById(R.id.image);
+        imageView = (ImageView) findViewById(R.id.image);
         getLoaderManager().initLoader(123, null, this);
+        loaded = false;
     }
 
 
@@ -35,11 +40,27 @@ public class ShowPhotoActivity extends ActionBarActivity implements LoaderManage
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        if (!loaded) {
+            return super.onOptionsItemSelected(item);
+        }
+        if (id == R.id.action_set_as_walpaper) {
+            Intent intent = new Intent(this, LocalActionsService.class);
+            intent.putExtra("id", image.idInDB);
+            intent.setAction("set as wallpaper");
+            startService(intent);
+        }
+        if (id == R.id.action_save) {
+            Intent intent = new Intent(this, LocalActionsService.class);
+            intent.putExtra("id", image.idInDB);
+            intent.setAction("save");
+            startService(intent);
+        }
+        if (id == R.id.action_open_in_browser) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(getString(R.string.baseURL) + image.link));
+            startActivity(intent);
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -50,8 +71,10 @@ public class ShowPhotoActivity extends ActionBarActivity implements LoaderManage
 
     @Override
     public void onLoadFinished(Loader<MyImage> loader, MyImage data) {
-        image.setImageBitmap(data.image);
+        imageView.setImageBitmap(data.image);
         getSupportActionBar().setTitle(data.name);
+        image = data;
+        loaded = true;
     }
 
     @Override

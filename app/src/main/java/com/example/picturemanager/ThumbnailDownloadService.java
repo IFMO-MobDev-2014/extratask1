@@ -31,7 +31,9 @@ import java.net.URLConnection;
 
 public class ThumbnailDownloadService extends IntentService {
 
-    public static final String LOAD_FINISHED_BROADCAST = "Load finished";
+    public static final String LOAD_STARTED_BROADCAST = "Loading started";
+    public static final String LOAD_FINISHED_BROADCAST = "Loading finished";
+    public static final String PROGRESS_BROADCAST = "Number of loaded pictures";
 
     private static final String CONSUMER_KEY = "nMEqt1FOd6Mqdjn9pDWQyjmzQDEotswvbDgakC9z";
     private static final String CONSUMER_SECRET = "ulOHRSaaFPmRnjW0fS70DjArOUtvZNFGeV8XMK6I";
@@ -84,7 +86,6 @@ public class ThumbnailDownloadService extends IntentService {
         int pageNumber = intent.getIntExtra("pageNumber", 1);
         String jsonString = getJsonString(pageNumber, category, 2);
         String jsonStringBigImages = getJsonString(pageNumber, category, 4);
-        //Log.d("JSONSTRING", jsonString);
         try {
             JSONArray jsonArray = (new JSONObject(jsonString)).getJSONArray("photos");
             JSONArray jsonArray2 = (new JSONObject(jsonStringBigImages)).getJSONArray("photos");
@@ -110,6 +111,10 @@ public class ThumbnailDownloadService extends IntentService {
                 cv.put(DBHelper.PICTURES_PAGE, pageNumber);
                 cv.put(DBHelper.PICTURES_CATEGORY, category);
                 getContentResolver().insert(DBContentProvider.PICTURES, cv);
+                Intent progress = new Intent();
+                progress.setAction(PROGRESS_BROADCAST);
+                progress.putExtra("progress", i + 1);
+                sendBroadcast(progress);
             }
         } catch (JSONException e) {
             e.printStackTrace();

@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/upcoming"
-        android:showAsAction="always"
-        android:title="Upcoming">
-    </item>
+        android:title="Upcoming"
+        app:showAsAction="always"></item>
     <item
         android:id="@+id/popular"
-        android:showAsAction="always"
-        android:title="Popular">
-    </item>
+        android:title="Popular"
+        app:showAsAction="always"></item>
     <item
         android:id="@+id/editors"
-        android:showAsAction="always"
-        android:title="Editors">
-    </item>
+        android:title="Editors"
+        app:showAsAction="always"></item>
+    <item
+        android:id="@+id/refresh"
+        android:title="Refresh"
+        android:icon="@android:drawable/stat_notify_sync_noanim"
+        app:showAsAction="always"></item>
+
 </menu>

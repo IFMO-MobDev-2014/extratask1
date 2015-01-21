@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +20,7 @@ import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,11 +37,14 @@ public class MainActivity extends ActionBarActivity {
     private int pageNumber;
     private String currentCategory;
     private GridView gridView;
-    private ActionBarActivity activity;
+    private MainActivity activity;
     private TextView pageNumberText;
+    private ProgressBar progressBar;
     private boolean isServiceWorking;
     private ArrayList<MyImage> images;
-    IntentFilter finishFilter = new IntentFilter(ThumbnailDownloadService.LOAD_FINISHED_BROADCAST);
+    private IntentFilter startFilter = new IntentFilter(ThumbnailDownloadService.LOAD_STARTED_BROADCAST);
+    private IntentFilter finishFilter = new IntentFilter(ThumbnailDownloadService.LOAD_FINISHED_BROADCAST);
+    private IntentFilter progressFilter = new IntentFilter(ThumbnailDownloadService.PROGRESS_BROADCAST);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,28 +53,20 @@ public class MainActivity extends ActionBarActivity {
         activity = this;
         gridView = (GridView) findViewById(R.id.gridView);
         gridView.setOnTouchListener(new OnSwipeTouchListener(this) {
-            public void onSwipeTop() {
-                    activity.registerReceiver(receiver, finishFilter);
-                    startService(currentCategory, pageNumber);
-                    activity.getLoaderManager().restartLoader(0, null, new MyLoader(pageNumber, currentCategory));
-            }
             public void onSwipeLeft() {
                 if (!isServiceWorking) {
                     pageNumber++;
-                    updatePageNumberText();
-                    startService(currentCategory, pageNumber);
+                    updatePageAndTitle();
+                    loadPhotos(currentCategory, pageNumber);
                 }
             }
 
             public void onSwipeRight() {
                 if (!isServiceWorking && pageNumber != 1) {
                     pageNumber--;
-                    updatePageNumberText();
-                    startService(currentCategory, pageNumber);
+                    updatePageAndTitle();
+                    loadPhotos(currentCategory, pageNumber);
                 }
-            }
-
-            public void onSwipeBottom() {
             }
 
 
@@ -80,18 +78,20 @@ public class MainActivity extends ActionBarActivity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(MainActivity.this, ShowPhotoActivity.class);
-                intent.putExtra("id", images.get(position).idInDB);
-                startActivity(intent);
-
+                if (!isServiceWorking) {
+                    Intent intent = new Intent(MainActivity.this, ShowPhotoActivity.class);
+                    intent.putExtra("id", images.get(position).idInDB);
+                    startActivity(intent);
+                }
             }
         });
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
         pageNumberText = (TextView) findViewById(R.id.numPage);
         pageNumber = 1;
         currentCategory = POPULAR_CATEGORY;
-        getSupportActionBar().setTitle("Popular");
-        getLoaderManager().initLoader(0, null, new MyLoader(pageNumber, currentCategory));
-        startService(currentCategory, pageNumber);
+        registerReceiver(onServiceStart, startFilter);
+        updatePageAndTitle();
+        loadPhotos(currentCategory, pageNumber);
     }
 
 
@@ -102,18 +102,26 @@ public class MainActivity extends ActionBarActivity {
         return true;
     }
 
-    public void startService(String category, int pageNumber) {
-        isServiceWorking = true;
-        activity.registerReceiver(receiver, finishFilter);
+    public void loadPhotos(String category, int pageNumber) {
         getLoaderManager().restartLoader(0, null, new MyLoader(pageNumber, category));
-        Intent intent = new Intent(this, ThumbnailDownloadService.class);
-        intent.putExtra("category", category);
-        intent.putExtra("pageNumber", pageNumber);
-        startService(intent);
     }
 
-    public void updatePageNumberText() {
+    public void updatePageAndTitle() {
+        getSupportActionBar().setTitle(currentCategory);
         pageNumberText.setText("Page " + pageNumber);
+    }
+
+    //MainActivity --Done
+    //Icon --Done
+    //refresh --Done
+    //wallpaper save etc
+    //isOnline --Done
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
     @Override
@@ -123,45 +131,93 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
 
         int id = item.getItemId();
+        if (!isServiceWorking && id == R.id.refresh) {
+            Intent start = new Intent();
+            start.setAction(ThumbnailDownloadService.LOAD_STARTED_BROADCAST);
+            sendBroadcast(start);
+            Intent intent = new Intent(this, ThumbnailDownloadService.class);
+            intent.putExtra("category", currentCategory);
+            intent.putExtra("pageNumber", pageNumber);
+            startService(intent);
+        }
         if (!isServiceWorking && id == R.id.upcoming) {
-            getSupportActionBar().setTitle(item.getTitle());
             pageNumber = 1;
-            updatePageNumberText();
-            startService(UPCOMING_CATEGORY, 1);
+            currentCategory = UPCOMING_CATEGORY;
+            updatePageAndTitle();
+            loadPhotos(UPCOMING_CATEGORY, 1);
 
         }
         if (!isServiceWorking && id == R.id.popular) {
-            getSupportActionBar().setTitle(item.getTitle());
             pageNumber = 1;
-            updatePageNumberText();
-            startService(POPULAR_CATEGORY, 1);
+            currentCategory = POPULAR_CATEGORY;
+            updatePageAndTitle();
+            loadPhotos(POPULAR_CATEGORY, 1);
         }
         if (!isServiceWorking && id == R.id.editors) {
-            getSupportActionBar().setTitle(item.getTitle());
             pageNumber = 1;
-            updatePageNumberText();
-            startService(EDITORS_CATEGORY, 1);
-        }
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+            currentCategory = EDITORS_CATEGORY;
+            updatePageAndTitle();
+            loadPhotos(EDITORS_CATEGORY, 1);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        unregisterReceiver(onServiceStart);
+        if (isServiceWorking) {
+            unregisterReceiver(onServiceFinish);
+            unregisterReceiver(loadingProgress);
+            isServiceWorking = false;
+        }
+    }
 
-    public BroadcastReceiver receiver = new BroadcastReceiver() {
+    @Override
+    public void onResume() {
+        super.onResume();
+        registerReceiver(onServiceStart, startFilter);
+    }
+
+
+
+    public BroadcastReceiver onServiceStart = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (isNetworkAvailable()) {
+                progressBar.setVisibility(View.VISIBLE);
+                progressBar.setProgress(0);
+                isServiceWorking = true;
+                activity.registerReceiver(onServiceFinish, finishFilter);
+                activity.registerReceiver(loadingProgress, progressFilter);
+            } else {
+                Toast.makeText(activity, "No internet connection", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    public BroadcastReceiver onServiceFinish = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String category = intent.getStringExtra("category");
+            progressBar.setVisibility(View.INVISIBLE);
             int pageNumber = intent.getIntExtra("pageNumber", 1);
-            Log.d(category, pageNumber + " ");
-            activity.unregisterReceiver(receiver);
             activity.getLoaderManager().restartLoader(0, null, new MyLoader(pageNumber, category));
+            activity.unregisterReceiver(onServiceFinish);
+            activity.unregisterReceiver(loadingProgress);
             isServiceWorking = false;
         }
     };
+
+    public BroadcastReceiver loadingProgress = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int progress = intent.getIntExtra("progress", 0);
+            progressBar.setProgress(progress*100/ThumbnailDownloadService.imagesPerPage);
+        }
+    };
+
 
     public void setAdapter(ArrayList<MyImage> images) {
         this.images = images;

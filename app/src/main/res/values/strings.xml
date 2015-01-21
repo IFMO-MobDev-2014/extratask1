@@ -12,7 +12,7 @@
     <string name="save">Save</string>
     <string name="setAsWallpaper">Set as wallpaper</string>
     <string name="openInBrowser">Open in Browser</string>
-    <string name="page">Page </string>
+    <string name="page">"Page "</string>
     <string name="baseURL">https://500px.com</string>
 
 

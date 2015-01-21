@@ -119,12 +119,12 @@ public class MainActivity extends ActionBarActivity {
         pageNumberText.setText(getString(R.string.page) + pageNumber);
     }
 
-    //MainActivity --Done
-    //Icon --Done
-    //refresh --Done
-    //wallpaper save etc
-    //isOnline --Done
-
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -134,13 +134,18 @@ public class MainActivity extends ActionBarActivity {
 
         int id = item.getItemId();
         if (!isServiceWorking && id == R.id.refresh) {
-            Intent start = new Intent();
-            start.setAction(ThumbnailDownloadService.LOAD_STARTED_BROADCAST);
-            sendBroadcast(start);
-            Intent intent = new Intent(this, ThumbnailDownloadService.class);
-            intent.putExtra("category", currentCategory);
-            intent.putExtra("pageNumber", pageNumber);
-            startService(intent);
+            if (isNetworkAvailable()) {
+                Intent start = new Intent();
+                start.setAction(ThumbnailDownloadService.LOAD_STARTED_BROADCAST);
+                start.putExtra("isNetworkAvailable", true);
+                sendBroadcast(start);
+                Intent intent = new Intent(this, ThumbnailDownloadService.class);
+                intent.putExtra("category", currentCategory);
+                intent.putExtra("pageNumber", pageNumber);
+                startService(intent);
+            } else {
+                Toast.makeText(activity, getString(R.string.noInternetConnection), Toast.LENGTH_SHORT).show();
+            }
         }
         if (!isServiceWorking && id == R.id.upcoming) {
             pageNumber = 1;

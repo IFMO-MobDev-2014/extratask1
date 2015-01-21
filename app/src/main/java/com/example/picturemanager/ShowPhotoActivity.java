@@ -1,9 +1,12 @@
 package com.example.picturemanager;
 
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -11,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 
 public class ShowPhotoActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<MyImage> {
@@ -26,10 +30,20 @@ public class ShowPhotoActivity extends ActionBarActivity implements LoaderManage
         setContentView(R.layout.activity_show_photo);
         photoId = getIntent().getIntExtra("id", 0);
         imageView = (ImageView) findViewById(R.id.image);
-        getLoaderManager().initLoader(123, null, this);
+        if (isNetworkAvailable()) {
+            getLoaderManager().initLoader(123, null, this);
+        } else {
+            Toast.makeText(this, getString(R.string.noInternetConnection), Toast.LENGTH_SHORT).show();
+        }
         loaded = false;
     }
 
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

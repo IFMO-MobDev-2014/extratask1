@@ -2,23 +2,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.picturemanager.ShowPhotoActivity">
-
+    <group android:id="@+id/group">
     <item
         android:id="@+id/action_save"
         android:orderInCategory="100"
         android:title="@string/save"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_set_as_walpaper"
         android:orderInCategory="100"
         android:title="@string/setAsWallpaper"
-        app:showAsAction="always" />
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_open_in_browser"
         android:orderInCategory="100"
         android:title="@string/openInBrowser"
-        app:showAsAction="always" />
-
+        app:showAsAction="never" />
+    </group>
 </menu>

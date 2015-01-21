@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Picture manager</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_show_photo">ShowPhotoActivity</string>
+    <string name="noInternetConnection">No internet connection</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="popular">Popular</string>
+    <string name="editors">Editors</string>
+    <string name="refresh">Refresh</string>
+    <string name="save">Save</string>
+    <string name="setAsWallpaper">Set as wallpaper</string>
+    <string name="openInBrowser">Open in Browser</string>
+    <string name="page">"Page "</string>
+    <string name="baseURL">https://500px.com</string>
+
+
+</resources>

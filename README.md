@@ -34,3 +34,4 @@ http://bit.ly/ifmo-md-14-results
 - GridView
 - RecyclerView - более удобный вариант GridView
 - TBD
+

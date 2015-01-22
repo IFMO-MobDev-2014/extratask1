@@ -54,8 +54,7 @@ public class PhotosActivity extends ActionBarActivity implements LoaderManager.L
         setContentView(R.layout.activity_photos);
         progressBar = (ProgressBar) findViewById(R.id.progressBarHorizontal);
         gridView = (GridView) findViewById(R.id.gridView);
-        List<Photo> listPhoto = new ArrayList<>();
-        photoAdapter = new PhotoAdapter(listPhoto);
+        photoAdapter = new PhotoAdapter(new ArrayList<Photo>());
         gridView.setAdapter(photoAdapter);
         gridView.setOnItemClickListener(listener);
         getLoaderManager().initLoader(1, null, this);
@@ -127,8 +126,8 @@ public class PhotosActivity extends ActionBarActivity implements LoaderManager.L
             if (cursor.getCount() != 0) {
                 photoAdapter.photos.clear();
                 while (cursor.moveToNext()) {
-                    photoAdapter.photos.add(new Photo(cursor.getString(2), cursor.getString(1),
-                            cursor.getBlob(4), cursor.getString(8), cursor.getInt(0)));
+                    photoAdapter.photos.add(new Photo(cursor.getString(6), cursor.getString(3),
+                            cursor.getBlob(2), cursor.getString(8), cursor.getInt(0)));
                 }
                 photoAdapter.notifyDataSetChanged();
             }

@@ -111,7 +111,7 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
         if (cursor.getCount() != 0 && !cursor.isLast()) {
             try {
                 cursor.moveToNext();
-                String id = cursor.getString(2);
+                String id = cursor.getString(6);
                 byte[] image = cursor.getBlob(5);
                 if (image != null) {
                     Bitmap bitmap = BitmapFactory.decodeStream(new ByteArrayInputStream(image));
@@ -123,7 +123,7 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
                     imageView.setImageMatrix(matrix);
                     imageView.setImageBitmap(bitmap);
                     imageView.invalidate();
-                    thisPhoto = new Photo(id, cursor.getString(1), cursor.getBlob(4), cursor.getString(8), cursor.getInt(0));
+                    thisPhoto = new Photo(id, cursor.getString(3), cursor.getBlob(2), cursor.getString(8), cursor.getInt(0));
                     browseUrl = thisPhoto.getBrowseUrl();
                 }
             } catch (CursorIndexOutOfBoundsException e) {

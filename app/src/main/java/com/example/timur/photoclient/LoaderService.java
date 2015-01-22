@@ -73,14 +73,14 @@ public class LoaderService extends IntentService {
             if (cursor.getCount() != 0) {
                 cursor.moveToNext();
                 ContentValues contentValues = new ContentValues();
-                String url = cursor.getString(3);
+                String url = cursor.getString(4);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 downloadImage(url).compress(Bitmap.CompressFormat.PNG, 100, stream);
-                contentValues.put(PhotoTable.AUTHOR, cursor.getString(1));
+                contentValues.put(PhotoTable.AUTHOR, cursor.getString(3));
+                contentValues.put(PhotoTable.IMAGE_MEDIUM, cursor.getBlob(2));
                 contentValues.put(PhotoTable.BROWSE_URL, cursor.getString(8));
                 contentValues.put(PhotoTable.PHOTO_STREAM_ID, cursor.getInt(7));
-                contentValues.put(PhotoTable.IN_FLOW_ID, cursor.getInt(6));
-                contentValues.put(PhotoTable.IMAGE_MEDIUM, cursor.getBlob(4));
+                contentValues.put(PhotoTable.IN_FLOW_ID, cursor.getInt(1));
                 contentValues.put(PhotoTable.ID, intent.getStringExtra(ID));
                 contentValues.put(PhotoTable.URL, url);
                 contentValues.put(PhotoTable.IMAGE_LARGE, stream.toByteArray());
@@ -145,7 +145,7 @@ public class LoaderService extends IntentService {
                 if (update) {
                     getContentResolver().delete(DatabaseContentProvider.PHOTOS_CONTENT_URI, PhotoTable.PAGE + " = " + page, null);
                 }
-                Set<String> extras = new TreeSet<>();
+                TreeSet<String> extras = new TreeSet<>();
                 Collections.addAll(extras, "description", "owner_name", "url_l", "url_c", "url_q");
                 int count = getContentResolver().query(DatabaseContentProvider.PHOTOS_CONTENT_URI, new String[]{PhotoTable.IN_FLOW_ID},
                         PhotoTable.PHOTO_STREAM_ID + " = " + 0, null, null).getCount();

@@ -13,5 +13,7 @@
     <string name="download_fail">Failed to download photos</string>
     <string name="photo_saved">Photo was saved</string>
     <string name="photo_not_saved">Failed to save photo</string>
+    <string name="wallpaper_not_set">Failed setting wallpaper</string>
+    <string name="wallpaper_set">Wallpaper was set successfully</string>
 
 </resources>

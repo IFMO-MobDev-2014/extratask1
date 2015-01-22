@@ -10,7 +10,7 @@
           android:title="@string/action_set_wallpaper"
           android:orderInCategory="11"
           android:showAsAction="never"
-          android:visible="false"/>
+          android:visible="true"/>
     <item android:id="@+id/action_open_in_browser"
           android:title="@string/action_open_in_browser"
           android:orderInCategory="12"

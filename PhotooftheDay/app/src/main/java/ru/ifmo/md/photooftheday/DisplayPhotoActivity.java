@@ -1,6 +1,7 @@
 package ru.ifmo.md.photooftheday;
 
 import android.app.Activity;
+import android.app.WallpaperManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -60,7 +61,6 @@ public class DisplayPhotoActivity extends Activity {
             if (!FilesUtils.isExternalStorageWritable()) {
                 Log.e(TAG, "External storage is not writable");
                 Toast.makeText(this, getString(R.string.photo_not_saved), Toast.LENGTH_SHORT).show();
-                return false;
             }
 
             File output = FilesUtils.createFile(path, photo.name + ".png");
@@ -92,9 +92,14 @@ public class DisplayPhotoActivity extends Activity {
             } catch (IOException e) {
                 Log.e(TAG, e.getMessage(), e);
             }
-            return false;
         } else if (id == R.id.action_set_wallpaper) {
-            // TODO: set wallpaper
+            try {
+                WallpaperManager.getInstance(getApplicationContext()).setBitmap(photo.getFullBitmap());
+                Toast.makeText(this, getString(R.string.wallpaper_set), Toast.LENGTH_SHORT).show();
+            } catch (IOException e) {
+                Log.e(TAG, e.getMessage(), e);
+                Toast.makeText(this, getString(R.string.wallpaper_not_set), Toast.LENGTH_SHORT).show();
+            }
         } else if (id == R.id.action_open_in_browser) {
             // TODO: open in browser
         }

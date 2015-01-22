@@ -19,7 +19,7 @@ public class PhotoTable {
     public static final String DESTROY_DATABASE = "drop table if exists " + NAME;
     public static final String CREATE_DATABASE = "create table " + NAME
             + " ("
-            + "_id integer primary key autoincrement,"
+            + " _id integer primary key autoincrement,"
             + IN_FLOW_ID + " integer,"
             + IMAGE_MEDIUM + " blob,"
             + AUTHOR + " text,"

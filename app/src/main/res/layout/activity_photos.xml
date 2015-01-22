@@ -13,7 +13,8 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:max="12" />
+        android:max="24" />
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -24,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="start"
-            android:onClick="prevPage"
+            android:onClick="changePage"
             android:text="@string/prev"
             android:layout_weight="3" />
 
@@ -40,10 +41,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:onClick="nextPage"
+            android:onClick="changePage"
             android:text="@string/next"
             android:layout_weight="3" />
     </LinearLayout>
+
     <ViewFlipper
         android:id="@+id/view_flipper"
         android:layout_width="fill_parent"
@@ -60,21 +62,6 @@
             android:columnWidth="150dp"
             android:gravity="center"
             android:verticalSpacing="8dp"
-
-            >
-        </GridView>
-
-        <GridView
-            android:id="@+id/gridView2"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:numColumns="auto_fit"
-            android:stretchMode="columnWidth"
-            android:columnWidth="150dp"
-            android:gravity="center"
-            android:horizontalSpacing="3dp"
-            android:verticalSpacing="8dp"
-
             >
         </GridView>
     </ViewFlipper>

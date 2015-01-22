@@ -36,14 +36,16 @@ import java.util.TreeSet;
 public class LoaderService extends IntentService {
     public static final String ID = "id";
     public static final String DATABASE_ID = "dbId";
+    public static final String PHOTO_PER_PAGE = "photo_per_page";
     public static final String PAGE = "page";
     public static final String UPDATE = "update";
     public static final String WALLPAPER = "wallpaper";
     public static final String SAVE = "save";
     public static final String BROUSE = "brouse";
     public static final String TITLE = "title";
+    public static final String API_KEY = "2c0b4b4e1a4d7501b585dd765bd0857f";
+    public static final String API_SECRET_KEY = "3cdb99ca3567fb1f";
     private static Handler handler;
-    public int photosPerPage = 12;
     public LoaderService() {
         super("LoaderService");
     }
@@ -57,40 +59,45 @@ public class LoaderService extends IntentService {
         if (intent != null) {
             String id = intent.getStringExtra(ID);
             int databaseId = intent.getIntExtra(DATABASE_ID, 0);
+            int imageCount = intent.getIntExtra(PHOTO_PER_PAGE, 24);
             int page = intent.getIntExtra(PAGE, 1);
             boolean update = intent.getBooleanExtra(UPDATE, false);
             boolean wallpaper = intent.getBooleanExtra(WALLPAPER, false);
             boolean save = intent.getBooleanExtra(SAVE, false);
 
             if (id != null) {
-                Uri uri = ContentUris.withAppendedId(DatabaseContentProvider.PHOTOS_CONTENT_URI, databaseId);
-                Cursor cursor = getContentResolver().query(uri, null, null, null, null);
-                if (cursor.getCount() != 0) {
-                    cursor.moveToNext();
-                    ContentValues contentValues = new ContentValues();
-                    String url = cursor.getString(3);
-                    Bitmap bmp = fetchImage(url);
-                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                    bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                    byte imageInByte[] = stream.toByteArray();
-                    contentValues.put(PhotoTable.AUTHOR, cursor.getString(1));
-                    contentValues.put(PhotoTable.BROWSE_URL, cursor.getString(8));
-                    contentValues.put(PhotoTable.PHOTOSTREAM_ID, cursor.getInt(7));
-                    contentValues.put(PhotoTable.IN_FLOW_ID, cursor.getInt(6));
-                    contentValues.put(PhotoTable.IMAGE_MEDIUM, cursor.getBlob(4));
-                    contentValues.put(PhotoTable.ID, id);
-                    contentValues.put(PhotoTable.LARGE_URL, url);
-                    contentValues.put(PhotoTable.IMAGE_LARGE, imageInByte);
-                    getContentResolver().update(uri, contentValues, null, null);
+                try {
+                    Uri uri = ContentUris.withAppendedId(DatabaseContentProvider.PHOTOS_CONTENT_URI, databaseId);
+                    Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+                    if (cursor.getCount() != 0) {
+                        cursor.moveToNext();
+                        ContentValues contentValues = new ContentValues();
+                        String url = cursor.getString(3);
+                        Bitmap bmp = fetchImage(url);
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        byte imageInByte[] = stream.toByteArray();
+                        contentValues.put(PhotoTable.AUTHOR, cursor.getString(1));
+                        contentValues.put(PhotoTable.BROWSE_URL, cursor.getString(8));
+                        contentValues.put(PhotoTable.PHOTO_STREAM_ID, cursor.getInt(7));
+                        contentValues.put(PhotoTable.IN_FLOW_ID, cursor.getInt(6));
+                        contentValues.put(PhotoTable.IMAGE_MEDIUM, cursor.getBlob(4));
+                        contentValues.put(PhotoTable.ID, id);
+                        contentValues.put(PhotoTable.LARGE_URL, url);
+                        contentValues.put(PhotoTable.IMAGE_LARGE, imageInByte);
+                        getContentResolver().update(uri, contentValues, null, null);
+                        cursor.close();
+                    }
+                } catch (NullPointerException e) {
+
                 }
-                cursor.close();
 
             } else if (!wallpaper) {
-                Flickr flickr = new Flickr(PhotosActivity.API_KEY, PhotosActivity.API_SECRET_KEY);
+                Flickr flickr = new Flickr(API_KEY, API_SECRET_KEY);
                 try {
                     Cursor cursor = getContentResolver().query(DatabaseContentProvider.PHOTOS_CONTENT_URI, new String[]{PhotoTable.IN_FLOW_ID},
                             PhotoTable.PAGE + " = " + page, null, null);
-                    if (cursor.getCount() < photosPerPage || update) {
+                    if (cursor.getCount() < imageCount || update) {
                         if (update) {
                             getContentResolver().delete(DatabaseContentProvider.PHOTOS_CONTENT_URI, PhotoTable.PAGE + " = " + page, null);
                         }
@@ -101,11 +108,11 @@ public class LoaderService extends IntentService {
                         extras.add("url_c");
                         extras.add("url_q");
                         Cursor cursor1 = getContentResolver().query(DatabaseContentProvider.PHOTOS_CONTENT_URI, new String[]{PhotoTable.IN_FLOW_ID},
-                                PhotoTable.PHOTOSTREAM_ID + " = " + 0, null, null);
+                                PhotoTable.PHOTO_STREAM_ID + " = " + 0, null, null);
                         int count = cursor1.getCount();
                         cursor1.close();
                         String nullString = null;
-                        PhotoList photos = flickr.getInterestingnessInterface().getList(nullString, extras, photosPerPage, page);
+                        PhotoList photos = flickr.getInterestingnessInterface().getList(nullString, extras, imageCount, page);
                         ContentValues contentValues = new ContentValues();
 
                         for (int i = 0; i < photos.size(); ++i) {
@@ -119,7 +126,7 @@ public class LoaderService extends IntentService {
                             contentValues.put(PhotoTable.ID, photo.getId());
                             contentValues.put(PhotoTable.LARGE_URL, photo.getLargeUrl());
                             contentValues.put(PhotoTable.BROWSE_URL, photo.getUrl());
-                            contentValues.put(PhotoTable.PHOTOSTREAM_ID, 0);
+                            contentValues.put(PhotoTable.PHOTO_STREAM_ID, 0);
                             contentValues.put(PhotoTable.IN_FLOW_ID, count + 1 + i);
                             contentValues.put(PhotoTable.PAGE, page);
                             if (handler != null) {

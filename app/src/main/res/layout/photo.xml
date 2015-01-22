@@ -5,16 +5,15 @@
     android:orientation="vertical">
 
     <ImageView
-        android:id="@+id/imagepart"
+        android:id="@+id/image"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:scaleType="fitXY"
         />
 
     <TextView
-        android:id="@+id/textpart"
+        android:id="@+id/text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="9sp"
+        android:textSize="14sp"
         android:textStyle="bold"/>
 </LinearLayout>

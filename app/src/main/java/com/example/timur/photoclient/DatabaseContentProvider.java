@@ -18,15 +18,15 @@ public class DatabaseContentProvider extends ContentProvider {
     private static final String AUTHORITY = "com.example.timur.photoclient";
     private static final String BAD_URI = "Invalid Uri";
     public static final Uri PHOTOS_CONTENT_URI = Uri.parse("content://"
-            + AUTHORITY + "/" + PhotoTable.PHOTOS_TABLE);
+            + AUTHORITY + "/" + PhotoTable.NAME);
     static final int URI_PHOTOS = 1;
     static final int URI_PHOTOS_ID = 2;
     private static final UriMatcher uriMatcher;
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(AUTHORITY, PhotoTable.PHOTOS_TABLE, URI_PHOTOS);
-        uriMatcher.addURI(AUTHORITY, PhotoTable.PHOTOS_TABLE + "/#", URI_PHOTOS_ID);
+        uriMatcher.addURI(AUTHORITY, PhotoTable.NAME, URI_PHOTOS);
+        uriMatcher.addURI(AUTHORITY, PhotoTable.NAME + "/#", URI_PHOTOS_ID);
     }
 
     private SQLiteDatabase sqLiteDatabase;
@@ -46,14 +46,14 @@ public class DatabaseContentProvider extends ContentProvider {
             if (TextUtils.isEmpty(sortOrder)) {
                 sortOrder = "_id " + " ASC";
             }
-            builder.setTables(PhotoTable.PHOTOS_TABLE);
+            builder.setTables(PhotoTable.NAME);
             sqLiteDatabase = sqLiteDatabaseHelper.getWritableDatabase();
             Cursor cursor = builder.query(sqLiteDatabase, projection, selection, selectionArgs, null, null, sortOrder);
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
             return cursor;
         } else if (uriType == URI_PHOTOS_ID) {
             String id = uri.getLastPathSegment();
-            builder.setTables(PhotoTable.PHOTOS_TABLE);
+            builder.setTables(PhotoTable.NAME);
             if (TextUtils.isEmpty(selection)) {
                 selection = PHOTO_ID + " = " + id;
             } else {
@@ -80,7 +80,7 @@ public class DatabaseContentProvider extends ContentProvider {
             Uri resultUri;
             resultUri = PHOTOS_CONTENT_URI;
             sqLiteDatabase = sqLiteDatabaseHelper.getWritableDatabase();
-            long rowID = sqLiteDatabase.insert(PhotoTable.PHOTOS_TABLE, null, values);
+            long rowID = sqLiteDatabase.insert(PhotoTable.NAME, null, values);
             resultUri = ContentUris.withAppendedId(resultUri, rowID);
             getContext().getContentResolver().notifyChange(resultUri, null);
             return resultUri;
@@ -95,7 +95,7 @@ public class DatabaseContentProvider extends ContentProvider {
         int uriType = uriMatcher.match(uri);
         if (uriType == URI_PHOTOS) {
             sqLiteDatabase = sqLiteDatabaseHelper.getWritableDatabase();
-            int count = sqLiteDatabase.delete(PhotoTable.PHOTOS_TABLE, selection, selectionArgs);
+            int count = sqLiteDatabase.delete(PhotoTable.NAME, selection, selectionArgs);
             getContext().getContentResolver().notifyChange(uri, null);
             return count;
         } else if (uriType == URI_PHOTOS_ID) {
@@ -106,7 +106,7 @@ public class DatabaseContentProvider extends ContentProvider {
                 selection = selection + " AND " + PHOTO_ID + " = " + id;
             }
             sqLiteDatabase = sqLiteDatabaseHelper.getWritableDatabase();
-            int count = sqLiteDatabase.delete(PhotoTable.PHOTOS_TABLE, selection, selectionArgs);
+            int count = sqLiteDatabase.delete(PhotoTable.NAME, selection, selectionArgs);
             getContext().getContentResolver().notifyChange(uri, null);
             return count;
         } else {
@@ -125,7 +125,7 @@ public class DatabaseContentProvider extends ContentProvider {
                 selection = selection + " AND " + PHOTO_ID + " = " + id;
             }
             sqLiteDatabase = sqLiteDatabaseHelper.getWritableDatabase();
-            int count = sqLiteDatabase.update(PhotoTable.PHOTOS_TABLE, values, selection, selectionArgs);
+            int count = sqLiteDatabase.update(PhotoTable.NAME, values, selection, selectionArgs);
             getContext().getContentResolver().notifyChange(uri, null);
             return count;
         } else {

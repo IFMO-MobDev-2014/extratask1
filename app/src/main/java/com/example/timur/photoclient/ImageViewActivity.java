@@ -7,6 +7,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -26,11 +27,11 @@ import java.io.ByteArrayInputStream;
 
 public class ImageViewActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    ImageView imageView;
-    String photoId;
-    String browseUrl;
-    AnPhoto thisPhoto;
-    int databaseId;
+    private ImageView imageView;
+    private String photoId;
+    private String browseUrl;
+    private Photo thisPhoto;
+    private int databaseId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,25 +104,29 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        if (cursor.getCount() != 0) {
-            cursor.moveToNext();
-            String id = cursor.getString(2);
-            byte[] image = cursor.getBlob(5);
-            if (image != null) {
-                ByteArrayInputStream imageStream = new ByteArrayInputStream(image);
-                Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-                RectF drawableRect = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
-                RectF viewRect = new RectF(0, 0, imageView.getWidth(), imageView.getHeight());
-                Matrix matrix = new Matrix();
-                matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER);
-                imageView.setScaleType(ImageView.ScaleType.MATRIX);
-                imageView.setImageMatrix(matrix);
-                imageView.setImageBitmap(bitmap);
-                imageView.invalidate();
-                thisPhoto = new AnPhoto(id, cursor.getString(1), cursor.getBlob(4));
-                thisPhoto.setDbId(cursor.getInt(0));
-                thisPhoto.setBrowseUrl(cursor.getString(8));
-                browseUrl = thisPhoto.getBrowseUrl();
+        if (cursor.getCount() != 0 && !cursor.isLast()) {
+            try {
+                cursor.moveToNext();
+                String id = cursor.getString(2);
+                byte[] image = cursor.getBlob(5);
+                if (image != null) {
+                    ByteArrayInputStream imageStream = new ByteArrayInputStream(image);
+                    Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
+                    RectF drawableRect = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
+                    RectF viewRect = new RectF(0, 0, imageView.getWidth(), imageView.getHeight());
+                    Matrix matrix = new Matrix();
+                    matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER);
+                    imageView.setScaleType(ImageView.ScaleType.MATRIX);
+                    imageView.setImageMatrix(matrix);
+                    imageView.setImageBitmap(bitmap);
+                    imageView.invalidate();
+                    thisPhoto = new Photo(id, cursor.getString(1), cursor.getBlob(4));
+                    thisPhoto.setDatabaseIndex(cursor.getInt(0));
+                    thisPhoto.setBrowseUrl(cursor.getString(8));
+                    browseUrl = thisPhoto.getBrowseUrl();
+                }
+            } catch (CursorIndexOutOfBoundsException e) {
+                e.printStackTrace();
             }
 
         }
@@ -129,6 +134,5 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 }

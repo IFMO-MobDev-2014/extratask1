@@ -6,23 +6,17 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
@@ -32,14 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.googlecode.flickrjandroid.Flickr;
-import com.googlecode.flickrjandroid.FlickrException;
-import com.googlecode.flickrjandroid.photos.PhotoList;
-
-import org.json.JSONException;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,13 +42,11 @@ public class PhotosActivity extends ActionBarActivity implements LoaderManager.L
         return super.onOptionsItemSelected(item);
     }
 
-    public static final String API_KEY = "2c0b4b4e1a4d7501b585dd765bd0857f";
-    public static final String API_SECRET_KEY = "3cdb99ca3567fb1f";
-    private PhotoAdapter myAdapter;
+    private PhotoAdapter photoAdapter;
     private GridView gridView;
     private ViewFlipper viewFlipper;
     private Handler handler;
-    private int myProgress = 0;
+    private int currentProgress = 0;
     private int currentPage = 1;
     private boolean updating = false;
     ProgressBar progressBar;
@@ -77,9 +61,9 @@ public class PhotosActivity extends ActionBarActivity implements LoaderManager.L
         viewFlipper = (ViewFlipper) findViewById(R.id.view_flipper);
         intent = new Intent(this, ImageViewActivity.class);
         gridView = (GridView) findViewById(R.id.gridView1);
-        List<AnPhoto> list1 = new ArrayList<>();
-        myAdapter = new PhotoAdapter(list1);
-        gridView.setAdapter(myAdapter);
+        List<Photo> list1 = new ArrayList<>();
+        photoAdapter = new PhotoAdapter(list1);
+        gridView.setAdapter(photoAdapter);
         gridView.setOnItemClickListener(listener);
         getLoaderManager().initLoader(1, null, this);
         if (checkNet()) {
@@ -92,16 +76,16 @@ public class PhotosActivity extends ActionBarActivity implements LoaderManager.L
             @Override
             public boolean handleMessage(Message message) {
                 if (message.what == 0) {
-                    if (myProgress == 0) {
+                    if (currentProgress == 0) {
                         updating = true;
                         progressBar.setVisibility(View.VISIBLE);
                     }
-                    myProgress++;
-                    if (myProgress == 12) {
+                    currentProgress++;
+                    if (currentProgress == progressBar.getMax()) {
                         progressBar.setVisibility(View.INVISIBLE);
                         updating = false;
                     }
-                    progressBar.setProgress(myProgress);
+                    progressBar.setProgress(currentProgress);
                 } else if (message.what == 1) {
                     progressBar.setVisibility(View.INVISIBLE);
                     updating = false;
@@ -116,14 +100,14 @@ public class PhotosActivity extends ActionBarActivity implements LoaderManager.L
         @Override
         public void onItemClick(AdapterView<?> parent, View v,
                                 int position, long id) {
-            intent.putExtra(LoaderService.ID, myAdapter.mData.get(position).getId());
-            intent.putExtra(LoaderService.DATABASE_ID, myAdapter.mData.get(position).getDbId());
-            intent.putExtra(LoaderService.BROUSE, myAdapter.mData.get(position).getBrowseUrl());
-            intent.putExtra(LoaderService.TITLE, myAdapter.mData.get(position).getAuthor());
+            intent.putExtra(LoaderService.ID, photoAdapter.mData.get(position).getIndex());
+            intent.putExtra(LoaderService.DATABASE_ID, photoAdapter.mData.get(position).getDatabaseIndex());
+            intent.putExtra(LoaderService.PHOTO_PER_PAGE, progressBar.getMax());
+            intent.putExtra(LoaderService.BROUSE, photoAdapter.mData.get(position).getBrowseUrl());
+            intent.putExtra(LoaderService.TITLE, photoAdapter.mData.get(position).getAuthor());
             startActivity(intent);
         }
     };
-
 
     private Boolean checkNet() {
         ConnectivityManager connMgr = (ConnectivityManager)
@@ -148,17 +132,17 @@ public class PhotosActivity extends ActionBarActivity implements LoaderManager.L
 
         try {
             if (cursor.getCount() != 0) {
-                myAdapter.mData.clear();
+                photoAdapter.mData.clear();
                 while (cursor.moveToNext()) {
                     String name = cursor.getString(1);
                     byte[] img = cursor.getBlob(4);
                     String id = cursor.getString(2);
-                    AnPhoto photo = new AnPhoto(id, name, img);
-                    photo.setDbId(cursor.getInt(0));
+                    Photo photo = new Photo(id, name, img);
+                    photo.setDatabaseIndex(cursor.getInt(0));
                     photo.setBrowseUrl(cursor.getString(8));
-                    myAdapter.mData.add(photo);
+                    photoAdapter.mData.add(photo);
                 }
-                myAdapter.notifyDataSetChanged();
+                photoAdapter.notifyDataSetChanged();
             }
         } catch (Exception e) {
         }
@@ -167,40 +151,38 @@ public class PhotosActivity extends ActionBarActivity implements LoaderManager.L
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        myAdapter = new PhotoAdapter(new ArrayList<AnPhoto>());
-        gridView.setAdapter(myAdapter);
+        photoAdapter = new PhotoAdapter(new ArrayList<Photo>());
+        gridView.setAdapter(photoAdapter);
     }
 
-    public void changePage(int turn) {
-        if (turn == 1 || (turn == -1 && currentPage != 1)) {
-            myProgress = 0;
-            viewFlipper.showPrevious();
-
-            currentPage = currentPage + turn;
-            if (currentPage % 2 == 0) {
-                gridView = (GridView) findViewById(R.id.gridView2);
+    public void changePage(View view) {
+        int turn = 0;
+        if (view.getId() == R.id.button_prev_page) {
+            if (currentPage != 1) {
+                turn = -1;
             } else {
-                gridView = (GridView) findViewById(R.id.gridView1);
+                Toast.makeText(getApplicationContext(), R.string.change_page_problem, Toast.LENGTH_LONG).show();
             }
-            myAdapter = new PhotoAdapter(new ArrayList<AnPhoto>());
-            gridView.setAdapter(myAdapter);
-            gridView.setOnItemClickListener(listener);
-            myAdapter.notifyDataSetChanged();
-            getLoaderManager().restartLoader(1, null, PhotosActivity.this);
-            if (checkNet()) {
-                Intent intent = new Intent(this, LoaderService.class);
-                intent.putExtra(LoaderService.PAGE, currentPage);
-                startService(intent);
-            }
+        } else if (view.getId() == R.id.button_next_page) {
+            turn = 1;
+        } else {
+            return;
         }
-    }
+        currentProgress = 0;
+        viewFlipper.showPrevious();
+        currentPage = currentPage + turn;
+        gridView = (GridView) findViewById(R.id.gridView1);
+        photoAdapter = new PhotoAdapter(new ArrayList<Photo>());
+        gridView.setAdapter(photoAdapter);
+        gridView.setOnItemClickListener(listener);
+        photoAdapter.notifyDataSetChanged();
+        getLoaderManager().restartLoader(1, null, PhotosActivity.this);
+        if (checkNet()) {
+            Intent intent = new Intent(this, LoaderService.class);
+            intent.putExtra(LoaderService.PAGE, currentPage);
+            startService(intent);
 
-    public void prevPage() {
-        changePage(-1);
-    }
-
-    public void nextPage() {
-        changePage(1);
+        }
     }
 
     public void refresh(View view) {
@@ -210,15 +192,15 @@ public class PhotosActivity extends ActionBarActivity implements LoaderManager.L
             myIntent.putExtra(LoaderService.PAGE, currentPage);
             startService(myIntent);
             updating = true;
-            myProgress = 0;
+            currentProgress = 0;
         }
     }
 
     public class PhotoAdapter extends BaseAdapter {
 
-        public List<AnPhoto> mData;
+        public List<Photo> mData;
 
-        public PhotoAdapter(List<AnPhoto> data) {
+        public PhotoAdapter(List<Photo> data) {
             this.mData = data;
         }
 
@@ -239,12 +221,12 @@ public class PhotosActivity extends ActionBarActivity implements LoaderManager.L
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View cell = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell, parent, false);
-            ImageView imageView = (ImageView) cell.findViewById(R.id.imagepart);
-            TextView textView = (TextView) cell.findViewById(R.id.textpart);
+            View photo = LayoutInflater.from(parent.getContext()).inflate(R.layout.photo, parent, false);
+            ImageView imageView = (ImageView) photo.findViewById(R.id.image);
+            TextView textView = (TextView) photo.findViewById(R.id.text);
             imageView.setImageBitmap(mData.get(position).getBitmap());
-            textView.setText("by " + mData.get(position).getAuthor());
-            return cell;
+            textView.setText(mData.get(position).getAuthor());
+            return photo;
         }
 
     }

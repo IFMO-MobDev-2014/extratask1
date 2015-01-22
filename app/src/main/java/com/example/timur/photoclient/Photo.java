@@ -8,26 +8,26 @@ import java.io.ByteArrayInputStream;
 /**
  * Created by timur on 19.01.15.
  */
-public class AnPhoto {
+public class Photo {
     private String author;
     private String browseUrl;
     private String id;
-    private int dbId;
+    private int databaseIndex;
     private byte[] image;
-    private Bitmap bmp = null;
+    private Bitmap bitmap = null;
 
-    public AnPhoto(String id, String author, byte[] image) {
+    public Photo(String id, String author, byte[] image) {
         this.id = id;
         this.author = author;
         this.image = image;
     }
 
     public Bitmap getBitmap() {
-        if (bmp == null) {
+        if (bitmap == null) {
             ByteArrayInputStream imageStream = new ByteArrayInputStream(image);
-            bmp = BitmapFactory.decodeStream(imageStream);
+            bitmap = BitmapFactory.decodeStream(imageStream);
         }
-        return bmp;
+        return bitmap;
     }
 
     public String getAuthor() {
@@ -38,20 +38,20 @@ public class AnPhoto {
         return browseUrl;
     }
 
-    public String getId() {
+    public String getIndex() {
         return id;
     }
 
-    public int getDbId() {
-        return dbId;
+    public int getDatabaseIndex() {
+        return databaseIndex;
     }
 
     public void setId(String arg) {
         this.id = arg;
     }
 
-    public void setDbId(int arg) {
-        this.dbId = arg;
+    public void setDatabaseIndex(int arg) {
+        this.databaseIndex = arg;
     }
 
     public void setBrowseUrl(String arg) {

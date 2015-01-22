@@ -1,28 +1,24 @@
 package com.example.timur.photoclient;
 
-import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
-
-import java.net.URL;
-import java.sql.Blob;
 
 /**
  * Created by timur on 18.01.15.
  */
 public class PhotoTable {
-    public static final String PHOTOS_TABLE = "photos";
-
+    public static final String NAME = "photos";
     public static final String AUTHOR = "author";
-    public static final String IMAGE_MEDIUM = "img_medium";
-    public static final String IMAGE_LARGE = "img_large";
+    public static final String IMAGE_MEDIUM = "image_medium";
+    public static final String IMAGE_LARGE = "image_large";
     public static final String ID = "photo_id";
     public static final String IN_FLOW_ID = "photo_flow_id";
-    public static final String PHOTOSTREAM_ID = "photostream_id";
+    public static final String PHOTO_STREAM_ID = "photo_stream_id";
     public static final String LARGE_URL = "large_url";
     public static final String BROWSE_URL = "browse_url";
     public static final String PAGE = "photo_page";
-    public static final String DESTROY_DATABASE = "drop table if exists " + PHOTOS_TABLE;
-    public static final String CREATE_DATABASE = "create table " + PHOTOS_TABLE + " ("
+    public static final String DESTROY_DATABASE = "drop table if exists " + NAME;
+    public static final String CREATE_DATABASE = "create table " + NAME
+            + " ("
             + "_id integer primary key autoincrement,"
             + AUTHOR + " text,"
             + ID + " text,"
@@ -30,7 +26,7 @@ public class PhotoTable {
             + IMAGE_MEDIUM + " blob,"
             + IMAGE_LARGE + " blob,"
             + IN_FLOW_ID + " integer,"
-            + PHOTOSTREAM_ID + " integer,"
+            + PHOTO_STREAM_ID + " integer,"
             + BROWSE_URL + " text,"
             + PAGE + " integer" + ");";    
     

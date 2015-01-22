@@ -13,5 +13,6 @@
     <string name="save">save</string>
     <string name="title_activity_image_view">ImageViewActivity</string>
     <string name="connection_problem">Internet is unavailable</string>
+    <string name="change_page_problem">There is no previous page</string>
 
 </resources>

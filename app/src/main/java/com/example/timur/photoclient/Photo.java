@@ -16,10 +16,12 @@ public class Photo {
     private byte[] image;
     private Bitmap bitmap = null;
 
-    public Photo(String id, String author, byte[] image) {
+    public Photo(String id, String author, byte[] image, String browseUrl, int databaseIndex) {
         this.id = id;
         this.author = author;
         this.image = image;
+        this.browseUrl = browseUrl;
+        this.databaseIndex = databaseIndex;
     }
 
     public Bitmap getBitmap() {
@@ -44,17 +46,5 @@ public class Photo {
 
     public int getDatabaseIndex() {
         return databaseIndex;
-    }
-
-    public void setId(String arg) {
-        this.id = arg;
-    }
-
-    public void setDatabaseIndex(int arg) {
-        this.databaseIndex = arg;
-    }
-
-    public void setBrowseUrl(String arg) {
-        this.browseUrl = arg;
     }
 }

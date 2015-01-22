@@ -13,7 +13,7 @@ public class PhotoTable {
     public static final String ID = "photo_id";
     public static final String IN_FLOW_ID = "photo_flow_id";
     public static final String PHOTO_STREAM_ID = "photo_stream_id";
-    public static final String LARGE_URL = "large_url";
+    public static final String URL = "url";
     public static final String BROWSE_URL = "browse_url";
     public static final String PAGE = "photo_page";
     public static final String DESTROY_DATABASE = "drop table if exists " + NAME;
@@ -22,7 +22,7 @@ public class PhotoTable {
             + "_id integer primary key autoincrement,"
             + AUTHOR + " text,"
             + ID + " text,"
-            + LARGE_URL + " text,"
+            + URL + " text,"
             + IMAGE_MEDIUM + " blob,"
             + IMAGE_LARGE + " blob,"
             + IN_FLOW_ID + " integer,"

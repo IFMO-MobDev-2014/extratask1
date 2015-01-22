@@ -77,13 +77,11 @@ public class DatabaseContentProvider extends ContentProvider {
     public Uri insert(Uri uri, ContentValues values) {
         int uriType = uriMatcher.match(uri);
         if (uriType == URI_PHOTOS) {
-            Uri resultUri;
-            resultUri = PHOTOS_CONTENT_URI;
+            Uri result = PHOTOS_CONTENT_URI;
             sqLiteDatabase = sqLiteDatabaseHelper.getWritableDatabase();
-            long rowID = sqLiteDatabase.insert(PhotoTable.NAME, null, values);
-            resultUri = ContentUris.withAppendedId(resultUri, rowID);
-            getContext().getContentResolver().notifyChange(resultUri, null);
-            return resultUri;
+            result = ContentUris.withAppendedId(result, sqLiteDatabase.insert(PhotoTable.NAME, null, values));
+            getContext().getContentResolver().notifyChange(result, null);
+            return result;
         } else {
             throw new IllegalArgumentException(BAD_URI);
         }

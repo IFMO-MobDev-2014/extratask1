@@ -41,12 +41,14 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
         databaseId = getIntent().getIntExtra(LoaderService.DATABASE_ID, 0);
         browseUrl = getIntent().getStringExtra(LoaderService.BROUSE);
         this.setTitle(getIntent().getStringExtra(LoaderService.TITLE));
+
         imageView = (ImageView) findViewById(R.id.fullscreen_content);
         getLoaderManager().initLoader(1, null, this);
         if (checkInternetConnection()) {
             Intent servIntent = new Intent(this, LoaderService.class);
             servIntent.putExtra(LoaderService.ID, photoId);
             servIntent.putExtra(LoaderService.DATABASE_ID, databaseId);
+            servIntent.setAction(LoaderService.ACTION_DOWNLOAD_PHOTO);
             startService(servIntent);
         }
     }
@@ -78,12 +80,14 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
             intent.putExtra(LoaderService.WALLPAPER, true);
             intent.putExtra(LoaderService.SAVE, true);
             intent.putExtra(LoaderService.DATABASE_ID, databaseId);
+            intent.setAction(LoaderService.ACTION_SAVE);
             startService(intent);
             return true;
         } else if (id == R.id.action_wallpaper) {
             Intent intent = new Intent(getApplicationContext(), LoaderService.class);
             intent.putExtra(LoaderService.WALLPAPER, true);
             intent.putExtra(LoaderService.DATABASE_ID, databaseId);
+            intent.setAction(LoaderService.ACTION_SET_WALLPAPER);
             startService(intent);
             return true;
         } else if (id == R.id.action_browse) {
@@ -110,25 +114,21 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
                 String id = cursor.getString(2);
                 byte[] image = cursor.getBlob(5);
                 if (image != null) {
-                    ByteArrayInputStream imageStream = new ByteArrayInputStream(image);
-                    Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
-                    RectF drawableRect = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
-                    RectF viewRect = new RectF(0, 0, imageView.getWidth(), imageView.getHeight());
+                    Bitmap bitmap = BitmapFactory.decodeStream(new ByteArrayInputStream(image));
                     Matrix matrix = new Matrix();
-                    matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER);
+                    matrix.setRectToRect(new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight()),
+                            new RectF(0, 0, imageView.getWidth(), imageView.getHeight()),
+                            Matrix.ScaleToFit.CENTER);
                     imageView.setScaleType(ImageView.ScaleType.MATRIX);
                     imageView.setImageMatrix(matrix);
                     imageView.setImageBitmap(bitmap);
                     imageView.invalidate();
-                    thisPhoto = new Photo(id, cursor.getString(1), cursor.getBlob(4));
-                    thisPhoto.setDatabaseIndex(cursor.getInt(0));
-                    thisPhoto.setBrowseUrl(cursor.getString(8));
+                    thisPhoto = new Photo(id, cursor.getString(1), cursor.getBlob(4), cursor.getString(8), cursor.getInt(0));
                     browseUrl = thisPhoto.getBrowseUrl();
                 }
             } catch (CursorIndexOutOfBoundsException e) {
                 e.printStackTrace();
             }
-
         }
     }
 

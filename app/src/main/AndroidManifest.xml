@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="lesson8.android.extratask" >
-
+    package="lesson8.android.extratask1" >
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -22,8 +24,10 @@
             android:parentActivityName=".PhotoGalleryActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="lesson8.android.extratask.PhotoGalleryActivity" />
+                android:value=".PhotoGalleryActivity" />
         </activity>
+        <provider android:name="lesson8.android.extratask1.PhotoProvider"
+                  android:authorities="lesson8.android.extratask1"/>
     </application>
 
 </manifest>

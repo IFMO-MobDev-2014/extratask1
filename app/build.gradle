@@ -15,11 +15,16 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "lesson8.android.extratask"
+//        useJack true
+        applicationId "lesson8.android.extratask1"
         minSdkVersion 16
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
+    }
+    dexOptions {
+        incremental true
+        javaMaxHeapSize "2g"
     }
     buildTypes {
         release {
@@ -45,4 +50,12 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'org.scala-lang:scala-library:2.11.2'
+    compile 'com.android.support:support-v13:21.0.2'
+    compile 'com.android.support:support-v4:21.0.2'
+    compile 'org.scalaj:scalaj-http_2.11:1.1.0'
+    compile 'com.android.support:recyclerview-v7:21.0.+'
+//    compile 'com.android.support:appcompat-v7:21.0.2'
+//    compile 'org.scalesxml:scales-xml_2.10:0.6.0-M2'
+//    compile 'org.json4s:json4s-core_2.11:3.2.11'
+//    compile 'org.json4s:json4s-native_2.11:3.2.11'
 }

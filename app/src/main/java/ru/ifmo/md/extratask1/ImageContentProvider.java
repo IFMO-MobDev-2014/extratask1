@@ -1,6 +1,5 @@
 package ru.ifmo.md.extratask1;
 
-import android.app.ActionBar;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -45,7 +44,8 @@ public class ImageContentProvider extends ContentProvider {
                     + Tables.Images.SMALL_NAME + " BLOB, "
                     + Tables.Images.LARGE_URL_NAME + " TEXT, "
                     + Tables.Images.ORIG_URL_NAME + " TEXT, "
-                    + Tables.Images.LARGE_NAME + " BLOB" + ");";
+                    + Tables.Images.LARGE_NAME + " BLOB, "
+                    + Tables.Images.LAST_UPD_NAME + " TEXT " + ");";
             sqLiteDatabase.execSQL(qs);
         }
 

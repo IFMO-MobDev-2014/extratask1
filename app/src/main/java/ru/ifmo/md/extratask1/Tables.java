@@ -8,11 +8,12 @@ public class Tables {
             "ru.ifmo.md.extratask1.provider.image";
 
     public static final class Images implements BaseColumns {
-        public static final int ID_COLUMN = 0;
-        public static final int SMALL_COLUMN = 1;
-        public static final int LARGE_URL_COLUMN = 2;
-        public static final int ORIG_URL_COLUMN = 3;
-        public static final int LARGE_COLUMN = 4;
+//        public static final int ID_COLUMN = 0;
+//        public static final int SMALL_COLUMN = 1;
+//        public static final int LARGE_URL_COLUMN = 2;
+//        public static final int ORIG_URL_COLUMN = 3;
+//        public static final int LARGE_COLUMN = 4;
+//        public static final int LAST_UPD_COLUMN = 5;
 
         private Images() {}
 
@@ -34,6 +35,8 @@ public class Tables {
         public static final String ORIG_URL_NAME = "orig";
 
         public static final String LARGE_NAME = "large";
+
+        public static final String LAST_UPD_NAME = "last_update";
     }
 }
 

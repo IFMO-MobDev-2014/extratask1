@@ -24,7 +24,7 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public void setPage(int p) {
-        onPage = new ArrayList<Image>();
+        onPage = new ArrayList<>();
         int n = p * 12;
         int to = Math.min(images.size(), n + 12);
         for (int i = n; i < to; i++) {

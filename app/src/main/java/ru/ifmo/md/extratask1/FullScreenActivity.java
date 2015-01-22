@@ -15,9 +15,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.io.ByteArrayInputStream;
 
@@ -38,7 +35,7 @@ public class FullScreenActivity extends ActionBarActivity {
         imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
 
         String largeUrl = getIntent().getStringExtra(EXTRA_LARGE);
-        String origUrl = getIntent().getStringExtra(EXTRA_ORIG);
+//        String origUrl = getIntent().getStringExtra(EXTRA_ORIG);
         long id = getIntent().getLongExtra(EXTRA_ID, 1);
 
         IntentFilter mStatusIntentFilter = new IntentFilter(
@@ -72,11 +69,13 @@ public class FullScreenActivity extends ActionBarActivity {
                     getIntent().getLongExtra(EXTRA_ID, 1));
             Cursor cursor = getContentResolver().query(uri, null, null, null, null);
             cursor.moveToFirst();
-            byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Tables.Images.LARGE_NAME));
-            if (bytes != null) {
-                ByteArrayInputStream imageStream = new ByteArrayInputStream(bytes);
-                Bitmap theImage = BitmapFactory.decodeStream(imageStream);
-                imageView.setImageBitmap(theImage);
+            if (!cursor.isAfterLast()) {
+                byte[] bytes = cursor.getBlob(cursor.getColumnIndex(Tables.Images.LARGE_NAME));
+                if (bytes != null) {
+                    ByteArrayInputStream imageStream = new ByteArrayInputStream(bytes);
+                    Bitmap theImage = BitmapFactory.decodeStream(imageStream);
+                    imageView.setImageBitmap(theImage);
+                }
             }
         }
     }

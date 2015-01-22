@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import org.apache.http.util.ByteArrayBuffer;
@@ -23,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Date;
 
 public class ImageIntentService extends IntentService {
     public static final String EXTRA_PROGRESS = "extra_percents";
@@ -77,13 +77,20 @@ public class ImageIntentService extends IntentService {
     private void downloadAll() throws IOException, JSONException{
         JSONArray images = load(YANDEX_API).getJSONArray("entries");
 
-        getContentResolver().delete(Tables.Images.CONTENT_URI, null, null);
+        Cursor cursor = getContentResolver()
+                .query(Tables.Images.CONTENT_URI, null, null, null, null);
+        cursor.moveToFirst();
+        String prev_update = "";
+        if (!cursor.isAfterLast()) {
+            prev_update = cursor.getString(cursor.getColumnIndex(Tables.Images.LAST_UPD_NAME));
+            cursor.close();
+        }
 
         int l = images.length();
+        String last_update = new Date().getTime() + "t";
         for (int i = 0; i < l; i++) {
             JSONObject image = images.getJSONObject(i).getJSONObject("img");
 
-            Log.i("JSON:", image.toString());
             String smallURL = image.getJSONObject("M").getString("href");
             String largeURL = image.getJSONObject("L").getString("href");
             String origURL;
@@ -97,6 +104,7 @@ public class ImageIntentService extends IntentService {
             cv.put(Tables.Images.SMALL_NAME, getImage(smallURL));
             cv.put(Tables.Images.LARGE_URL_NAME, largeURL);
             cv.put(Tables.Images.ORIG_URL_NAME, origURL);
+            cv.put(Tables.Images.LAST_UPD_NAME, last_update);
             getContentResolver().insert(Tables.Images.CONTENT_URI, cv);
 
             Intent localIntent =
@@ -104,6 +112,9 @@ public class ImageIntentService extends IntentService {
                             .putExtra(EXTRA_PROGRESS, 100 * (i + 1) / l);
             LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
         }
+
+        getContentResolver().delete(Tables.Images.CONTENT_URI,
+                Tables.Images.LAST_UPD_NAME + "=\"" + prev_update + "\"", null);
     }
 
     private byte[] getImage(String url) throws IOException {
@@ -115,7 +126,7 @@ public class ImageIntentService extends IntentService {
         BufferedInputStream bis = new BufferedInputStream(is);
 
         ByteArrayBuffer baf = new ByteArrayBuffer(500);
-        int current = 0;
+        int current;
         while ((current = bis.read()) != -1) {
             baf.append((byte) current);
         }

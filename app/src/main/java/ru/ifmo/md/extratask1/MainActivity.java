@@ -1,6 +1,5 @@
 package ru.ifmo.md.extratask1;
 
-import android.app.ActionBar;
 import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,10 +16,8 @@ import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 
@@ -31,7 +28,6 @@ import java.util.ArrayList;
 public class MainActivity extends ActionBarActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
     private ImageAdapter adapter;
-    private Button upd;
     private ProgressBar progressBar;
     private GridView gridView;
     Handler handler;
@@ -40,20 +36,16 @@ public class MainActivity extends ActionBarActivity
 
     private int curPage = 0;
 
-    private ResponseReceiver responseReceiver;
-    private IntentFilter mStatusIntentFilter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        upd = (Button) findViewById(R.id.update);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        mStatusIntentFilter = new IntentFilter(
+        IntentFilter mStatusIntentFilter = new IntentFilter(
                 ImageIntentService.BROADCAST_ACTION);
-        responseReceiver = new ResponseReceiver();
+        ResponseReceiver responseReceiver = new ResponseReceiver();
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(responseReceiver, mStatusIntentFilter);
 
@@ -128,7 +120,6 @@ public class MainActivity extends ActionBarActivity
                 image.largeUrl = cursor.getString(cursor.getColumnIndex(Tables.Images.LARGE_URL_NAME));
                 image.origUrl = cursor.getString(cursor.getColumnIndex(Tables.Images.ORIG_URL_NAME));
                 image.id = cursor.getLong(cursor.getColumnIndex(Tables.Images._ID));
-                Log.i("URI: ", cursor.getPosition() + "");
                 adapter.add(image);
                 cursor.moveToNext();
             }

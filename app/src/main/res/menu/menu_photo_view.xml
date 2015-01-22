@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:context="lesson8.android.extratask1.PhotoViewActivity">
+    <item android:id="@+id/action_download"
+          android:title="@string/download"
+          android:showAsAction="ifRoom"/>
+    <item android:id="@+id/action_wallpaper_set"
+          android:title="@string/set_as_wallpaper"
+          android:showAsAction="ifRoom"/>
+</menu>

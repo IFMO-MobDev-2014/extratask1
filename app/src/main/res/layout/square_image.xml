@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lesson8.android.extratask1.SquareRelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="6dp"
+        android:layout_gravity="center"
+        android:gravity="center">
+
+</lesson8.android.extratask1.SquareRelativeLayout>

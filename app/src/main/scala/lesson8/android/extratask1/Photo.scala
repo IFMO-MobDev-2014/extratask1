@@ -29,7 +29,7 @@ class Photo(val id: String,
     values.put(PHOTO_THUMBNAIL_URL, thumbnailUrl.toString)
     values.put(PHOTO_FULLSIZE_URL, fullsizeUrl.toString)
     values.put(PHOTO_THUMBNAIL_FILE, thumbnail match { case Some(a) => a.getAbsolutePath; case _ => ""})
-    values.put(PHOTO_FULLSIZE_FILE, thumbnail match { case Some(a) => a.getAbsolutePath; case _ => ""})
+    values.put(PHOTO_FULLSIZE_FILE, fullsize match { case Some(a) => a.getAbsolutePath; case _ => ""})
     values
   }
 
@@ -57,15 +57,17 @@ class Photo(val id: String,
     }
   // copypaste's awesome!
   def downloadAndSaveThumbnail(dir: File, callback: (File, Photo) => Unit) = {
-    Log.d(this.toString, "Downloading photo")
+    Log.d(this.toString, "Downloading thumbnail")
     thumbnail match {
       case None => try {
-        val path = new File(dir.getAbsolutePath + "/" + id + ".png")
+        val path = new File(dir.getAbsolutePath + "/" + id + "_thumbnail.png")
         val out = new FileOutputStream(path)
         loadFromURL(thumbnailUrl).compress(Bitmap.CompressFormat.PNG, 100, out)
         Log.d(this.toString, "Downloaded and saved thumbnail into " + path.getAbsolutePath)
         val ret = new Photo(id, thumbnailUrl, fullsizeUrl, Some(path), fullsize)
-        Log.d(this.toString, "Calling callback")
+        Log.d(this.toString, "Fullsize is " +
+          (fullsize match { case None => " NONE "; case Some(a) => a}))
+        Log.d(this.toString, "Calling callback ")
         callback(path, ret)
         ret
       } catch {
@@ -79,7 +81,7 @@ class Photo(val id: String,
     Log.d(this.toString, "Downloading fullsize photo")
     fullsize match {
       case None => try {
-        val path = new File(dir.getAbsolutePath + "/" + id + ".png")
+        val path = new File(dir.getAbsolutePath + "/" + id + "_fullsize.png")
         val out = new FileOutputStream(path)
         loadFromURL(thumbnailUrl).compress(Bitmap.CompressFormat.PNG, 100, out)
         Log.d(this.toString, "Downloaded and saved thumbnail into " + path.getAbsolutePath)

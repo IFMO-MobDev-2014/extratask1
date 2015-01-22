@@ -97,9 +97,12 @@ class PhotoGalleryActivity extends Activity with LoaderCallbacks[Album] {
             val photoUrls = photo.optJSONObject("img")
             ret = new Photo(photo.getString("id"),
               new URL(photoUrls.getJSONObject("M").getString("href")),
-              new URL(if (!photo.getBoolean("hideOriginal"))
-                photoUrls.getJSONObject("orig").getString("href")
-              else photoUrls.getJSONObject("XL").getString("href"))) :: ret
+              new URL(
+//                if (!photo.getBoolean("hideOriginal"))
+//                photoUrls.getJSONObject("orig").getString("href")
+//              else
+                photoUrls.getJSONObject("XXL").getString("href")
+              )) :: ret
           }
           ret.foreach(println)
           ret

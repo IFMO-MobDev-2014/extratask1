@@ -25,7 +25,7 @@ class PhotoViewActivity extends Activity with LoaderCallbacks[Photo] {
     mImageView = cast(findViewById(R.id.image_detail_view))
     mDatabaseHelper = new DatabaseHelper(this)
     mPhoto = mDatabaseHelper.mWrapper.getAlbumByIDs(List(getIntent.getStringExtra(PhotoViewActivity.photoId)))(0)
-    getLoaderManager.initLoader(0, null, this)
+    getLoaderManager.initLoader(0, null, this).forceLoad()
   }
 
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
@@ -62,6 +62,8 @@ class PhotoViewActivity extends Activity with LoaderCallbacks[Photo] {
       case None => Toast.makeText(this, "Failed to load picture", Toast.LENGTH_SHORT)
       case Some(a) =>
         mPhoto = p2
+        Toast.makeText(this, "fullsize: " + mPhoto.fullsize.get.getAbsolutePath +
+          " thumbnail " + mPhoto.thumbnail.get.getAbsolutePath, Toast.LENGTH_LONG).show()
         mImageView.setImageBitmap(a)
         mImageView.setVisibility(View.VISIBLE)
         mDatabaseHelper.mWrapper.updatePhoto(p2)

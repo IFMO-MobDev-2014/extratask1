@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.util.Log
 import android.view.View.OnClickListener
-import android.view.{LayoutInflater, View, ViewGroup}
+import android.view.{Gravity, LayoutInflater, View, ViewGroup}
 import android.widget.{ImageView, ProgressBar, RelativeLayout}
 
 object PhotoGalleryFragment {
@@ -88,6 +88,7 @@ class PhotoGalleryFragment extends Fragment with LoaderCallbacks[Album] {
                Log.d(this.toString, "in callback - updating " + mAlbum.indexOf(b).toString)
                mAlbum = mAlbum.updated(mAlbum.indexOf(b), newph)
                mRecyclerViewAdapter.notifyDataSetChanged()
+               mRecyclerViewAdapter.notifyItemChanged(mAlbum.indexOf(b))
                mDatabaseHelper.mWrapper.updatePhoto(newph)
              case _ => Log.e(this.toString, "WTF IN PHOTO CALLBACK")
            }
@@ -121,26 +122,20 @@ class PhotoGalleryFragment extends Fragment with LoaderCallbacks[Album] {
 
     def addImg(position: Int, view: SquareRelativeLayout): SquareRelativeLayout = {
       view.removeAllViews()
-      view.setGravity(RelativeLayout.CENTER_VERTICAL)
-      view.setGravity(RelativeLayout.CENTER_HORIZONTAL)
+      view.setGravity(RelativeLayout.CENTER_IN_PARENT)
       mAlbum(position).getThumbnail match {
         case Some(a) =>
           val img = new ImageView(context)
-          val centerParams: RelativeLayout.LayoutParams = cast(img.getLayoutParams())
-          centerParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
-          img.setLayoutParams(centerParams)
           img.setImageBitmap(a)
-          img.setScaleType(ImageView.ScaleType.FIT_XY)
+          img.setScaleType(ImageView.ScaleType.CENTER)
           view.addView(img)
         //          view.setBackground(cast(new BitmapDrawable(a)))
         case None =>
           val bar = new ProgressBar(context)
-          val centerParams: RelativeLayout.LayoutParams = cast(bar.getLayoutParams())
-          centerParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE)
-          bar.setLayoutParams(centerParams)
           view.addView(bar)
       }
       view.setPadding(3,3,3,3)
+      view.setGravity(Gravity.CENTER)
       view.setOnClickListener(new OnClickListener {
         override def onClick(p1: View): Unit = {
           val newIntent = new Intent(context, classOf[PhotoViewActivity])
@@ -159,7 +154,7 @@ class PhotoGalleryFragment extends Fragment with LoaderCallbacks[Album] {
     }
     override def getItemCount: Int = mAlbum.length
     override def onBindViewHolder(holder: GridViewHolder, pos: Int): Unit = {
-      Log.d(this.toString, "Setting image for fragment with " + mAlbum.length + " positions")
+//      Log.d(this.toString, "Setting image for fragment with " + mAlbum.length + " positions")
       holder.sq = addImg(pos, holder.sq)
     }
   }

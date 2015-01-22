@@ -30,7 +30,7 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
     private ImageView imageView;
     private String photoId;
     private String browseUrl;
-    private Photo thisPhoto;
+    private Photo photo;
     private int databaseId;
 
     @Override
@@ -45,11 +45,11 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
         imageView = (ImageView) findViewById(R.id.fullscreen_content);
         getLoaderManager().initLoader(1, null, this);
         if (checkInternetConnection()) {
-            Intent servIntent = new Intent(this, LoaderService.class);
-            servIntent.putExtra(LoaderService.ID, photoId);
-            servIntent.putExtra(LoaderService.DATABASE_ID, databaseId);
-            servIntent.setAction(LoaderService.ACTION_DOWNLOAD_PHOTO);
-            startService(servIntent);
+            Intent intent = new Intent(this, LoaderService.class);
+            intent.putExtra(LoaderService.ID, photoId);
+            intent.putExtra(LoaderService.DATABASE_ID, databaseId);
+            intent.setAction(LoaderService.ACTION_DOWNLOAD_PHOTO);
+            startService(intent);
         }
     }
 
@@ -64,6 +64,7 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
             return false;
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -91,12 +92,13 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
             startService(intent);
             return true;
         } else if (id == R.id.action_browse) {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(browseUrl));
-            startActivity(intent);
-            return true;
+            if (checkInternetConnection()) {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(browseUrl));
+                startActivity(intent);
+                return true;
+            }
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -123,8 +125,8 @@ public class ImageViewActivity extends ActionBarActivity implements LoaderManage
                     imageView.setImageMatrix(matrix);
                     imageView.setImageBitmap(bitmap);
                     imageView.invalidate();
-                    thisPhoto = new Photo(id, cursor.getString(3), cursor.getBlob(2), cursor.getString(8), cursor.getInt(0));
-                    browseUrl = thisPhoto.getBrowseUrl();
+                    photo = new Photo(id, cursor.getString(3), cursor.getBlob(2), cursor.getString(8), cursor.getInt(0));
+                    browseUrl = photo.getBrowseUrl();
                 }
             } catch (CursorIndexOutOfBoundsException e) {
                 e.printStackTrace();

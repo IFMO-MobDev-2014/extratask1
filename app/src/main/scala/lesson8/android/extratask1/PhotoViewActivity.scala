@@ -62,8 +62,8 @@ class PhotoViewActivity extends Activity with LoaderCallbacks[Photo] {
       case None => Toast.makeText(this, "Failed to load picture", Toast.LENGTH_SHORT)
       case Some(a) =>
         mPhoto = p2
-        Toast.makeText(this, "fullsize: " + mPhoto.fullsize.get.getAbsolutePath +
-          " thumbnail " + mPhoto.thumbnail.get.getAbsolutePath, Toast.LENGTH_LONG).show()
+//        Toast.makeText(this, "fullsize: " + mPhoto.fullsize.get.getAbsolutePath +
+//          " thumbnail " + mPhoto.thumbnail.get.getAbsolutePath, Toast.LENGTH_LONG).show()
         mImageView.setImageBitmap(a)
         mImageView.setVisibility(View.VISIBLE)
         mDatabaseHelper.mWrapper.updatePhoto(p2)

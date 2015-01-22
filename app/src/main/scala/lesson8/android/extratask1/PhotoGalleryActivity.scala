@@ -87,7 +87,7 @@ class PhotoGalleryActivity extends Activity with LoaderCallbacks[Album] {
     case PhotoGalleryActivity.loadFromNet => new AsyncTaskLoader[Album](this) {
         override def loadInBackground(): Album = {
           val response: HttpResponse[String] =
-            Http("http://api-fotki.yandex.ru/api/top/published/?format=json").timeout(10000, 10000).asString
+            Http("http://api-fotki.yandex.ru/api/top/published/?format=json&limit=43").timeout(10000, 10000).asString
           val jsonObj = new JSONObject(response.body)
           val photos: JSONArray = jsonObj.getJSONArray("entries")
           var ret: List[Photo] = Nil

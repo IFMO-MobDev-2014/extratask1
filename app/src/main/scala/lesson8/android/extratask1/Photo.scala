@@ -83,7 +83,7 @@ class Photo(val id: String,
       case None => try {
         val path = new File(dir.getAbsolutePath + "/" + id + "_fullsize.png")
         val out = new FileOutputStream(path)
-        loadFromURL(thumbnailUrl).compress(Bitmap.CompressFormat.PNG, 100, out)
+        loadFromURL(fullsizeUrl).compress(Bitmap.CompressFormat.PNG, 100, out)
         Log.d(this.toString, "Downloaded and saved thumbnail into " + path.getAbsolutePath)
         val ret = new Photo(id, thumbnailUrl, fullsizeUrl, thumbnail, Some(path))
         ret

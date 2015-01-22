@@ -2,6 +2,8 @@ package ru.ifmo.md.photooftheday;
 
 import android.app.Activity;
 import android.app.WallpaperManager;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -101,7 +103,8 @@ public class DisplayPhotoActivity extends Activity {
                 Toast.makeText(this, getString(R.string.wallpaper_not_set), Toast.LENGTH_SHORT).show();
             }
         } else if (id == R.id.action_open_in_browser) {
-            // TODO: open in browser
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(photo.fullUrl.toString()));
+            startActivity(browserIntent);
         }
 
         return super.onOptionsItemSelected(item);

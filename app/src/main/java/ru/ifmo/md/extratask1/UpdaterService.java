@@ -16,10 +16,13 @@ import java.net.URLConnection;
 
 public class UpdaterService extends IntentService {
     private static final String url = "http://api-fotki.yandex.ru/api/podhistory/?format=json";
+
     public UpdaterService() {
         super("UpdaterService");
     }
+
     ResultReceiver receiver;
+
     @Override
     protected void onHandleIntent(Intent intent) {
 
@@ -45,7 +48,7 @@ public class UpdaterService extends IntentService {
 
                 // load into cache
                 //Log.d("updater", link);
-                if(GridActivity.cache.get(link) == null) {
+                if (GridActivity.cache.get(link) == null) {
                     // cant download
                     throw new Exception(link);
                 }

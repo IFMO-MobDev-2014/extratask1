@@ -6,6 +6,7 @@ import android.widget.ImageView;
 
 public class FullScreenView extends Activity {
     private ImageView imageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

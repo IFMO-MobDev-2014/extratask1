@@ -30,7 +30,7 @@ public class GridAdapter extends ArrayAdapter<Bitmap> {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), FullScreenView.class);
-                intent.putExtra("index", number+position);
+                intent.putExtra("index", number + position);
                 getContext().startActivity(intent);
             }
         });

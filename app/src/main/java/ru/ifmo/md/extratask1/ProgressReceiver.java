@@ -11,6 +11,7 @@ public class ProgressReceiver extends ResultReceiver {
     public static final int DONE = 0;
     public static final int ERROR = 1;
     public static final int IMGLOADED = 2;
+
     public interface Receiver {
         public void onReceiveResult(int resultCode, Bundle data);
     }

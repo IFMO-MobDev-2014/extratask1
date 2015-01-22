@@ -1,24 +1,23 @@
 package ru.ifmo.md.extratask1;
 
-import java.util.ArrayList;
-import java.util.List;
-
-
 import android.content.Intent;
-import android.os.Handler;
 import android.graphics.Bitmap;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
+import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class GridActivity extends ActionBarActivity implements ProgressReceiver.Receiver {
@@ -72,7 +71,6 @@ public class GridActivity extends ActionBarActivity implements ProgressReceiver.
     }
 
 
-
     public void update(View v) {
         images.clear();
 
@@ -109,7 +107,6 @@ public class GridActivity extends ActionBarActivity implements ProgressReceiver.
         }
 
     }
-
 
 
     /**
@@ -152,8 +149,8 @@ public class GridActivity extends ActionBarActivity implements ProgressReceiver.
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             gridView = (GridView) rootView.findViewById(R.id.gridView);
             if (!GridActivity.images.isEmpty()) {
-                screen = GridActivity.images.subList(6 * (pos-1), 6 + 6 * (pos-1));
-                gridView.setAdapter(new GridAdapter(getActivity(), screen, 6 * (pos-1)));
+                screen = GridActivity.images.subList(6 * (pos - 1), 6 + 6 * (pos - 1));
+                gridView.setAdapter(new GridAdapter(getActivity(), screen, 6 * (pos - 1)));
             }
 
             return rootView;

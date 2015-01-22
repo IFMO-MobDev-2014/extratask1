@@ -26,17 +26,17 @@ public class ImageCache {
 
 
     public Bitmap get(String url) {
-        if(cache.containsKey(url)) {
+        if (cache.containsKey(url)) {
             return cache.get(url);
         }
         // disk
         Bitmap bm;
         try {
-            bm = BitmapFactory.decodeStream(new FileInputStream(new File(ctx.getCacheDir(), ""+url.hashCode())));
+            bm = BitmapFactory.decodeStream(new FileInputStream(new File(ctx.getCacheDir(), "" + url.hashCode())));
         } catch (FileNotFoundException e) {
             bm = null;
         }
-        if(bm != null) {
+        if (bm != null) {
             cache.put(url, bm);
             return bm;
         }
@@ -44,18 +44,17 @@ public class ImageCache {
             // network
             URL u = new URL(url);
             bm = BitmapFactory.decodeStream(u.openConnection().getInputStream());
-        } catch(IOException e) {
+        } catch (IOException e) {
             bm = null;
         }
-        if(bm != null) {
+        if (bm != null) {
             cache.put(url, bm);
             // save on disk
             try {
-                FileOutputStream outputStream = new FileOutputStream(new File(ctx.getCacheDir(), ""+url.hashCode()));
+                FileOutputStream outputStream = new FileOutputStream(new File(ctx.getCacheDir(), "" + url.hashCode()));
                 bm.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
                 outputStream.close();
-            }
-            catch(IOException e) {
+            } catch (IOException e) {
                 // ignore
                 Log.w("imagecache", "cant write file " + ctx.getCacheDir().getAbsolutePath() + "/" + url.hashCode());
             }

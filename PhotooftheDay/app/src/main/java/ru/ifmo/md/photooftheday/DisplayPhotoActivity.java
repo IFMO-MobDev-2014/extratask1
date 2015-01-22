@@ -2,20 +2,35 @@ package ru.ifmo.md.photooftheday;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+
+import ru.ifmo.md.photooftheday.memoryutils.FilesUtils;
 
 public class DisplayPhotoActivity extends Activity {
+    public static final String TAG = DisplayPhotoActivity.class.getSimpleName();
+
 // TODO: update to viewPager
     private ImageView imageView;
+    private Photo photo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_photo);
         imageView = (ImageView) findViewById(R.id.full_image_view);
-        Photo photo = getIntent().getParcelableExtra(MainActivity.PHOTO);
+        photo = getIntent().getParcelableExtra(MainActivity.PHOTO);
         imageView.setImageBitmap(photo.getFullBitmap());
     }
 
@@ -33,7 +48,56 @@ public class DisplayPhotoActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        // TODO: save to storage, change wallpaper, open in browser
+        if (id == R.id.action_save) {
+            File input = photo.getPathToFullBitmap();
+            FileChannel src = null;
+            try {
+                src = new FileInputStream(input).getChannel();
+            } catch (FileNotFoundException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+            File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            if (!FilesUtils.isExternalStorageWritable()) {
+                Log.e(TAG, "External storage is not writable");
+                Toast.makeText(this, getString(R.string.photo_not_saved), Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            File output = FilesUtils.createFile(path, photo.name + ".png");
+            FileChannel dest = null;
+            try {
+                dest = new FileOutputStream(output).getChannel();
+            } catch (FileNotFoundException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+
+            boolean saved = false;
+            if (src != null && dest != null) {
+                try {
+                    dest.transferFrom(src, 0, src.size());
+                    saved = true;
+                } catch (IOException e) {
+                    Log.e(TAG, e.getMessage(), e);
+                }
+            }
+            if (saved) {
+                Toast.makeText(this, getString(R.string.photo_saved), Toast.LENGTH_SHORT).show();
+            } else {
+                Log.e(TAG, "Can not save this photo");
+                Toast.makeText(this, getString(R.string.photo_not_saved), Toast.LENGTH_SHORT).show();
+            }
+            try {
+                src.close();
+                dest.close();
+            } catch (IOException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+            return false;
+        } else if (id == R.id.action_set_wallpaper) {
+            // TODO: set wallpaper
+        } else if (id == R.id.action_open_in_browser) {
+            // TODO: open in browser
+        }
 
         return super.onOptionsItemSelected(item);
     }

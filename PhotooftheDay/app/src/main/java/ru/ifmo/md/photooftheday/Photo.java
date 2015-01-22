@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
@@ -32,6 +33,10 @@ public class Photo implements Parcelable {
         this.id = id;
         this.thumbnailUrl = thumbnailUrl;
         this.fullUrl = fullUrl;
+    }
+
+    public File getPathToFullBitmap() {
+        return new File(FilesUtils.getApplicationStorageDir(), id);
     }
 
     public Bitmap getThumbnailBitmap() {

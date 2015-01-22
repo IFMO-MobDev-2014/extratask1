@@ -24,16 +24,17 @@ public class PhotoDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + "IF NOT EXISTS " + Tables.PHOTO + "(" +
-                        PhotoContract.Photo._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        PhotoContract.Photo.ID + " TEXT NOT NULL, " +
-                        PhotoContract.Photo.NAME + " TEXT NOT NULL, " +
-                        PhotoContract.Photo.URL_THUMBNAIL + " TEXT, " +
-                        PhotoContract.Photo.URL_FULL + " TEXT, " +
-                        PhotoContract.Photo.VALID_STATE + " INTEGER CHECK(" +
-                            PhotoContract.Photo.VALID_STATE + " IN (0, 1))" +
-                        ");"
-        );
+        final String createCommand = "CREATE TABLE " /*+ "IF NOT EXISTS "*/ + Tables.PHOTO + "(" +
+                PhotoContract.Photo._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                PhotoContract.Photo.ID + " TEXT NOT NULL, " +
+                PhotoContract.Photo.NAME + " TEXT NOT NULL, " +
+                PhotoContract.Photo.URL_THUMBNAIL + " TEXT, " +
+                PhotoContract.Photo.URL_FULL + " TEXT, " +
+                PhotoContract.Photo.VALID_STATE + " INTEGER CHECK(" +
+                PhotoContract.Photo.VALID_STATE + " IN (0, 1))" +
+                ");";
+        Log.d(TAG, "execSQL( " + createCommand + " )");
+        db.execSQL(createCommand);
     }
 
     @Override

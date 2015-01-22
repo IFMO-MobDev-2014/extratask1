@@ -141,6 +141,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
             return;
         }
 
+        recyclerAdapter.clear();
         ContentValues values = new ContentValues();
         values.put(PhotoContract.Photo.VALID_STATE, 0);
         getContentResolver().update(PhotoProvider.PHOTO_CONTENT_URI, values, null, null);

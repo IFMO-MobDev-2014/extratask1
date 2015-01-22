@@ -1,5 +1,6 @@
 package ru.ifmo.md.extratask1;
 
+import android.app.ActionBar;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -21,8 +22,8 @@ public class ImageContentProvider extends ContentProvider {
     private static final UriMatcher uriMatcher;
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI(Image.AUTHORITY, Image.JustImage.PATH, IMAGE);
-        uriMatcher.addURI(Image.AUTHORITY, Image.JustImage.PATH + "/#", IMAGE_ID);
+        uriMatcher.addURI(Tables.AUTHORITY, Tables.Images.PATH, IMAGE);
+        uriMatcher.addURI(Tables.AUTHORITY, Tables.Images.PATH + "/#", IMAGE_ID);
     }
 
     private static class DbHelper extends SQLiteOpenHelper {
@@ -40,9 +41,11 @@ public class ImageContentProvider extends ContentProvider {
 
         private void createTables(SQLiteDatabase sqLiteDatabase) {
             String qs = "CREATE TABLE " + IMAGE_TABLE_NAME + " ("
-                    + Image.JustImage._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                    + Image.JustImage.SMALL_NAME + " BLOB, "
-                    + Image.JustImage.LARGE_NAME + " TEXT" + ");";
+                    + Tables.Images._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + Tables.Images.SMALL_NAME + " BLOB, "
+                    + Tables.Images.LARGE_URL_NAME + " TEXT, "
+                    + Tables.Images.ORIG_URL_NAME + " TEXT, "
+                    + Tables.Images.LARGE_NAME + " BLOB" + ");";
             sqLiteDatabase.execSQL(qs);
         }
 
@@ -69,9 +72,9 @@ public class ImageContentProvider extends ContentProvider {
     public String getType(Uri uri) {
         switch (uriMatcher.match(uri)) {
             case IMAGE:
-                return Image.JustImage.CONTENT_TYPE;
+                return Tables.Images.CONTENT_TYPE;
             case IMAGE_ID:
-                return Image.JustImage.CONTENT_ITEM_TYPE;
+                return Tables.Images.CONTENT_ITEM_TYPE;
             default:
                 throw new IllegalArgumentException("Unknown type: " + uri);
         }
@@ -99,7 +102,7 @@ public class ImageContentProvider extends ContentProvider {
 
         long rowID = db.insert(IMAGE_TABLE_NAME, null, values);
         if (rowID > 0) {
-            Uri resultUri = ContentUris.withAppendedId(Image.JustImage.CONTENT_URI, rowID);
+            Uri resultUri = ContentUris.withAppendedId(Tables.Images.CONTENT_URI, rowID);
             getContext().getContentResolver().notifyChange(resultUri, null);
             return resultUri;
         }
@@ -123,7 +126,7 @@ public class ImageContentProvider extends ContentProvider {
             case IMAGE_ID:
                 long id = ContentUris.parseId(uri);
                 affected = db.delete(IMAGE_TABLE_NAME,
-                        Image.JustImage._ID + "=" + id
+                        Tables.Images._ID + "=" + id
                                 + (!TextUtils.isEmpty(selection) ?
                                 " (" + selection + ')' : ""),
                         selectionArgs);
@@ -144,9 +147,9 @@ public class ImageContentProvider extends ContentProvider {
         if (match == IMAGE_ID) {
             String id = uri.getLastPathSegment();
             if (TextUtils.isEmpty(selection)) {
-                selection = Image.JustImage._ID + " = " + id;
+                selection = Tables.Images._ID + " = " + id;
             } else {
-                selection = selection + " AND " + Image.JustImage._ID + " = " + id;
+                selection = selection + " AND " + Tables.Images._ID + " = " + id;
             }
         } else if (match != IMAGE) {
             throw new IllegalArgumentException("Wrong URI: " + uri);
@@ -156,7 +159,7 @@ public class ImageContentProvider extends ContentProvider {
         Cursor cursor = db.query(IMAGE_TABLE_NAME, projection, selection,
                 selectionArgs, null, null, sortOrder);
         cursor.setNotificationUri(getContext().getContentResolver(),
-                Image.JustImage.CONTENT_URI);
+                Tables.Images.CONTENT_URI);
         return cursor;
     }
 
@@ -174,7 +177,7 @@ public class ImageContentProvider extends ContentProvider {
             case IMAGE_ID:
                 String id = uri.getPathSegments().get(1);
                 affected = db.update(IMAGE_TABLE_NAME, values,
-                        Image.JustImage._ID + "=" + id
+                        Tables.Images._ID + "=" + id
                                 + (!TextUtils.isEmpty(selection) ?
                                 " AND (" + selection + ')' : ""),
                         selectionArgs);

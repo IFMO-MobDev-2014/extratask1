@@ -26,13 +26,13 @@ public class BitmapDownloadTask extends AsyncTask<URL, Void, Bitmap> {
         } catch (IOException e) {
             Log.e(TAG, e.getMessage(), e);
         }
-        Log.d(TAG, "doInBackground() ready in " + (System.currentTimeMillis() - startTime) + ".ms");
         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
         try {
             inputStream.close();
         } catch (IOException e) {
             Log.e(TAG, e.getMessage(), e);
         }
+        Log.d(TAG, "doInBackground() ready in " + (System.currentTimeMillis() - startTime) + ".ms");
         return bitmap;
     }
 }

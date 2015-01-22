@@ -2,8 +2,8 @@
 <resources>
 
     <string name="app_name">Photo of the Day</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Reload</string>
+    <string name="action_reload">Reload</string>
     <string name="title_activity_display_photo">DisplayPhotoActivity</string>
+    <string name="download_fail">Failed to download photos</string>
 
 </resources>

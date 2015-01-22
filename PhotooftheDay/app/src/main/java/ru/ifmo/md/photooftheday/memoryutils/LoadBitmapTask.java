@@ -3,7 +3,6 @@ package ru.ifmo.md.photooftheday.memoryutils;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
@@ -27,7 +26,6 @@ public class LoadBitmapTask extends AsyncTask<Void, Void, Bitmap> {
             return null;
         }
         File fullPath = FilesUtils.createFile(FilesUtils.getApplicationStorageDir(), fileName);
-        Log.d(TAG, "Read " + fileName + ".bitmap from " + fullPath.getAbsolutePath());
         return BitmapFactory.decodeFile(fullPath.getAbsolutePath());
     }
 }

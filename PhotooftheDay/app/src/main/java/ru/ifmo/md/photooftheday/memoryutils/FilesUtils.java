@@ -19,7 +19,6 @@ public class FilesUtils {
     }
 
     public static File getApplicationStorageDir() {
-        // Get the directory for the user's public pictures directory.
         if (APP_DIR == null) {
             APP_DIR = createDirectory(Environment.getExternalStorageDirectory(), APP_NAME);
         }
@@ -36,6 +35,15 @@ public class FilesUtils {
             Log.e(TAG, "Directory not created");
         }
         return file;
+    }
+
+    public static boolean fileExists(File path, String fileName) {
+        if (!path.exists()) {
+            Log.e(TAG, path + " doesn't exist");
+            return false;
+        }
+        File file = new File(path, fileName);
+        return file.exists();
     }
 
     public static File createFile(File path, String fileName) {

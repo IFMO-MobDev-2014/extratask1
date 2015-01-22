@@ -1,7 +1,5 @@
 package ru.ifmo.md.photooftheday.photodownloader;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -11,18 +9,11 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by vadim on 17/01/15.
@@ -30,13 +21,14 @@ import java.util.List;
 public class JSONDownloadTask extends AsyncTask<Void, Void, JSONObject> {
     public static final String TAG = JSONDownloadTask.class.getSimpleName();
 
+    public static final int IMAGES_TO_DOWNLOAD = 20;
     private static final String API_URL = "https://api.500px.com/v1/photos";
     private static final String CONSUMER_KEY = "EeLvrefbDq9ZgIhCNk95vSjOMHwaogEGkJjNRayk";
 
     private static String feature = "fresh_today";
     private static String sort = "highest_rating";
     private static String sortDirection = "desc";
-    private static String counter = "20";
+    private static String counter = Integer.toString(IMAGES_TO_DOWNLOAD);
     private static String[] imageSizes = {"2", "4"};
 //    private static String only = "0";
 //    private static String exclude = "0";

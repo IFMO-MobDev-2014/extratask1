@@ -1,8 +1,5 @@
 package ru.ifmo.md.photooftheday;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,12 +15,10 @@ import java.util.List;
 public abstract class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Holder> {
     public static final String TAG = RecyclerAdapter.class.getSimpleName();
 
-    protected List<Bitmap> dataset;
-    protected List<String> datasetTitles;
+    protected List<Photo> dataset;
 
-    public RecyclerAdapter(List<Bitmap> dataset, List<String> datasetTitles) {
+    public RecyclerAdapter(List<Photo> dataset) {
         this.dataset = dataset;
-        this.datasetTitles = datasetTitles;
     }
 
     public class Holder extends RecyclerView.ViewHolder {
@@ -35,39 +30,24 @@ public abstract class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapt
         }
     }
 
-    public String getTitle(int position) {
-        return datasetTitles.get(position);
-    }
-
-    public void add(int position, Bitmap bitmap, String title) {
-        dataset.add(position, bitmap);
-        datasetTitles.add(position, title);
+    public void add(int position, Photo photo) {
+        dataset.add(position, photo);
         notifyItemInserted(position);
     }
 
-    public void add(Bitmap bitmap, String title) {
-        add(dataset.size(), bitmap, title);
+    public void add(Photo photo) {
+        add(dataset.size(), photo);
     }
 
     public void remove(int position) {
         dataset.remove(position);
-        datasetTitles.remove(position);
         notifyItemRemoved(position);
     }
 
-    public void remove(Bitmap bitmap) {
-        int position = dataset.indexOf(bitmap);
+    public void remove(Photo photo) {
+        int position = dataset.indexOf(photo);
         if (position == -1) {
-            Log.d(TAG, "There is no such element in dataset");
-            throw new IllegalArgumentException("There is no such element in dataset");
-        }
-        remove(position);
-    }
-
-    public void remove(String title) {
-        int position = datasetTitles.indexOf(title);
-        if (position != -1) {
-            Log.d(TAG, "There is no such element in dataset");
+            Log.e(TAG, "There is no such element in dataset");
             throw new IllegalArgumentException("There is no such element in dataset");
         }
         remove(position);
@@ -75,7 +55,6 @@ public abstract class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapt
 
     public void clear() {
         dataset.clear();
-        datasetTitles.clear();
         notifyDataSetChanged();
     }
 

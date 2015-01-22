@@ -2,7 +2,6 @@ package ru.ifmo.md.photooftheday.memoryutils;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -37,8 +36,10 @@ public class SaveBitmapTask extends AsyncTask<Bitmap, Void, Boolean> {
         for (int i = 0; i < Math.min(fileNames.length, bitmaps.length); ++i) {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             bitmaps[i].compress(Bitmap.CompressFormat.PNG, QUALITY, bytes);
+            if (FilesUtils.fileExists(FilesUtils.getApplicationStorageDir(), fileNames[i])) {
+                continue;
+            }
             File fullPath = FilesUtils.createFile(FilesUtils.getApplicationStorageDir(), fileNames[i]);
-            Log.d(TAG, "Write " + fileNames[i] + ".bitmap to " + fullPath.getAbsolutePath());
             FileOutputStream outputStream = null;
             try {
                 outputStream = new FileOutputStream(fullPath);

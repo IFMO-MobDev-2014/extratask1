@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
 
 /**
  * Created by vadim on 18/01/15.
@@ -31,14 +30,12 @@ public class PhotoProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        Log.d(TAG, "onCreate()");
         dbHelper = new PhotoDatabaseHelper(getContext());
         return true;
     }
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Log.d(TAG, "query()!!!");
         int match = URI_MATCHER.match(uri);
         Cursor cursor;
         switch (match) {
@@ -66,7 +63,6 @@ public class PhotoProvider extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        Log.d(TAG, "insert()");
         Uri resultURI;
         int match = URI_MATCHER.match(uri);
         switch (match) {

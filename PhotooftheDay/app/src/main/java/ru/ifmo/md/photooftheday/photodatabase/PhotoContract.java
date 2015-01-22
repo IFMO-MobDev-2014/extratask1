@@ -8,7 +8,7 @@ import android.provider.BaseColumns;
  */
 public final class PhotoContract {
     public interface PhotoColumns {
-        public static final String TITLE = "photo_title";
+        public static final String ID = "photo_id";
         public static final String NAME = "photo_name";
         public static final String URL_FULL = "photo_url_full";
         public static final String URL_THUMBNAIL = "photo_url_thumbnail";
@@ -27,7 +27,7 @@ public final class PhotoContract {
 
         public static final String[] ALL_COLUMNS = {
                 Photo._ID,
-                Photo.TITLE,
+                Photo.ID,
                 Photo.NAME,
                 Photo.URL_FULL,
                 Photo.URL_THUMBNAIL,

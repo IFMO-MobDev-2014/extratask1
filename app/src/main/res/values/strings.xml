@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">500pxImageManager</string>
+
+    <string name="title_activity_full_screen_activity_fm">FullScreenActivityFM</string>
+
+    <string name="actionRefresh">Refresh</string>
+
+    <string name="actionOpenInBrowser">Open in Browser</string>
+    <string name="actionDownload">Download</string>
+    <string name="actionSetAsWallpaper">Set as wallpaper</string>
+
+    <string name="serviceURL">https://500px.com</string>
+    <string name="imageView">imageView</string>
+
+    <string name="toastNoInternetConnection">No Internet Connection</string>
+    <string name="toastWallpaperSucceed">Image has been set as a wallpaper</string>
+    <string name="toastWallpaperFailed">Image hasn\'t been cached yet</string>
+
+    <string name="category_popular">Popular</string>
+    <string name="category_fresh">Fresh</string>
+    <string name="category_upcoming">Upcoming</string>
+    <string name="category_editors">Editors</string>
+</resources>

@@ -157,7 +157,7 @@ public class MyIntentService extends IntentService {
                         try {
                             String root = Environment.getExternalStorageDirectory().toString();
                             Log.i("root directory: ", root);
-                            File directory = new File(root + "/saved_images");
+                            File directory = new File(root, "/saved_images");
                             directory.mkdirs();
                             File photo = new File(directory, cursor.getString(2) + ".jpg");
                             if (photo.exists()) {

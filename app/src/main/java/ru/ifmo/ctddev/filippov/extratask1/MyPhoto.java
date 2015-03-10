@@ -9,13 +9,13 @@ import java.io.ByteArrayInputStream;
  * Created by Dima_2 on 01.03.2015.
  */
 public class MyPhoto {
-    String author;
-    String id;
-    byte[] image;
+    public final String author;
+    public final String id;
+    public final byte[] image;
     private Bitmap bitmap = null;
-    int databaseId;
-    String fullUrl;
-    String browseUrl;
+    public int databaseId;
+    public String fullUrl;
+    public String browseUrl;
 
     public MyPhoto(String id, String author, byte[] image) {
         this.id = id;

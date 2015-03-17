@@ -2,6 +2,8 @@ package com.example.alexey.extratask1;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +51,7 @@ import java.util.ArrayList;
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
           ImageView imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(180, 180));
+            imageView.setLayoutParams(new GridView.LayoutParams(MainActivity.width/3,MainActivity.width/3));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(8, 8, 8, 8);
             imageView.setImageBitmap(getProduct(position));

@@ -13,7 +13,9 @@ import android.widget.Toast;
 
 public class FullscreenActivity extends Activity {
     int pos;
+    private static final int LONG_DELAY = 3500;
     ImageView imageView;
+
     protected void onCreate(final Bundle savedInstanceState) {
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -25,26 +27,20 @@ public class FullscreenActivity extends Activity {
         pos = getIntent().getIntExtra("img", 1);
         set();
         Toast toast = Toast.makeText(getApplicationContext(),
-                "Click to next, long click to close.", Toast.LENGTH_SHORT);
-        toast.show();
+                "Click to next, back button to close.", Toast.LENGTH_LONG);
         toast.show();
         contentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 pos++;
                 pos %= IServise.IMGCOUNT;
-                set();
-            }
-        });
-        contentView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                FullscreenActivity.this.finish();
-                return false;
+                try {
+                    set();
+                } catch (Exception e) {
+                }
             }
         });
     }
-
     private void set() {
         Cursor cursor = getContentResolver().query(provider.CONTENT_URI, null, provider.DAY + " = " + Integer.toString(pos), null, null);
         cursor.moveToFirst();

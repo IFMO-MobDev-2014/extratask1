@@ -5,12 +5,12 @@ package com.example.alexey.extratask1;
  */
 
 import android.app.IntentService;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.os.ResultReceiver;
 import android.util.Log;
 
@@ -24,23 +24,22 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class IServise extends IntentService {
-    public static final int IMGCOUNT = 24;
+    public static final int IMGCOUNT = 48;
     static String RECEIVER = "1";
     static int STATUS_RUNNING = 2;
     static String RECEIVER_DATA = "4";
-    static int STATUS_FINISHED = 5;
+    ContentValues cv;
 
     public IServise() {
         this("IServise");
     }
 
+
     public IServise(String name) {
         super(name);
     }
-
 
     public void onCreate() {
         super.onCreate();
@@ -51,6 +50,7 @@ public class IServise extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.i("started", "onhandle");
+        cv = new ContentValues();
         final Bundle data = new Bundle();
         ResultReceiver receiver = intent.getParcelableExtra(RECEIVER);
         data.putString(RECEIVER_DATA, "Sample result data");
@@ -59,7 +59,6 @@ public class IServise extends IntentService {
         try {
             HttpClient client = new DefaultHttpClient();
             Uri.Builder uriBuilder = new Uri.Builder();
-            //String path= (String) intent.getSerializableExtra("word");
             uriBuilder.scheme("https")
                     .authority("api.flickr.com")
                     .appendPath("services")
@@ -68,7 +67,6 @@ public class IServise extends IntentService {
                     .appendQueryParameter("api_key", "4a32b392b522081a39ddd65c07e4bb18")
                     .appendQueryParameter("method", "flickr.interestingness.getList")
                     .appendQueryParameter("format", "json");
-                    //.appendQueryParameter("text", path);
             HttpGet POST = new HttpGet(uriBuilder.build().toString());
             ResponseHandler<String> handler = new BasicResponseHandler();
             String response = client.execute(POST, handler);
@@ -78,10 +76,7 @@ public class IServise extends IntentService {
             int count = IMGCOUNT;
             if (count > results.length())
                 count = results.length();
-            int status;
             for (int i = 0; i < count; i++) {
-                status = 5;
-                if (i==0) status = 6;
                 JSONObject result = results.getJSONObject(i);
                 String farm = result.getString("farm");
                 String server = result.getString("server");
@@ -89,23 +84,23 @@ public class IServise extends IntentService {
                 String secret = result.getString("secret");
                 pictures = "https://farm" + farm + ".staticflickr.com/" +
                         server + "/" + id + "_" + secret + "_q.jpg";
-             //   BoxAdapter  boxAdapter = new BoxAdapter(this, );
                 Bitmap bitmap = ground(pictures);
-                int[] pixels = new int[bitmap.getWidth()*bitmap.getHeight()];
+                int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
                 bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-                data.putIntArray("pic", pixels);
-                data.putInt("wth", bitmap.getWidth());
-                data.putInt("hth", bitmap.getHeight());
-                receiver.send(status, data);
+                cv.put(provider.DAY, i);
+                cv.put(provider.DATE, ImageConverter.getBytes(bitmap));
+                getContentResolver().insert(provider.CONTENT_URI, cv);
+                data.putInt("p", i * 100 / count);
+                receiver.send(6, data);
             }
-            receiver.send(7, data);
+            receiver.send(7, new Bundle());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    //ArrayList<Bitmap> ret = new ArrayList<Bitmap>();
+
     public Bitmap ground(String link) {
-            return downloadImage(link);
+        return downloadImage(link);
     }
 
     public Bitmap downloadImage(String url) {

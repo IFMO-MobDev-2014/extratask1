@@ -8,10 +8,6 @@ import android.os.ResultReceiver;
 
 public class AppReceiver extends ResultReceiver {
 
-    public interface Receiver {
-        public void onReceiveResult(int resultCode, Bundle data);
-    }
-
     private Receiver mReceiver;
 
     public AppReceiver(Handler handler) {
@@ -27,5 +23,9 @@ public class AppReceiver extends ResultReceiver {
         if (mReceiver != null) {
             mReceiver.onReceiveResult(resultCode, resultData);
         }
+    }
+
+    public interface Receiver {
+        public void onReceiveResult(int resultCode, Bundle data);
     }
 }

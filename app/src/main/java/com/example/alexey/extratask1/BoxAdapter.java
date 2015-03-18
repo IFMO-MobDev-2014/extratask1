@@ -1,65 +1,37 @@
 package com.example.alexey.extratask1;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Point;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.SimpleCursorAdapter;
 
-import java.util.ArrayList;
+public class BoxAdapter extends SimpleCursorAdapter {
 
-/**
- * Created by Alexey on 18.01.2015.
- */
+    private int layout;
 
-    public class BoxAdapter extends BaseAdapter {
-        Context ctx;
-        LayoutInflater lInflater;
-        ArrayList<Bitmap> objects;
-    private Context mContext;
-        BoxAdapter(Context context, ArrayList<Bitmap> products) {
-            ctx = context;
-            objects = products;
-           mContext = context;
-            lInflater = (LayoutInflater) ctx
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        }
+    public BoxAdapter(Context _context, int _layout, Cursor _cursor, String[] _from, int[] _to) {
+        super(_context, _layout, _cursor, _from, _to);
+        layout = _layout;
+    }
 
+    @Override
+    public void bindView(View view, Context _context, Cursor _cursor) {
+        Bitmap bitmap = ImageConverter.getImage(_cursor.getBlob(_cursor.getColumnIndex(provider.DATE)));
+        ((ImageView) view).setImageBitmap(bitmap);
+        view.setLayoutParams(new GridView.LayoutParams(MainActivity.width / 3, MainActivity.width / 3));
+        view.setPadding(8, 8, 8, 8);
+    }
 
-        @Override
-        public int getCount() {
-            return objects.size();
-        }
-
-
-        @Override
-        public Object getItem(int position) {
-            return objects.get(position);
-        }
-
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-          ImageView imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(MainActivity.width/3,MainActivity.width/3));
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setPadding(8, 8, 8, 8);
-            imageView.setImageBitmap(getProduct(position));
-            return imageView;
-        }
-
-        Bitmap getProduct(int position) {
-            return (Bitmap) getItem(position);
-        }
+    @Override
+    public View newView(Context _context, Cursor _cursor, ViewGroup parent) {
+        LayoutInflater inflater = (LayoutInflater) _context.getSystemService(_context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(layout, parent, false);
+        return view;
+    }
 
 }

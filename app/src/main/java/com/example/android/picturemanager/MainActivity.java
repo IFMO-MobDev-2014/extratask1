@@ -27,6 +27,8 @@ import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemor
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import java.util.ArrayList;
+
 public class MainActivity extends ActionBarActivity implements ActionBar.TabListener {
     // TODO if this becomes too memory intensive, it may be best to
     // TODO switch to a {@image_url android.support.v4.app.FragmentStatePagerAdapter}
@@ -149,7 +151,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
     public static class CategorySectionFragment extends Fragment {
         public static final String SECTION_NUMBER = "section_number";
-        private static final int IMAGE_SIZE = 2;
+        private static final int IMAGE_SIZE_SMALL = 2;
+        private static final int IMAGE_SIZE_BIG = 4;
 
         private static int columns;
         private static int imagesPerPage;
@@ -190,7 +193,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                     progressBar.setVisibility(View.VISIBLE);
                     progressBar.setProgress(0);
                     isServiceWorking = intent.getIntExtra("imagesPerPage", 0);
-
                     getActivity().registerReceiver(loadingProgress, progressFilter);
                 }
             }
@@ -252,8 +254,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
             ImageAdapter imageAdapter = new ImageAdapter(getActivity(), CATEGORIES[sectionNumber]);
 
-            myFeed = new MyFeed(getActivity(), imageAdapter, IMAGE_SIZE,
-                    CATEGORIES[sectionNumber]);
+            myFeed = new MyFeed(getActivity(), imageAdapter, IMAGE_SIZE_SMALL, IMAGE_SIZE_BIG, CATEGORIES[sectionNumber]);
 
             gridView.setAdapter(imageAdapter);
             gridView.setNumColumns(columns);
@@ -267,14 +268,15 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 @Override
                 public void onLoadMore(int page, int totalItemsCount) {
                     getActivity().registerReceiver(onServiceStart, startFilter);
-                    myFeed.loadItems(++pageNumber, visibleThreshold);
+//                    myFeed.loadItems(++pageNumber, visibleThreshold);
+                    myFeed.loadItems(++pageNumber, imagesPerPage);
                 }
             });
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent intent = new Intent(getActivity(), FullScreenActivityFM.class);
-                    intent.putStringArrayListExtra("items", myFeed.getItems());
+                    intent.putStringArrayListExtra("items", (ArrayList<String>) myFeed.getItems());
                     intent.putExtra("position", position);
 
                     startActivity(intent);

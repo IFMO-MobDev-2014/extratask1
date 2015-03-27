@@ -11,7 +11,7 @@ import retrofit.converter.GsonConverter;
  */
 
 public class RestClient {
-    private static final String CONSUMER_KEY = "jzHVTypUhngwiRs0CJ7aDjyRp0NLy62KFeYsdrUn";
+    private static final String CONSUMER_KEY = "x0ceDhj40VRAALAJRBjEqzjlDFdQzp0po0C4l6Xc";
     private static final String SERVICE_URL = "https://api.500px.com/v1";
 
     private ApiService apiService;

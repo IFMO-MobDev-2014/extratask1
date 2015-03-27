@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.android.picturemanager.ImageAdapter;
@@ -27,7 +28,8 @@ public class MyFeed {
     public static final String LOAD_STARTED_BROADCAST = "Loading started";
     public static final String PROGRESS_BROADCAST = "Loading images";
 
-    private int imageSize;
+    private int imageSizeSmall;
+    private int imageSizeBig;
     private List<Photo> items;
     private RestClient restClient;
     private ImageAdapter imageAdapter;
@@ -35,22 +37,23 @@ public class MyFeed {
     private Context context;
     private String category;
 
-    public ArrayList<String> getItems() {
-        ArrayList<String> res = new ArrayList<>();
+    public List<String> getItems() {
+        List<String> res = new ArrayList<>();
         for (Photo photo : items) {
             res.add(photo.toString());
         }
         return res;
     }
 
-    public MyFeed(Context context, ImageAdapter imageAdapter, int imageSize, String category) {
+    public MyFeed(Context context, ImageAdapter imageAdapter, int imageSizeSmall, int imageSizeBig, String category) {
         this.context = context;
         this.category = category;
         hashSet = new HashSet<>();
 
         this.restClient = new RestClient();
 
-        this.imageSize = imageSize;
+        this.imageSizeSmall = imageSizeSmall;
+        this.imageSizeBig = imageSizeBig;
         if (this.items == null) {
             this.items = new ArrayList<>();
         }
@@ -68,7 +71,8 @@ public class MyFeed {
         Toast.makeText(context, context.getString(R.string.toastNoInternetConnection), Toast.LENGTH_SHORT).show();
     }
 
-    public void loadItems(int pageNumber, int imagesPerPage) {
+
+    public void loadItems(final int pageNumber, final int imagesPerPage) {
         Intent start = new Intent();
         start.setAction(LOAD_STARTED_BROADCAST);
         start.putExtra("category", category);
@@ -77,15 +81,34 @@ public class MyFeed {
 
         restClient.getApiService().getFeed(
                 category,
-                imageSize,
+                imageSizeSmall,
                 pageNumber,
                 imagesPerPage,
                 restClient.getConsumerKey(),
                 new Callback<Response>() {
                     @Override
                     public void success(Response response, retrofit.client.Response httpResponse) {
-                        List<Photo> received = response.getPhotos();
-                        appendItems(received);
+                        appendItems(response.getPhotos());
+                        restClient.getApiService().getFeed(
+                                category,
+                                imageSizeBig,
+                                pageNumber,
+                                imagesPerPage,
+                                restClient.getConsumerKey(),
+                                new Callback<Response>() {
+                                    @Override
+                                    public void success(Response response, retrofit.client.Response httpResponse) {
+                                        updateItems(response.getPhotos());
+                                    }
+
+                                    @Override
+                                    public void failure(RetrofitError error) {
+                                        if (!isNetworkAvailable()) {
+                                            noInternetConnection();
+                                        }
+                                        Log.d("==MY_FEED__big==", "load failure, error = " + error.getMessage());
+                                    }
+                                });
                     }
 
                     @Override
@@ -93,8 +116,24 @@ public class MyFeed {
                         if (!isNetworkAvailable()) {
                             noInternetConnection();
                         }
+
+                        Log.d("==MY_FEED_small==", "load failure, error = " + error.getMessage());
                     }
                 });
+    }
+
+    private void updateItems(List<Photo> other) {
+        for (int i = 0; i < other.size(); i++) {
+            Photo big_photo = other.get(i);
+            if (hashSet.contains(big_photo.getTitle())) {
+                for (Photo p : items) {
+                    if (p.getTitle().equals(big_photo.getTitle())) {
+                        p.setBig_image_url(big_photo.getImage_url());
+                    }
+                }
+            }
+        }
+        this.imageAdapter.notifyDataSetChanged();
     }
 
     private void appendItems(List<Photo> other) {
@@ -111,5 +150,6 @@ public class MyFeed {
         hashSet = new HashSet<>();
         items = new ArrayList<>();
         imageAdapter.setItems(items);
+        imageAdapter.notifyDataSetChanged();
     }
 }

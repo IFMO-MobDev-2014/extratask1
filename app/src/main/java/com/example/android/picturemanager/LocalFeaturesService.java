@@ -31,8 +31,7 @@ public class LocalFeaturesService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        String name = intent.getStringExtra("name");
-        String username = intent.getStringExtra("username");
+        String title = intent.getStringExtra("title");
         String bigImageUrl = intent.getStringExtra("big_image_url");
 
         List<Bitmap> list = MemoryCacheUtils.findCachedBitmapsForImageUri(bigImageUrl,
@@ -55,17 +54,15 @@ public class LocalFeaturesService extends IntentService {
             File image = new File(root + "/saved_images");
             image.mkdirs();
 
-            final File file = new File(image, name + " by " + username + ".jpg");
+            final File file = new File(image, title + ".jpg");
             if (file.exists()) {
                 file.delete();
 //                file.renameTo(new File(image, name + " by " + username + "00.jpg"));
             }
 
-            try {
-                FileOutputStream fOut = new FileOutputStream(file);
+            try (FileOutputStream fOut = new FileOutputStream(file)) {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
                 fOut.flush();
-                fOut.close();
             } catch (Exception e) {
                 e.printStackTrace();
                 return;

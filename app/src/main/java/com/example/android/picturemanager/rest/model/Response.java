@@ -9,12 +9,11 @@ public class Response {
     private List<Photo> photos;
 
     public List<Photo> getPhotos() {
-        return this.photos;
+        return photos;
     }
 
     @Override
     public String toString() {
-        return "{" + "photos=" + photos +
-                '}';
+        return "{" + "photos='" + photos + "\'" + '}';
     }
 }

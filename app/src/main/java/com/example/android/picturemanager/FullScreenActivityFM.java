@@ -45,7 +45,7 @@ public class FullScreenActivityFM extends ActionBarActivity {
             .build();
 
     private static int position;
-    private static boolean ifDownloaded;
+    private static boolean ifDownloaded = false;
     private static ArrayList<Photo> items;
 
     private CollectionPagerAdapter mCollectionPagerAdapter;
@@ -57,7 +57,7 @@ public class FullScreenActivityFM extends ActionBarActivity {
 
         Intent intent = getIntent();
         position = intent.getIntExtra("position", 0);
-        items = Photo.getPhotos(intent.getStringArrayListExtra("items"));
+        items = (ArrayList<Photo>) Photo.getPhotos(intent.getStringArrayListExtra("items"));
 
         mCollectionPagerAdapter = new CollectionPagerAdapter(getSupportFragmentManager(), items);
 
@@ -97,16 +97,14 @@ public class FullScreenActivityFM extends ActionBarActivity {
                     + items.get(position).getBrowser_url()));
             startActivity(intent);
         }
-
         if (!ifDownloaded) {
             return super.onOptionsItemSelected(item);
         }
-        if (id == R.id.action_set_as_wallpaper || id == R.id.action_download) {
-            Intent intent = new Intent(this, LocalFeaturesService.class);
-            Photo photo = items.get(position);
 
-            intent.putExtra("name", photo.getName());
-            intent.putExtra("username", photo.getUsername());
+        if (id == R.id.action_set_as_wallpaper || id == R.id.action_download) {
+            Photo photo = items.get(position);
+            Intent intent = new Intent(this, LocalFeaturesService.class);
+            intent.putExtra("title", photo.getTitle());
             intent.putExtra("big_image_url", photo.getBig_image_url());
             intent.setAction(id == R.id.action_set_as_wallpaper ?
                     getString(R.string.actionSetAsWallpaper) :
@@ -135,7 +133,6 @@ public class FullScreenActivityFM extends ActionBarActivity {
 
             Bundle args = new Bundle();
 
-            args.putInt("id", i);
             args.putString(ObjectFragment.NAME, items.get(i).getName());
             args.putString(ObjectFragment.USERNAME, items.get(i).getUsername());
             args.putString(ObjectFragment.BIG_IMAGE_URL, items.get(i).getBig_image_url());
@@ -243,6 +240,36 @@ public class FullScreenActivityFM extends ActionBarActivity {
             getActivity().registerReceiver(onHide, hideFilter);
         }
 
+        private void displayImage() {
+            ImageLoader.getInstance()
+                    .displayImage(bigImageUrl, scaleImageView, options, new ImageLoadingListener() {
+                        @Override
+                        public void onLoadingStarted(String imageUri, View view) {
+                            progressBar.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                            if (failReason.getType() == FailReason.FailType.IO_ERROR) {
+                                if (!isNetworkAvailable(getActivity())) {
+                                    noInternetConnection();
+                                }
+                            }
+                            progressBar.setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                            ifDownloaded = true;
+                            progressBar.setVisibility(View.INVISIBLE);
+                        }
+
+                        @Override
+                        public void onLoadingCancelled(String imageUri, View view) {
+                        }
+                    });
+        }
+
         @Override
         public void onViewCreated(View view, Bundle savedInstanceState) {
             textView.setVisibility(View.INVISIBLE);
@@ -252,36 +279,9 @@ public class FullScreenActivityFM extends ActionBarActivity {
             hideSystemUI();
 
             if (bigImageUrl == null) {
-                Log.d("BigPic", "bigImageUrl = null");
+                Log.d("FSA", "big_image_url == null");
             } else {
-                ImageLoader.getInstance()
-                        .displayImage(bigImageUrl, scaleImageView, options, new ImageLoadingListener() {
-                            @Override
-                            public void onLoadingStarted(String imageUri, View view) {
-                                progressBar.setVisibility(View.VISIBLE);
-                            }
-
-                            @Override
-                            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                                if (failReason.getType() == FailReason.FailType.IO_ERROR) {
-                                    if (!isNetworkAvailable(getActivity())) {
-                                        noInternetConnection();
-                                    }
-                                }
-                                progressBar.setVisibility(View.INVISIBLE);
-                            }
-
-                            @Override
-                            public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                                ifDownloaded = true;
-                                progressBar.setVisibility(View.INVISIBLE);
-                            }
-
-                            @Override
-                            public void onLoadingCancelled(String imageUri, View view) {
-
-                            }
-                        });
+                displayImage();
             }
         }
     }

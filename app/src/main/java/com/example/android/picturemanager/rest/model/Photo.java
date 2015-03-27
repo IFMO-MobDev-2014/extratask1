@@ -6,18 +6,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Photo {
+
     public Photo(String s) {
         try {
             //TODO check for "it's"
+            s = s.replace("'s", "bloblo");
             JSONObject js = new JSONObject(s);
+
             this.name = js.getString("name");
+            name = name.replace("bloblo", "'s");
+
             this.username = js.getString("username");
-            this.big_image_url = js.getString("big_image_url");
+            username = username.replace("bloblo", "'s");
+
             this.browser_url = js.getString("browser_url");
+            this.big_image_url = js.getString("big_image_url");
         } catch (JSONException e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 
@@ -30,15 +38,28 @@ public class Photo {
     @SerializedName("url")
     private String browser_url;
 
-    @SerializedName("image_url")
+    @SerializedName("images")
+    private Image[] images;
+
     private String image_url;
+    private String big_image_url;
 
     private String title;
     private String username;
-    private String big_image_url;
 
     public String getImage_url() {
+        if (image_url == null) {
+            image_url = images[0].getUrl();
+        }
         return image_url;
+    }
+
+    public String getBig_image_url() {
+        return big_image_url;
+    }
+
+    public void setBig_image_url(String url) {
+        big_image_url = url;
     }
 
     public String getBrowser_url() {
@@ -50,10 +71,6 @@ public class Photo {
             name = "Unnamed";
         }
         return name;
-    }
-
-    public User getUser() {
-        return user;
     }
 
     public String getUsername() {
@@ -69,13 +86,13 @@ public class Photo {
 
     public String getTitle() {
         if (title == null) {
-            title = name + " by " + getUsername();
+            title = getName() + " by " + getUsername();
         }
         return title;
     }
 
-    public static ArrayList<Photo> getPhotos(ArrayList<String> list) {
-        ArrayList<Photo> res = new ArrayList<>();
+    public static List<Photo> getPhotos(List<String> list) {
+        List<Photo> res = new ArrayList<>();
         for (String s : list) {
             res.add(new Photo(s));
         }
@@ -85,27 +102,10 @@ public class Photo {
     @Override
     public String toString() {
         return "{" +
-                "name='" + name + '\'' +
+                "name='" + getName() + '\'' +
                 ", username='" + getUsername() + '\'' +
-                ", big_image_url='" + getBig_image_url() + '\'' +
                 ", browser_url='" + browser_url + '\'' +
+                ", big_image_url='" + getBig_image_url() + '\'' +
                 '}';
-    }
-
-    public String getBig_image_url() {
-        // SECRET CODE
-        // to get the biggest image, api allows only to get sizes 1..4
-        if (big_image_url == null) {
-            char[] chars = image_url.toCharArray();
-
-            int id = image_url.lastIndexOf(".jpg");
-            if (id < 0) {
-                return big_image_url = image_url;
-            }
-            chars[id - 1] = '5';
-            big_image_url = new String(chars);
-        }
-        // SECRET CODE
-        return big_image_url;
     }
 }

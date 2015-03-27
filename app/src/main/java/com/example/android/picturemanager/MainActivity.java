@@ -230,8 +230,8 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 getActivity().getWindowManager().getDefaultDisplay().getSize(size);
                 columns = (int) (size.x / getResources().getDimension(R.dimen.gridView_columnWidth));
                 imagesPerPage = (columns * ((int) (size.y
-                        / getResources().getDimension(R.dimen.gridView_columnWidth)) - 1));
-                visibleThreshold = columns * 2;
+                        / getResources().getDimension(R.dimen.gridView_columnWidth)) + 1));
+                visibleThreshold = columns * 4;
                 lastOrientation = orientation;
             }
         }
@@ -268,8 +268,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
                 @Override
                 public void onLoadMore(int page, int totalItemsCount) {
                     getActivity().registerReceiver(onServiceStart, startFilter);
-//                    myFeed.loadItems(++pageNumber, visibleThreshold);
-                    myFeed.loadItems(++pageNumber, imagesPerPage);
+                    myFeed.loadItems(++pageNumber, visibleThreshold);
                 }
             });
             gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

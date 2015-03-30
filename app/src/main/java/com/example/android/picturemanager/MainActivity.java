@@ -79,9 +79,6 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
         actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_upcoming_tab).setTabListener(this));
         actionBar.addTab(actionBar.newTab().setIcon(R.drawable.ic_editors_tab).setTabListener(this));
 
-        if (android.os.Build.VERSION.SDK_INT >= 21) {
-            actionBar.setHideOnContentScrollEnabled(true);
-        }
         actionBar.setTitle(CATEGORIES[0]);
         actionBar.setLogo(R.drawable.ic_withoutbackground);
         actionBar.setDisplayUseLogoEnabled(true);

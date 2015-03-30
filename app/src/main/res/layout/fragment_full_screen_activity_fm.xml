@@ -1,0 +1,40 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_full_screen_activity_fm"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primary_dark_material_dark"
+    android:paddingBottom="@dimen/activity_fullscreen_vertical_margin"
+    android:paddingLeft="@dimen/activity_fullscreen_horizontal_margin"
+    android:paddingRight="@dimen/activity_fullscreen_horizontal_margin"
+    android:paddingTop="@dimen/activity_fullscreen_vertical_margin">
+
+    <com.example.android.picturemanager.ScaleImageView
+        android:id="@+id/image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/fullscreen_background"/>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:background="@color/primary_dark_material_dark"
+        android:elegantTextHeight="true"
+        android:lines="2"
+        android:minLines="2"
+        android:textColor="@android:color/white"
+        android:textSize="25sp"
+        android:textStyle="italic" />
+</RelativeLayout>

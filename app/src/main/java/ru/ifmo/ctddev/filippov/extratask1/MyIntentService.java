@@ -103,8 +103,7 @@ public class MyIntentService extends IntentService {
                                 MyContentProvider.PHOTO_KEY_PHOTOSTREAM_ID + " = " + 0, null, null);
                         int count = cursor.getCount();
                         cursor.close();
-                        String nullString = null;
-                        PhotoList photos = flickr.getInterestingnessInterface().getList(nullString, extras, photosOnPage, page);
+                        PhotoList photos = flickr.getInterestingnessInterface().getList((String) null, extras, photosOnPage, page);
                         ContentValues contentValues = new ContentValues();
 
                         for (int i = 0; i < photos.size(); ++i) {
@@ -158,10 +157,10 @@ public class MyIntentService extends IntentService {
                             String root = Environment.getExternalStorageDirectory().toString();
                             Log.i("root directory: ", root);
                             File directory = new File(root, "/saved_images");
-                            directory.mkdirs();
+                            assert directory.mkdirs();
                             File photo = new File(directory, cursor.getString(2) + ".jpg");
                             if (photo.exists()) {
-                                photo.delete();
+                                assert photo.delete();
                             }
                             FileOutputStream photoOutputFile = new FileOutputStream(photo);
                             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, photoOutputFile);

@@ -35,8 +35,6 @@ import ru.ifmo.ctddev.filippov.extratask1.util.SystemUiHider;
  * Created by Dima_2 on 02.03.2015.
  */
 public class ImageActivity extends Activity implements View.OnTouchListener, LoaderManager.LoaderCallbacks<Cursor> {
-
-    private static final boolean AUTO_HIDE = true;
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
 
     private boolean TOGGLE_ON_CLICK = true;
@@ -53,8 +51,6 @@ public class ImageActivity extends Activity implements View.OnTouchListener, Loa
     private ImageView imageView;
     private String photoId;
     private String browseUrl;
-    private Bitmap bitmap;
-    private MyPhoto nowPhoto;
     private int databaseId;
 
     @Override
@@ -88,9 +84,7 @@ public class ImageActivity extends Activity implements View.OnTouchListener, Loa
         View.OnClickListener browseListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (AUTO_HIDE) {
-                    delayedHide(AUTO_HIDE_DELAY_MILLIS);
-                }
+                delayedHide(AUTO_HIDE_DELAY_MILLIS);
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(browseUrl));
                 startActivity(intent);
@@ -136,7 +130,7 @@ public class ImageActivity extends Activity implements View.OnTouchListener, Loa
                             controlsView.setVisibility(visible ? View.VISIBLE : View.GONE);
                         }
 
-                        if (visible && AUTO_HIDE) {
+                        if (visible) {
                             delayedHide(AUTO_HIDE_DELAY_MILLIS);
                         }
                     }
@@ -218,7 +212,7 @@ public class ImageActivity extends Activity implements View.OnTouchListener, Loa
             byte[] image = cursor.getBlob(5);
             if (image != null) {
                 ByteArrayInputStream imageStream = new ByteArrayInputStream(image);
-                bitmap = BitmapFactory.decodeStream(imageStream);
+                Bitmap bitmap = BitmapFactory.decodeStream(imageStream);
                 RectF drawableRect = new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight());
                 RectF viewRect = new RectF(0, 0, imageView.getWidth(), imageView.getHeight());
                 matrix.setRectToRect(drawableRect, viewRect, Matrix.ScaleToFit.CENTER);
@@ -228,7 +222,7 @@ public class ImageActivity extends Activity implements View.OnTouchListener, Loa
                 imageView.invalidate();
                 progressBar.setVisibility(View.INVISIBLE);
 
-                nowPhoto = new MyPhoto(id, cursor.getString(1), cursor.getBlob(4));
+                MyPhoto nowPhoto = new MyPhoto(id, cursor.getString(1), cursor.getBlob(4));
                 nowPhoto.databaseId = cursor.getInt(0);
                 nowPhoto.fullUrl = cursor.getString(3);
                 browseUrl = nowPhoto.browseUrl = cursor.getString(8);

@@ -29,12 +29,10 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
     public static final String API_KEY = "6ff27bc7aa54ac32d9b42e90c83c50cb";
     public static final String API_SECRET_KEY = "cfd26d2770b06e82";
     private ProgressBar progressBar;
-    private TextView photoStream;
     private ViewFlipper viewFlipper;
     private Intent intent;
     private GridView gridView;
     private PhotoAdapter photoAdapter;
-    private Handler handler;
     private int photosShown = 0;
     private int currentPage = 1;
     private boolean updating = false;
@@ -45,7 +43,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         setContentView(R.layout.activity_main);
 
         progressBar = (ProgressBar) findViewById(R.id.progressBarHorizontal);
-        photoStream = (TextView) findViewById(R.id.photostream);
+        TextView photoStream = (TextView) findViewById(R.id.photostream);
         photoStream.setText(R.string.title);
         viewFlipper = (ViewFlipper) findViewById(R.id.view_flipper);
         intent = new Intent(this, ImageActivity.class);
@@ -57,7 +55,7 @@ public class MainActivity extends ActionBarActivity implements LoaderManager.Loa
         getLoaderManager().initLoader(1, null, this);
         loadAllPhotos();
 
-        handler = new Handler(new Handler.Callback() {
+        Handler handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message message) {
                 switch (message.what) {

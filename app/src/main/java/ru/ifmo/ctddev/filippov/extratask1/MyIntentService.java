@@ -120,7 +120,7 @@ public class MyIntentService extends IntentService {
                             contentValues.put(MyContentProvider.PHOTO_KEY_LARGE_URL, photo.getLargeUrl());
                             contentValues.put(MyContentProvider.PHOTO_KEY_BROWSE_URL, photo.getUrl());
                             contentValues.put(MyContentProvider.PHOTO_KEY_PHOTOSTREAM_ID, 0);
-                            contentValues.put(MyContentProvider.PHOTO_KEY_IN_FLOW_ID, count + 1 + i);
+                            contentValues.put(MyContentProvider.PHOTO_KEY_IN_FLOW_ID, count + i + 1);
                             contentValues.put(MyContentProvider.PHOTO_KEY_PAGE, page);
 
                             if (handler != null) {

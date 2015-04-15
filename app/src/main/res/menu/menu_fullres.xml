@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="ru.ifmo.md.extratask.MainActivity2">
+    <item android:id="@+id/action_set_wallpaper" android:title="@string/action_set_as_wallpaper"
+        android:orderInCategory="100" android:showAsAction="never" />
+    <item android:id="@+id/action_download" android:title="@string/action_download"
+        android:orderInCategory="100" android:showAsAction="never" />
+    <item android:id="@+id/action_open_browser" android:title="@string/action_open_browser"
+        android:orderInCategory="100" android:showAsAction="never" />
+</menu>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Popular Ya Photos</string>
+    <string name="title_activity_full">View Photo</string>
+    <string name="action_set_as_wallpaper">Set as Wallpaper</string>
+    <string name="action_download">Download</string>
+    <string name="action_open_browser">Open in browser</string>
+    <string name="wallpaper_success">Set as Wallpaper successfully</string>
+    <string name="wallpaper_fail">Couldn\'t set as Wallpaper</string>
+    <string name="progress_title">Updating…</string>
+    <string name="progress_message">Please wait…</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="dialog_error">An error occurred</string>
+
+</resources>

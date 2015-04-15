@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="item_margin">8dp</dimen>
+    <dimen name="fab_diameter">56dp</dimen>
+</resources>

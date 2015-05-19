@@ -1,4 +1,4 @@
-package year2013.ifmo.imageloader;
+package year2013.ifmo.photogallery;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

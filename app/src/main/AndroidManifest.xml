@@ -1,22 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="year2013.ifmo.imageloader" >
+    package="year2013.ifmo.photogallery" >
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/photocat"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="year2013.ifmo.imageloader.MainActivity"
+            android:name="year2013.ifmo.photogallery.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <service
+            android:name="year2013.ifmo.photogallery.ImageIntentService"
+            android:exported="false" >
+        </service>
+
+        <provider
+            android:name="year2013.ifmo.photogallery.ImageContentProvider"
+            android:authorities="year2013.ifmo.photogallery.provider.image"
+            android:enabled="true"
+            android:exported="false" >
+        </provider>
+
+        <activity
+            android:name="year2013.ifmo.photogallery.FullScreenImageActivity"
+            android:label="@string/title_activity_full_screen" >
         </activity>
     </application>
 

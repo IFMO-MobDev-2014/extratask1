@@ -3,20 +3,17 @@ package ru.ifmo.md.photooftheday.photodownloader;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
- * Created by vadim on 17/01/15.
+ * @author Vadim Semenov <semenov@rain.ifmo.ru>
  */
 public class JSONDownloadTask extends AsyncTask<Void, Void, JSONObject> {
     public static final String TAG = JSONDownloadTask.class.getSimpleName();
@@ -50,42 +47,34 @@ public class JSONDownloadTask extends AsyncTask<Void, Void, JSONObject> {
         long startTime = System.currentTimeMillis();
         final String url = API_URL + "?" + request + "&consumer_key=" + CONSUMER_KEY;
         Log.v(TAG, "URL: " + url);
-        JSONObject object = handle(new HttpGet(url));
+        JSONObject object = null;
+        try {
+            object = handle(url);
+        } catch (IOException e) {
+            Log.e(TAG, "Error obtaining response from 500px api.", e);
+        }
         Log.d(TAG, "doInBackground() complete in " + (System.currentTimeMillis() - startTime) + ".ms");
         return object;
     }
 
     // copy-paste from https://github.com/500px/500px-android-sdk/blob/master/src/main/java/com/fivehundredpx/api/PxApi.java
-    private JSONObject handle(HttpUriRequest request) {
+    private JSONObject handle(String urlString) throws IOException {
+        URL url = new URL(urlString);
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        JSONObject result = null;
         try {
-            DefaultHttpClient client = new DefaultHttpClient();
-
-            HttpResponse response = client.execute(request);
-            final int statusCode = response.getStatusLine().getStatusCode();
-
-            if (statusCode != HttpStatus.SC_OK) {
-                final String msg = String.format(
-                        "Error, statusCode not OK(%d). for url: %s",
-                        statusCode, request.getURI().toString());
-                Log.e(TAG, msg);
-                return null;
-            }
-
-            HttpEntity responseEntity = response.getEntity();
-            InputStream inputStream = responseEntity.getContent();
-            BufferedReader r = new BufferedReader(new InputStreamReader(
-                    inputStream));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
             StringBuilder total = new StringBuilder();
             String line;
-            while ((line = r.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 total.append(line);
             }
-
-            JSONObject json = new JSONObject(total.toString());
-            return json;
-        } catch (Exception e) {
-            Log.e(TAG, "Error obtaining response from 500px api.", e);
+            result = new JSONObject(total.toString());
+        } catch (JSONException e) {
+            Log.e(TAG, "Error parsing JSONObject", e);
+        } finally {
+            urlConnection.disconnect();
         }
-        return null;
+        return result;
     }
 }

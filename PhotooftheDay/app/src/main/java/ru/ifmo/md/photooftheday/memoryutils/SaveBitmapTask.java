@@ -6,7 +6,6 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -33,22 +32,16 @@ public class SaveBitmapTask extends AsyncTask<Bitmap, Void, Boolean> {
             Log.e(TAG, "External storage is not writable");
             return false;
         }
-        for (int i = 0; i < Math.min(fileNames.length, bitmaps.length); ++i) {
+        for (int i = Math.min(fileNames.length, bitmaps.length) - 1; i >= 0; --i) {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             bitmaps[i].compress(Bitmap.CompressFormat.PNG, QUALITY, bytes);
             if (FilesUtils.fileExists(FilesUtils.getApplicationStorageDir(), fileNames[i])) {
                 continue;
             }
             File fullPath = FilesUtils.createFile(FilesUtils.getApplicationStorageDir(), fileNames[i]);
-            FileOutputStream outputStream = null;
-            try {
-                outputStream = new FileOutputStream(fullPath);
-            } catch (FileNotFoundException e) {
-                Log.e(TAG, e.getMessage(), e);
-            }
-            try {
+            if (fullPath == null) throw new AssertionError("there is no application dir?oO");
+            try (FileOutputStream outputStream = new FileOutputStream(fullPath)) {
                 outputStream.write(bytes.toByteArray());
-                outputStream.close();
             } catch (IOException e) {
                 Log.e(TAG, e.getMessage(), e);
             }

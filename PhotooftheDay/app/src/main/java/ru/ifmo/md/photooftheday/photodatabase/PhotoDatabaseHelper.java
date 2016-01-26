@@ -15,7 +15,7 @@ public class PhotoDatabaseHelper extends SQLiteOpenHelper {
     public static final int PHOTO_DATABASE_VERSION = 1;
 
     public interface Tables {
-        public static final String PHOTO = "photo";
+        String PHOTO = "photo";
     }
 
     public PhotoDatabaseHelper(Context context) {

@@ -52,11 +52,8 @@ public class FilesUtils {
             return null;
         }
         File file = new File(path, fileName);
-        if (file.exists()) {
-            return file;
-        }
         try {
-            file.createNewFile();
+            boolean newFile = file.createNewFile();
         } catch (IOException e) {
             Log.e(TAG, "File not created");
         }
@@ -78,18 +75,12 @@ public class FilesUtils {
 
     public static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     public static boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 }

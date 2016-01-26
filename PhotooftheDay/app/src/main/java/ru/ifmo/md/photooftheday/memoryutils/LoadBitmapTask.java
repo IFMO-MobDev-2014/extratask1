@@ -26,6 +26,7 @@ public class LoadBitmapTask extends AsyncTask<Void, Void, Bitmap> {
             return null;
         }
         File fullPath = FilesUtils.createFile(FilesUtils.getApplicationStorageDir(), fileName);
+        if (fullPath == null) throw new AssertionError("there is no application dir?oO");
         return BitmapFactory.decodeFile(fullPath.getAbsolutePath());
     }
 }

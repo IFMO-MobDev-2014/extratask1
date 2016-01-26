@@ -3,9 +3,11 @@ package ru.ifmo.md.photooftheday.photodatabase;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 /**
  * @author Vadim Semenov <semenov@rain.ifmo.ru>
@@ -35,14 +37,15 @@ public class PhotoProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         int match = URI_MATCHER.match(uri);
         Cursor cursor;
         switch (match) {
             case URI_PHOTO_ID:
                 cursor = dbHelper.getReadableDatabase().query(PHOTO_TABLE,
                         projection, selection, selectionArgs, null, null, sortOrder);
-                cursor.setNotificationUri(getContext().getContentResolver(), PHOTO_CONTENT_URI);
+                final Context context = getContext();
+                cursor.setNotificationUri((context == null ? null : context.getContentResolver()), PHOTO_CONTENT_URI);
                 break;
             default:
                 throw new IllegalArgumentException("No such URI found: " + match);
@@ -51,7 +54,7 @@ public class PhotoProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         int match = URI_MATCHER.match(uri);
         switch (match) {
             case URI_PHOTO_ID:
@@ -62,14 +65,17 @@ public class PhotoProvider extends ContentProvider {
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
         Uri resultURI;
         int match = URI_MATCHER.match(uri);
         switch (match) {
             case URI_PHOTO_ID:
                 long rowID = dbHelper.getWritableDatabase().insert(PHOTO_TABLE, null, values);
                 resultURI = ContentUris.withAppendedId(PHOTO_CONTENT_URI, rowID);
-                getContext().getContentResolver().notifyChange(resultURI, null);
+                final Context context = getContext();
+                if (context != null) {
+                    context.getContentResolver().notifyChange(resultURI, null);
+                }
                 break;
             default:
                 throw new IllegalArgumentException("No such URI found: " + match);
@@ -78,7 +84,7 @@ public class PhotoProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         int result;
         int match = URI_MATCHER.match(uri);
         switch (match) {
@@ -88,12 +94,15 @@ public class PhotoProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("No such URI found: " + match);
         }
-        getContext().getContentResolver().notifyChange(uri, null);
+        final Context context = getContext();
+        if (context != null) {
+            context.getContentResolver().notifyChange(uri, null);
+        }
         return result;
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         int result;
         int match = URI_MATCHER.match(uri);
         switch (match) {
@@ -103,7 +112,10 @@ public class PhotoProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("No such URI found: " + match);
         }
-        getContext().getContentResolver().notifyChange(uri, null);
+        final Context context = getContext();
+        if (context != null) {
+            context.getContentResolver().notifyChange(uri, null);
+        }
         return result;
     }
 }

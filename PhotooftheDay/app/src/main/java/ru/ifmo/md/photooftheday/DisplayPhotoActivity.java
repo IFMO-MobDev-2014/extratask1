@@ -21,6 +21,9 @@ import java.nio.channels.FileChannel;
 
 import ru.ifmo.md.photooftheday.memoryutils.FilesUtils;
 
+/**
+ * @author Vadim Semenov <semenov@rain.ifmo.ru>
+ */
 public class DisplayPhotoActivity extends Activity {
     public static final String TAG = DisplayPhotoActivity.class.getSimpleName();
 

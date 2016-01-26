@@ -8,7 +8,7 @@ import android.util.Log;
 import java.io.File;
 
 /**
- * Created by vadim on 18/01/15.
+ * @author Vadim Semenov <semenov@rain.ifmo.ru>
  */
 public class LoadBitmapTask extends AsyncTask<Void, Void, Bitmap> {
     public static final String TAG = LoadBitmapTask.class.getSimpleName();

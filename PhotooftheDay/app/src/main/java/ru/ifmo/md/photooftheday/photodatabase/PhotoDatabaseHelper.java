@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 /**
- * Created by vadim on 18/01/15.
+ * @author Vadim Semenov <semenov@rain.ifmo.ru>
  */
 public class PhotoDatabaseHelper extends SQLiteOpenHelper {
     public static final String TAG = PhotoDatabaseHelper.class.getName();

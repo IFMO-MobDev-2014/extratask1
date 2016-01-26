@@ -32,7 +32,9 @@ import ru.ifmo.md.photooftheday.photodatabase.PhotoContract;
 import ru.ifmo.md.photooftheday.photodatabase.PhotoProvider;
 import ru.ifmo.md.photooftheday.photodownloader.JSONDownloadTask;
 
-
+/**
+ * @author Vadim Semenov <semenov@rain.ifmo.ru>
+ */
 public class MainActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
     public static final String TAG = MainActivity.class.getSimpleName();
 

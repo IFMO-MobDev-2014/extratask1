@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import java.util.List;
 
 /**
- * Created by vadim on 16/01/15.
+ * @author Vadim Semenov <semenov@rain.ifmo.ru>
  */
 public abstract class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.Holder> {
     public static final String TAG = RecyclerAdapter.class.getSimpleName();

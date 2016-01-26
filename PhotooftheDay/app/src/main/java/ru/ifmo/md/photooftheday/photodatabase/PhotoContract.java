@@ -4,15 +4,15 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
- * Created by vadim on 18/01/15.
+ * @author Vadim Semenov <semenov@rain.ifmo.ru>
  */
 public final class PhotoContract {
     public interface PhotoColumns {
-        public static final String ID = "photo_title";
-        public static final String NAME = "photo_name";
-        public static final String URL_FULL = "photo_url_full";
-        public static final String URL_THUMBNAIL = "photo_url_thumbnail";
-        public static final String VALID_STATE = "photo_valid_state";
+        String ID = "photo_title";
+        String NAME = "photo_name";
+        String URL_FULL = "photo_url_full";
+        String URL_THUMBNAIL = "photo_url_thumbnail";
+        String VALID_STATE = "photo_valid_state";
     }
 
     public static final String AUTHORITY = PhotoContract.class.getCanonicalName();

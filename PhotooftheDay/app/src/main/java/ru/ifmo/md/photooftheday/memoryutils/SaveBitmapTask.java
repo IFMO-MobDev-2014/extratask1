@@ -11,7 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * Created by vadim on 18/01/15.
+ * @author Vadim Semenov <semenov@rain.ifmo.ru>
  */
 public class SaveBitmapTask extends AsyncTask<Bitmap, Void, Boolean> {
     public static final String TAG = SaveBitmapTask.class.getSimpleName();

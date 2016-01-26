@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by vadim on 18/01/15.
+ * @author Vadim Semenov <semenov@rain.ifmo.ru>
  */
 public class FilesUtils {
     public static final String TAG = FilesUtils.class.getSimpleName();

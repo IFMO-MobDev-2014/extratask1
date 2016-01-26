@@ -8,7 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 /**
- * Created by vadim on 18/01/15.
+ * @author Vadim Semenov <semenov@rain.ifmo.ru>
  */
 public class PhotoProvider extends ContentProvider {
     public static final String TAG = PhotoProvider.class.getSimpleName();

@@ -16,7 +16,7 @@ import ru.ifmo.md.photooftheday.memoryutils.SaveBitmapTask;
 import ru.ifmo.md.photooftheday.photodownloader.BitmapDownloadTask;
 
 /**
- * Created by vadim on 22/01/15.
+ * @author Vadim Semenov <semenov@rain.ifmo.ru>
  */
 public class Photo implements Parcelable {
     public static final String TAG = Photo.class.getSimpleName();

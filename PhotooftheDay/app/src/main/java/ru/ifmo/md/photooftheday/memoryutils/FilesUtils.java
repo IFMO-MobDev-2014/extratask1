@@ -32,7 +32,7 @@ public class FilesUtils {
         }
         File file = new File(path, dirName);
         if (!file.exists() && !file.mkdirs()) {
-            Log.e(TAG, "Directory not created");
+            Log.e(TAG, "Directory '" + path + "/" + dirName + "' not created");
         }
         return file;
     }

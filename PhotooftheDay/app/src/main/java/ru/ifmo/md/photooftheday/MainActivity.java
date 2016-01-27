@@ -9,6 +9,7 @@ import android.content.Loader;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,7 +26,7 @@ import org.json.JSONObject;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
+import java.util.List;
 
 import ru.ifmo.md.photooftheday.memoryutils.FilesUtils;
 import ru.ifmo.md.photooftheday.photodatabase.PhotoContract;
@@ -130,87 +131,103 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
 
     // TODO: progress bar
     public void refresh() {
-        JSONObject jsonObject = null;
-        try {
-            jsonObject = new JSONDownloadTask().execute().get();
-        } catch (InterruptedException e) {
-            Log.e(TAG, e.getMessage(), e);
-        } catch (ExecutionException e) {
-            Log.e(TAG, e.getMessage(), e);
-        }
-        if (jsonObject == null) {
-            Toast.makeText(this, getString(R.string.download_fail), Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        recyclerAdapter.clear();
-        ContentValues values = new ContentValues();
-        values.put(PhotoContract.Photo.VALID_STATE, 0);
-        getContentResolver().update(PhotoProvider.PHOTO_CONTENT_URI, values, null, null);
-
-        try {
-            JSONArray photos = jsonObject.getJSONArray("photos");
-            int insertCounter = 0;
-            for (int i = 0; i < photos.length(); ++i) {
-                final JSONObject jsonPhoto = photos.getJSONObject(i);
-                final JSONArray images = jsonPhoto.getJSONArray("images");
-                JSONObject jsonThumbnail = images.getJSONObject(0);
-                JSONObject jsonFull = images.getJSONObject(1);
-
-                if (!(jsonFull.getInt("size") == 4 && jsonThumbnail.getInt("size") == 2)) throw new AssertionError();
-                final String thumbnailUrl = jsonThumbnail.getString("url");
-                final String fullUrl = jsonFull.getString("url");
-
-                final String photoID = jsonPhoto.getString("id");
-                final String photoName = jsonPhoto.getString("name");
-
-                Photo photo = new Photo(photoName, photoID, new URL(thumbnailUrl), new URL(fullUrl));
-                recyclerAdapter.add(photo);
-
-                Cursor cursor = getContentResolver().query(PhotoProvider.PHOTO_CONTENT_URI, null,
-                        PhotoContract.Photo.ID + " = " + DatabaseUtils.sqlEscapeString(photoID) + " AND " +
-                                PhotoContract.Photo.NAME + " = " + DatabaseUtils.sqlEscapeString(photoName) + " AND " +
-                                PhotoContract.Photo.URL_FULL + " = " + DatabaseUtils.sqlEscapeString(fullUrl) + " AND " +
-                                PhotoContract.Photo.URL_THUMBNAIL + " = " + DatabaseUtils.sqlEscapeString(thumbnailUrl),
-                        null, null
-                        );
-                if (cursor.getCount() == 0) {
-                    insertCounter++;
-                    values.clear();
-                    values.put(PhotoContract.Photo.ID, photoID);
-                    values.put(PhotoContract.Photo.NAME, photoName);
-                    values.put(PhotoContract.Photo.URL_FULL, fullUrl);
-                    values.put(PhotoContract.Photo.URL_THUMBNAIL, thumbnailUrl);
-                    values.put(PhotoContract.Photo.VALID_STATE, 1);
-                    getContentResolver().insert(PhotoProvider.PHOTO_CONTENT_URI, values);
-                } else {
-                    values.clear();
-                    values.put(PhotoContract.Photo.VALID_STATE, 1);
-                    getContentResolver().update(PhotoProvider.PHOTO_CONTENT_URI, values, null, null);
+        final AsyncTask<JSONObject, Void, List<Photo>> updateDB = new AsyncTask<JSONObject, Void, List<Photo>>() {
+            @Override
+            protected List<Photo> doInBackground(JSONObject... params) {
+                if (params == null || params.length == 0) {
+                    return null;
                 }
-                cursor.close();
+                JSONObject jsonObject = params[0];
+                List<Photo> result = new ArrayList<>();
+
+                ContentValues values = new ContentValues();
+                values.put(PhotoContract.Photo.VALID_STATE, 0);
+                getContentResolver().update(PhotoProvider.PHOTO_CONTENT_URI, values, null, null);
+
+                try {
+                    JSONArray photos = jsonObject.getJSONArray("photos");
+                    int insertCounter = 0;
+                    for (int i = 0; i < photos.length(); ++i) {
+                        final JSONObject jsonPhoto = photos.getJSONObject(i);
+                        final JSONArray images = jsonPhoto.getJSONArray("images");
+                        JSONObject jsonThumbnail = images.getJSONObject(0);
+                        JSONObject jsonFull = images.getJSONObject(1);
+
+                        if (!(jsonFull.getInt("size") == 4 && jsonThumbnail.getInt("size") == 2)) throw new AssertionError();
+                        final String thumbnailUrl = jsonThumbnail.getString("url");
+                        final String fullUrl = jsonFull.getString("url");
+
+                        final String photoID = jsonPhoto.getString("id");
+                        final String photoName = jsonPhoto.getString("name");
+
+                        Photo photo = new Photo(photoName, photoID, new URL(thumbnailUrl), new URL(fullUrl));
+                        result.add(photo);
+
+                        Cursor cursor = getContentResolver().query(PhotoProvider.PHOTO_CONTENT_URI, null,
+                                PhotoContract.Photo.ID + " = " + DatabaseUtils.sqlEscapeString(photoID) + " AND " +
+                                        PhotoContract.Photo.NAME + " = " + DatabaseUtils.sqlEscapeString(photoName) + " AND " +
+                                        PhotoContract.Photo.URL_FULL + " = " + DatabaseUtils.sqlEscapeString(fullUrl) + " AND " +
+                                        PhotoContract.Photo.URL_THUMBNAIL + " = " + DatabaseUtils.sqlEscapeString(thumbnailUrl),
+                                null, null
+                        );
+                        if (cursor.getCount() == 0) {
+                            insertCounter++;
+                            values.clear();
+                            values.put(PhotoContract.Photo.ID, photoID);
+                            values.put(PhotoContract.Photo.NAME, photoName);
+                            values.put(PhotoContract.Photo.URL_FULL, fullUrl);
+                            values.put(PhotoContract.Photo.URL_THUMBNAIL, thumbnailUrl);
+                            values.put(PhotoContract.Photo.VALID_STATE, 1);
+                            getContentResolver().insert(PhotoProvider.PHOTO_CONTENT_URI, values);
+                        } else {
+                            values.clear();
+                            values.put(PhotoContract.Photo.VALID_STATE, 1);
+                            getContentResolver().update(PhotoProvider.PHOTO_CONTENT_URI, values, null, null);
+                        }
+                        cursor.close();
+                    }
+                    Cursor cursor = getContentResolver().query(PhotoProvider.PHOTO_CONTENT_URI, PhotoContract.Photo.ALL_COLUMNS,
+                            PhotoContract.Photo.VALID_STATE + " = 0", null, null);
+                    int beforeDeleteCounter = cursor.getCount();
+                    while (!cursor.isAfterLast()) {
+                        String photoID = cursor.getString(cursor.getColumnIndex(PhotoContract.Photo.ID));
+                        FilesUtils.removeFile(FilesUtils.getApplicationStorageDir(), photoID + Photo.THUMBNAIL_SUFFIX);
+                        FilesUtils.removeFile(FilesUtils.getApplicationStorageDir(), photoID);
+                        cursor.moveToNext();
+                    }
+                    cursor.close();
+                    int deleteCounter = getContentResolver().delete(PhotoProvider.PHOTO_CONTENT_URI,
+                            PhotoContract.Photo.VALID_STATE + " = 0", null);
+                    Log.d(TAG, "After updating " + insertCounter + " rows were inserted " +
+                            "and " +  deleteCounter + "(" + beforeDeleteCounter + ") were deleted");
+                } catch (JSONException | MalformedURLException e) {
+                    Log.e(TAG, e.getMessage(), e);
+                }
+
+                return result;
             }
-            Cursor cursor = getContentResolver().query(PhotoProvider.PHOTO_CONTENT_URI, PhotoContract.Photo.ALL_COLUMNS,
-                    PhotoContract.Photo.VALID_STATE + " = 0", null, null);
-            int ddeleteCounter = cursor.getCount();
-            while (!cursor.isAfterLast()) {
-                String photoID = cursor.getString(cursor.getColumnIndex(PhotoContract.Photo.ID));
-                FilesUtils.removeFile(FilesUtils.getApplicationStorageDir(), photoID + Photo.THUMBNAIL_SUFFIX);
-                FilesUtils.removeFile(FilesUtils.getApplicationStorageDir(), photoID);
-                cursor.moveToNext();
+
+            @Override
+            protected void onPostExecute(List<Photo> photos) {
+                // UI-thread
+                if (photos == null) {
+                    Toast.makeText(MainActivity.this, getString(R.string.download_fail), Toast.LENGTH_SHORT).show();
+                } else {
+                    updateUI(photos);
+                }
             }
-            cursor.close();
-            int deleteCounter = getContentResolver().delete(PhotoProvider.PHOTO_CONTENT_URI,
-                    PhotoContract.Photo.VALID_STATE + " = 0", null);
-            Log.d(TAG, "After updating " + insertCounter + " rows were inserted " +
-                    "and " +  deleteCounter + "(" + ddeleteCounter + ") were deleted");
-        } catch (JSONException e) {
-            Log.e(TAG, e.getMessage(), e);
-            Toast.makeText(this, getString(R.string.download_fail), Toast.LENGTH_SHORT).show();
-            return;
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        };
+
+        new JSONDownloadTask(){
+            @Override
+            protected void onPostExecute(JSONObject jsonObject) {
+                if (jsonObject == null) {
+                    Toast.makeText(MainActivity.this, getString(R.string.download_fail), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                updateDB.execute(jsonObject);
+            }
+        }.execute();
     }
 
     /* LoaderCallback methods */
@@ -226,7 +243,7 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
             refresh();
         } else {
             data.moveToFirst();
-            recyclerAdapter.clear();
+            List<Photo> photos = new ArrayList<>();
             while (!data.isAfterLast()) {
                 final String photoName = data.getString(data.getColumnIndex(PhotoContract.Photo.NAME));
                 final String photoID = data.getString(data.getColumnIndex(PhotoContract.Photo.ID));
@@ -239,17 +256,28 @@ public class MainActivity extends Activity implements LoaderManager.LoaderCallba
                     Log.e(TAG, e.getMessage(), e);
                 }
                 if (photo != null) {
-                    recyclerAdapter.add(photo);
+                    photos.add(photo);
                 } else {
                     Log.w(TAG, "couldn't load photo from database (maybe URL is incorrect)");
                 }
                 data.moveToNext();
             }
+            updateUI(photos);
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         Log.d(TAG, "onLoaderReset() was called");
+    }
+
+    private void updateUI(List<Photo> photos) {
+        if (photos == null || photos.size() == 0) {
+            return;
+        }
+        recyclerAdapter.clear();
+        for (Photo photo : photos) {
+            recyclerAdapter.add(photo);
+        }
     }
 }
